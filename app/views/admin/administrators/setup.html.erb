@@ -2,12 +2,14 @@
   <div class='col-12 col-md-4 offset-md-4 text-center'>
     <h3>Setup Administrator</h3>
     <%= form_with url: setup_admin_administrators_path, method: 'post', local: true do %>
-      <h6 class='mt-4'>1. Create a password</h6>
-      <div class='form-group'>
-        <input type='password' name='password' class='form-control form-control-lg text-center' placeholder='password' />
-      </div>
+      <% if !@administrator.password_digest? -%>
+        <h6 class='mt-4'>Create a password</h6>
+        <div class='form-group'>
+          <input type='password' name='password' class='form-control form-control-lg text-center' placeholder='password' />
+        </div>
+      <% end -%>
 
-      <h6 class='mt-4'>2. Scan QR code with authenticator app</h6>
+      <h6 class='mt-4'>Scan QR code with authenticator app</h6>
 
       <div class='d-flex justify-content-center my-2'>
         <%= @qr.as_svg(
@@ -23,7 +25,7 @@
 
       <input type='hidden' name='secret' value='<%= @secret %>' />
 
-      <h6 class='mt-4'>3. Confirm code</h6>
+      <h6 class='mt-4'>Confirm code</h6>
       <div class='form-group'>
         <input type='text' name='verification' class='form-control form-control-lg text-center' placeholder='confirm code' />
       </div>

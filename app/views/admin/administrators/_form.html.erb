@@ -1,17 +1,50 @@
-<%= form_for [:admin, @administrator] do |f| -%>
-  <% if @administrator.errors.any? -%>
-    <div class='alert alert-warning'>
-      <strong>Sorry, we noticed errors with this form!</strong>
-      <ul>
-        <% @administrator.errors.full_messages.each do |msg| -%>
-          <li><%= msg %></li>
-        <% end -%>
-      </ul>
-    </div>
-  <% end -%>
+<div class='row clearfix pt-3'>
+  <div class='col-12 col-md-4 offset-md-4'>
+    <%= form_for [:admin, @administrator] do |f| -%>
+      <% if @administrator.errors.any? -%>
+        <div class='alert alert-warning'>
+          <strong>Sorry, we noticed errors with this form!</strong>
+          <ul>
+            <% @administrator.errors.full_messages.each do |msg| -%>
+              <li><%= msg %></li>
+            <% end -%>
+          </ul>
+        </div>
+      <% end -%>
 
-  <%= f.text_field :name, placeholder: 'name' %>
-  <%= f.email_field :email, placeholder: 'email' %>
+      <div class='form-group'>
+        <%= f.text_field :name, placeholder: 'name', class: 'form-control form-control-lg' %>
+      </div>
+      <div class='form-group'>
+        <%= f.email_field :email, placeholder: 'email', class: 'form-control form-control-lg' %>
+      </div>
 
-  <%= f.submit %>
-<% end -%>
+      <% if @administrator.persisted? -%>
+        <div class='form-group'>
+          <input id='new-password' type='password' name='change_password' readonly autocomplete='new-password' placeholder='new password (optional)' class='form-control form-control-lg' />
+        </div>
+        <div class='form-group'>
+          <input type='text' name='otp_code' class='form-control form-control-lg' placeholder='2fa code' />
+        </div>
+        <div class='form-group text-center'>
+          <label class='mb-0'>
+            <input type='checkbox' name='reset_otp' />
+            Reset 2FA?
+          </label>
+        </div>
+        <script>
+          $(document).ready( function() {
+            setTimeout(
+              () => $('#new-password').removeAttr( 'readonly' ),
+              1000
+            )
+          } )
+        </script>
+      <% end -%>
+
+      <div class='d-flex justify-content-center'>
+        <%= f.submit (@administrator.persisted? ? 'Update' : 'Create'), class: 'btn btn-primary' %>
+      </div>
+    <% end -%>
+  </div>
+</div>

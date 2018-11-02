@@ -28,8 +28,25 @@ class Admin::AdministratorsController < Admin::BaseController
 
   def update
     @administrator = current_admin
-    @administrator.update_attributes params.require(:administrator).permit(%i{ name email })
-    flash[:notice] = 'Administrator info updated.'
+
+    if @administrator.authenticate_otp(params[:otp_code])
+      if !params[:change_password].blank?
+        params[:administrator][:password] = params.delete(:change_password)
+      end
+
+      @administrator.update_attributes params.require(:administrator).permit(%i{ name email password })
+
+      if params[:reset_otp] == 'on'
+        @administrator.update_attributes otp_secret_key: ROTP::Base32.random_base32
+        redirect_to setup_admin_administrators_path
+        return
+      end
+
+      flash[:notice] = 'Administrator info updated.'
+    else
+      flash[:error] = 'Incorrect 2FA code.'
+    end
+
     redirect_to admin_administrators_path
   end
 
@@ -43,7 +60,7 @@ class Admin::AdministratorsController < Admin::BaseController
 
   def setup
     if request.post?
-      a = helpers.current_admin
+      a = current_admin
       a.password = params[:password]
       a.otp_secret_key = params[:secret]
       a.one_time_setup_token = nil
@@ -56,10 +73,10 @@ class Admin::AdministratorsController < Admin::BaseController
         redirect_to setup_admin_administrators_path
       end
     else
-      a = helpers.current_admin
-      @secret = a.otp_secret_key || ROTP::Base32.random_base32
+      @administrator = current_admin
+      @secret = @administrator.otp_secret_key || ROTP::Base32.random_base32
       @qr = RQRCode::QRCode.new(
-        [ 'otpauth://totp/', a.email,
+        [ 'otpauth://totp/', @administrator.email,
           '?secret=', @secret,
           '&issuer=', URI.escape("Hubble #{"(#{Rails.env}) " unless Rails.env.production?}Admin") ].join('')
       )
