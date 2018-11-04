@@ -120,20 +120,3 @@ $box-shadow: 0px 5px 15px 3px #F2F2F2;
 .fa.fa-huge {
   font-size: 3rem;
 }
-
-@font-face {
-  font-family: 'figment-tezos';
-  src: asset-url('figment-tezos.eot?2rxfce');
-  src: asset-url('figment-tezos.eot?2rxfce#iefix') format('embedded-opentype'),
-    asset-url('figment-tezos.ttf?2rxfce') format('truetype'),
-    asset-url('figment-tezos.woff?2rxfce') format('woff'),
-    asset-url('figment-tezos.svg?2rxfce#figment-tezos') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-.fi-tz:before {
-  font-family: 'figment-tezos' !important;
-  content: "\e900";
-  font-size: 80%;
-  margin-left: 3px;
-}
