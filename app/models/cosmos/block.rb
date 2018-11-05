@@ -17,7 +17,14 @@ class Cosmos::Block < ApplicationRecord
         raw_validator_set = syncer.get_validator_set( height )
       end
 
-      precommitters = raw_commit['result']['SignedHeader']['commit']['precommits']
+      precommitters = if raw_commit['result'].has_key?('signed_header')
+        # cosmos 0.25.0+
+        raw_commit['result']['signed_header']['commit']['precommits']
+      else
+        # older cosmos (8001 and before)
+        raw_commit['result']['SignedHeader']['commit']['precommits']
+      end
+
       addresses = precommitters.map { |pc| pc['validator_address'] rescue nil }.compact
       validator_set = raw_validator_set['result']['validators'].each_with_object({}) { |o, h| h[o['address']] = o['voting_power'].to_i }
 

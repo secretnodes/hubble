@@ -28,12 +28,22 @@ class Cosmos::PreStartService < Cosmos::SyncBase
 
   def validators
     genesis_validators = @genesis['result']['genesis']['validators']
+    return [] if genesis_validators.nil?
 
     @state['result']['round_state']['validators']['validators'].map do |sd|
       genesis_info = genesis_validators.find { |gd| gd['pub_key']['value'] == sd['pub_key']['value'] }
       next if genesis_info.nil?
+
+      bech32 = if sd.has_key?('consensus_pubkey')
+        # cosmos 0.25.0+
+        Cosmos::KeyConverter.pubkey_to_bech32( sd['consensus_pubkey']['value'], 'cosmosvalconspub' )
+      else
+        # older cosmos (8001 and before)
+        Cosmos::KeyConverter.pubkey_to_bech32( sd['pub_key']['value'], 'cosmosvalpub' )
+      end
+
       {
-        addr: Cosmos::KeyConverter.pubkey_to_bech32( sd['pub_key']['value'] ),
+        addr: bech32,
         pub: sd['pub_key']['value'],
         power: genesis_info['power'].to_i,
         name: genesis_info['name']

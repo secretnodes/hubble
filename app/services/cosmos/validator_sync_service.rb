@@ -86,7 +86,16 @@ class Cosmos::ValidatorSyncService
       return
     end
 
-    indexed_stake_info = stake_info.index_by { |info| info['pub_key'] }
+    if stake_info.first.has_key?('consensus_pubkey')
+      # cosmos 0.25.0+
+      key_prefix = 'cosmosvalconspub'
+      indexed_stake_info = stake_info.index_by { |info| info['consensus_pubkey'] }
+    else
+      # older cosmos (8001 and before)
+      key_prefix = 'cosmosvaladdr'
+      indexed_stake_info = stake_info.index_by { |info| info['pub_key'] }
+    end
+
     validators = @chain.validators
     total = validators.count
 
@@ -101,7 +110,7 @@ class Cosmos::ValidatorSyncService
         validator_in_set = validator_set_result['result']['validators'].find { |v| v['address'] == validator.address }
         amino_pub_key = validator_in_set['pub_key']['value']
 
-        bech32_key = Cosmos::KeyConverter.pubkey_to_bech32( amino_pub_key )
+        bech32_key = Cosmos::KeyConverter.pubkey_to_bech32( amino_pub_key, key_prefix )
 
         validator.update_attributes info: indexed_stake_info[bech32_key]
       rescue
