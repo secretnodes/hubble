@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   root to: 'home#index'
 
   namespace :cosmos, path: '' do
-    resources :chains, only: %i{ index show } do
+    resources :chains, format: false, constraints: { id: /[^\/]+/ }, only: %i{ index show } do
       # Faucet is a WIP
       # resource :faucet, only: %i{ show } do
       #   resources :transactions, only: %i{ index create show }
@@ -58,7 +58,7 @@ Rails.application.routes.draw do
     end
 
     namespace :cosmos do
-      resources :chains, only: %i{ new create show update destroy } do
+      resources :chains, format: false, constraints: { id: /[^\/]+/ }, only: %i{ new create show update destroy } do
         resource :faucet, only: %i{ show update destroy }
         resources :faucets, only: %i{ create } do
           collection do
