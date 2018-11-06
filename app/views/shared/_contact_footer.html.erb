@@ -1,0 +1,20 @@
+<div class='contact-container d-flex align-items-center'>
+  <div class='container d-flex align-items-center justify-content-between flex-column flex-md-row'>
+    <div class='contact-text mb-3 mb-md-0'>
+      <% if defined? text -%>
+        <%= text.html_safe %>
+      <% else -%>
+        Ready to get started?<br/>
+        <b>Get in touch.</b>
+      <% end -%>
+    </div>
+    <div class='contact-buttons d-flex flex-column flex-md-row align-items-center justify-content-center justify-content-md-end'>
+      <a target='_blank' href='<%= defined?(contact_link) ? contact_link : 'https://discord.gg/zqBZ2UG' %>' class='btn btn-lg btn-light mb-3 mr-0 mb-md-0 mr-md-3'><%= defined?(contact_button_text) ? contact_button_text.html_safe : 'Join our Discord' %></a>
+      <% if content_for? :contact_footer_primary_action -%>
+        <%= yield :contact_footer_primary_action %>
+      <% else -%>
+        <a href='<%= root_path(anchor: 'portfolio') %>' class='btn btn-lg btn-secondary btn-green'>Delegate with Us</a>
+      <% end -%>
+    </div>
+  </div>
+</div>

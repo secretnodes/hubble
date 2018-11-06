@@ -1,0 +1,52 @@
+<% content_for :body_class, 'admin-root' %>
+
+<div class='row'>
+  <div class='col-12'>
+
+    <div class='card'>
+      <h5 class='card-header header'>
+        Cosmos
+        <a class='btn btn-sm btn-outline-light' href='<%= new_admin_cosmos_chain_path %>'>+ new</a>
+      </h5>
+      <div class='card-body'><%= render partial: '/admin/cosmos/chains/quick_info' %></div>
+    </div>
+
+  </div>
+</div>
+
+<div class='row'>
+  <div class='col-12 col-md-3'>
+
+    <div class='card'>
+      <a href='<%= admin_users_path %>'>&nbsp;</a>
+      <h5 class='card-header'>Users</h5>
+      <div class='card-body'>
+        <div><small class='text-muted'><%= pluralize User.count, 'user' %> total</small></div>
+        <div><small class='text-muted'>
+          <%= User.where( 'created_at >= ?', 1.day.ago ).count %>
+          new in past day
+        </small></div>
+        <div><small class='text-muted'>
+          <%= User.where( 'last_seen_at >= ?', 1.day.ago ).count %>
+          seen in past day
+        </small></div>
+      </div>
+    </div>
+
+  </div>
+  <div class='col-12 col-md-3'>
+
+    <div class='card'>
+      <a href='<%= admin_administrators_path %>'>&nbsp;</a>
+      <h5 class='card-header'>Administrators</h5>
+      <div class='card-body'>
+        <div><small class='text-muted'><%= pluralize Administrator.count, 'administrator' %></small></div>
+        <% not_set_up = Administrator.where.not( one_time_setup_token: nil ).count -%>
+        <% if not_set_up > 0 -%>
+          <div><small class='text-danger'><%= not_set_up %> pending invitations</small></div>
+        <% end -%>
+      </div>
+    </div>
+
+  </div>
+</div>

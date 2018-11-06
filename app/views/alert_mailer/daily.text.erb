@@ -1,0 +1,8 @@
+Daily digest for <%= @alertable.short_name %>
+<%= cosmos_chain_validator_url(@alertable.chain, @alertable) %>
+
+<%= pluralize( @events.count, 'new event' ) %> on <%= @date.strftime("%B %d, %Y") %>
+
+<% if @events.any? -%>
+<%= render partial: 'event_list' %>
+<% end -%>

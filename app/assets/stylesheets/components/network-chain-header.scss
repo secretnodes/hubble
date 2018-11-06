@@ -1,0 +1,30 @@
+.network-chain-header {
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  margin-bottom: 30px;
+
+  h1 {
+    font-size: $h1-font-size - 0.2rem;
+
+    small.text-muted {
+      display: block;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    align-items: center;
+    justify-content: space-between;
+
+    h1 {
+      font-size: $h1-font-size;
+
+      small.text-muted {
+        display: inline;
+      }
+    }
+  }
+
+  .buttons {
+    white-space: nowrap;
+  }
+}

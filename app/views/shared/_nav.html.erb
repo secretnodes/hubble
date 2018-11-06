@@ -1,0 +1,42 @@
+<nav class='navbar navbar-expand-lg navbar-light bg-white'>
+  <div class='container'>
+    <div class='brands'>
+      <a class='navbar-brand' href='/'>
+        <img height='35px' src='<%= image_path 'hubble-logo.png' %>' alt='Hubble (by Figment Networks)' />
+      </a>
+    </div>
+
+    <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarNavDropdown' aria-controls='navbarNavDropdown' aria-expanded='false' aria-label='Toggle navigation'>
+      <span class='navbar-toggler-icon'></span>
+    </button>
+    <div class='collapse navbar-collapse' id='navbarNavDropdown'>
+      <ul class='navbar-nav ml-auto'>
+        <% if current_user -%>
+          <li class='nav-item dropdown'>
+            <a class='nav-link dropdown-toggle' href='#' id='account-menu-link' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+              Account
+            </a>
+            <div class='dropdown-menu' aria-labelledby='account-menu-link'>
+              <a class='dropdown-item' href='<%= settings_users_path %>'>Settings</a>
+              <a class='dropdown-item' href='<%= logout_path %>'>Logout</a>
+            </div>
+          </li>
+          <li class='sep'>|</li>
+        <% elsif should_show_login_links? -%>
+          <li class='nav-item'>
+            <a class='nav-link' href='<%= login_path %>'>Login</a>
+          </li>
+          <li class='sep'>/</li>
+          <li class='nav-item'>
+            <a class='nav-link' href='<%= new_user_path %>'>Signup</a>
+          </li>
+          <li class='sep'>|</li>
+        <% end -%>
+
+        <li class='nav-item'>
+          <a class='nav-link' href='<%= root_path %>'>Home</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

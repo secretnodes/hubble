@@ -1,0 +1,23 @@
+.admin-administrators-index {
+  // table thead, table tbody {
+  //   :nth-child(1), :nth-child(2) {
+  //     visibility: hidden;
+  //   }
+  // }
+
+  .admin-buttons {
+    margin: 8px 0;
+    .btn {
+      margin-right: 6px;
+    }
+
+    @include media-breakpoint-up(md) {
+      margin: 0;
+      justify-content: flex-end;
+      .btn {
+        margin-right: 0;
+        margin-left: 8px;
+      }
+    }
+  }
+}

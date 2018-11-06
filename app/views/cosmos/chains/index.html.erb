@@ -1,0 +1,27 @@
+<% content_for :body_class, 'chain-index' %>
+
+<%= render partial: '/cosmos/shared/chain_header' %>
+
+<div class='chain-list'>
+  <div class='row'>
+    <% sort_chains(@chains).each do |chain| -%>
+      <div class='col-12 col-md-4'>
+        <div class='card'>
+          <a href='<%= cosmos_chain_path( chain ) %>' <% if chain.primary? -%>data-toggle='tooltip' data-tooltip-side='top' title='Current Primary <%= chain.network_name %> Chain'<% end -%>>&nbsp;</a>
+          <div class='card-body'>
+            <h4 class='card-title d-flex align-items-center'>
+              <%= chain.name %>
+              <% if chain.primary? -%>
+                <span class='fa fa-star text-primary text-sm ml-2'></span>
+              <% end -%>
+            </h4>
+            <div class='card-subtitle'>
+              <label>Block:</label> <span class='technical'><%= chain.blocks.first.try(:height) || 'No blocks.' %></span><br/>
+              <label>Sync:</label> <%= chain.last_sync_time ? distance_of_time_in_words( Time.now.utc, chain.last_sync_time, true, highest_measures: 2 ) + ' ago' : 'Never' %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end -%>
+  </div>
+</div>

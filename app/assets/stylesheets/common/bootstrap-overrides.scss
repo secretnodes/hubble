@@ -1,0 +1,40 @@
+.card {
+  box-shadow: $box-shadow;
+  margin-bottom: 30px;
+
+  &.light-shadow {
+    box-shadow: none;//0 0.1rem 0.25rem rgba(100, 100, 100, 0.15);
+  }
+
+  .card-header {
+    color: white;
+  }
+
+  a, a * {
+    text-decoration: none !important;
+  }
+
+  > a {
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  &.with-hover:hover {
+    background: #FEFEFE;
+  }
+}
+
+.badge {
+  cursor: default;
+}
+
+.btn-round {
+  border-radius: 1000px;
+}
+.btn-wide {
+  padding-left: 20px;
+  padding-right: 20px;
+}

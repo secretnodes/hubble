@@ -1,0 +1,7 @@
+<%= pluralize( @events.count, 'new event' ) %> for
+
+<%= @alertable.short_name %>
+<%= cosmos_chain_validator_url(@alertable.chain, @alertable) %>
+
+There <%= @events.count == 1 ? 'is' : 'are' %> <%= pluralize( @events.count, 'new event' ) %>.
+<%= render partial: 'event_list'

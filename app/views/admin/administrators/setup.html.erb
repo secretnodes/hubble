@@ -1,0 +1,36 @@
+<div class='row clearfix pt-3'>
+  <div class='col-12 col-md-4 offset-md-4 text-center'>
+    <h3>Setup Administrator</h3>
+    <%= form_with url: setup_admin_administrators_path, method: 'post', local: true do %>
+      <h6 class='mt-4'>1. Create a password</h6>
+      <div class='form-group'>
+        <input type='password' name='password' class='form-control form-control-lg text-center' placeholder='password' />
+      </div>
+
+      <h6 class='mt-4'>2. Scan QR code with authenticator app</h6>
+
+      <div class='d-flex justify-content-center my-2'>
+        <%= @qr.as_svg(
+          offset: 0,
+          color: '000',
+          shape_rendering: 'crispEdges',
+          module_size: 4
+        ).html_safe %>
+      </div>
+      <small class='text-muted d-block mb-3'>
+        ( or copy code &mdash; <span class='technical'><%= @secret %></span> )
+      </small>
+
+      <input type='hidden' name='secret' value='<%= @secret %>' />
+
+      <h6 class='mt-4'>3. Confirm code</h6>
+      <div class='form-group'>
+        <input type='text' name='verification' class='form-control form-control-lg text-center' placeholder='confirm code' />
+      </div>
+
+      <div class='d-flex justify-content-center'>
+        <input type='submit' value='complete setup' class='btn btn-primary' />
+      </div>
+    <% end -%>
+  </div>
+</div>

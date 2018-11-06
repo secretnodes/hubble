@@ -1,0 +1,10 @@
+<div>
+  <span class='d-inline d-md-none <%= icon_classes %> mr-1'></span>
+  <span class='font-weight-bold'>
+    Missed <span class='technical'><%= event.data['n'] %></span> consecutive precommits
+  </span>
+  <span class='text-muted'>
+    as of block
+    <a class='technical' href='<%= cosmos_chain_block_path(@chain, event.height) %>'><%= event.height %></a>
+  </span>
+</div>

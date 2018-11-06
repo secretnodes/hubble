@@ -1,0 +1,17 @@
+<% @events.each do |event| -%>
+  - <%= event.timestamp.strftime("%Y-%m-%d %H:%M %Z") %>
+  <% case event.type -%>
+  <% when 'Cosmos::ValidatorEvents::VotingPowerChange' %>
+    Voting power changed from <%= event.from %> -> <%= event.to %> (<%= sprintf("%+.1f%%", event.percentage_change) %>) at block <%= event.height %>
+
+  <% when 'Cosmos::ValidatorEvents::ActiveSetInclusion' %>
+    <%= event.added? ? 'Added to' : 'Removed from' %> active set at block <%= event.height %>
+
+  <% when 'Cosmos::ValidatorEvents::NOfM' %>
+    Missed <%= event.n %> of <%= event.m %> precommits as of block <%= event.height %>
+
+  <% when 'Cosmos::ValidatorEvents::NConsecutive' %>
+    Missed <%= event.n %> consecutive precommits as of block <%= event.height %>
+
+  <% end -%>
+<% end -%>

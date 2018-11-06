@@ -1,0 +1,85 @@
+<% content_for :body_class, 'faucet-show' %>
+
+<% if flash[:error] -%>
+  <div class='alert alert-danger'><%= flash[:error] %></div>
+<% end -%>
+
+<%= form_for @chain.faucet.transactions.build, url: cosmos_chain_faucet_transactions_path(@chain), html: { class: 'mb-5 mt-5' } do |f| %>
+  <input type='hidden' name='captcha_verification' />
+  <input type='hidden' name='ok_dest' value='<%= cosmos_chain_faucet_transaction_path(@chain, 'TRANSACTION-ID') %>' />
+  <input type='hidden' name='fail_dest' value='<%= cosmos_chain_faucet_path(@chain) %>' />
+
+  <h3 class='text-center mb-4'><%= @chain.network_name %> / <%= @chain.name %> Community Faucet</h3>
+
+  <div class='alert alert-primary'>
+    <small class='text-muted'>
+      This faucet is community funded. Please contribute!
+    </small>
+    <span class='technical'><%= @faucet.address %></span>
+  </div>
+
+  <div class='row mt-3'>
+    <div class='col-12'>
+      <input class='form-control form-control-lg' type='text' name='fund_this_address' placeholder='cosmosaccaddr1...' />
+    </div>
+  </div>
+
+  <div class='row mt-3'>
+    <div class='col-8'>
+      <select name='denomination' class='form-control'>
+        <% tokens = @chain.faucet.tokens_by_denomination -%>
+        <% sorted_faucet_token_denominations(@chain, tokens).each do |denomination| -%>
+          <option value='<%= denomination %>'>
+            <%= denomination %>
+            (<%= tokens[denomination] %> available)
+          </option>
+        <% end -%>
+      </select>
+    </div>
+    <div class='col-4 text-right'>
+      <button class='submit-button btn btn-primary'
+              data-sitekey='<%= Rails.application.secrets.recaptcha[:site] %>'>
+        Send Tokens
+      </button>
+    </div>
+  </div>
+<% end -%>
+
+<script src='https://www.google.com/recaptcha/api.js?render=explicit'></script>
+
+<% total_transactions = @chain.faucet.transactions.count -%>
+<% max_transactions = 10 -%>
+
+<% if @chain.faucet.transactions.any? -%>
+  <% transactions = @chain.faucet.transactions.limit(max_transactions) -%>
+  <br/>
+  <hr class='mt-4 mb-4 w-50' />
+  <br/>
+  <h3 class='mt-5 text-center'>Recent Transactions</h3>
+  <table class='table mt-4'>
+    <thead class='thead-light'>
+      <tr>
+        <th>Date</th>
+        <th>Details</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% transactions.each do |tr| -%>
+        <%= render partial: '/util/faucet_transactions/row', object: tr %>
+      <% end -%>
+    </tbody>
+    <% if true#total_transactions > max_transactions -%>
+      <tfoot>
+        <tr>
+          <td colspan='3'>
+            <small class='text-muted'>
+              Showing latest <%= pluralize( transactions.count, 'transactions' ) %> of <%= total_transactions %> total &mdash;
+              <a href='<%= cosmos_chain_faucet_transactions_path(@chain) %>'>Show all &raquo</a>
+            </small>
+          </td>
+        </tr>
+      </tfoot>
+    <% end -%>
+  </table>
+<% end -%>

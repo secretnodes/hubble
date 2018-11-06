@@ -1,0 +1,31 @@
+.admin-user-show {
+  .header {
+    flex-direction: column;
+    @include media-breakpoint-up(md) {
+      flex-direction: row;
+    }
+  }
+  .user-short-info-table {
+    font-size: $font-size-sm;
+    th { font-weight: normal; max-width: 130px; }
+    label { margin-bottom: 0; margin-right: 8px; white-space: nowrap; }
+  }
+}
+
+.admin-users-index {
+  th.extra-info, td.extra-info {
+    display: none;
+    // if we have more to show in the table later
+    // @include media-breakpoint-up(md) {
+    //   display: block;
+    // }
+  }
+  .user-list-buttons {
+    flex-direction: column-reverse;
+    .btn { margin-bottom: 6px; &:first-child { margin-bottom: 0; } }
+    @include media-breakpoint-up(md) {
+      flex-direction: row;
+      .btn { margin-bottom: 0; margin-left: 8px; }
+    }
+  }
+}

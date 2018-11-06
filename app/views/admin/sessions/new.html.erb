@@ -1,0 +1,21 @@
+<div class='row clearfix pt-3'>
+  <div class='col-12 col-md-4 offset-md-4'>
+    <%= form_with url: admin_sessions_path, method: 'post', local: true do %>
+      <input type='hidden' name='return_path' value='<%= params[:return_path] %>' />
+
+      <div class='form-group'>
+        <input type='email' name='email' class='form-control form-control-lg' placeholder='your@email.com' />
+      </div>
+      <div class='form-group'>
+        <input type='password' name='password' class='form-control form-control-lg' placeholder='password' />
+      </div>
+      <div class='form-group'>
+        <input type='text' name='otp_code' class='form-control form-control-lg' placeholder='2fa code' />
+      </div>
+
+      <div class='d-flex justify-content-center'>
+        <input type='submit' value='login' class='btn btn-primary' />
+      </div>
+    <% end -%>
+  </div>
+</div>

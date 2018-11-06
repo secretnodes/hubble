@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= page_title? ? page_title + ' - Admin' : 'Hubble Admin' %></title>
+    <%= csrf_meta_tags %>
+
+    <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+
+    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Comfortaa:400,700' rel='stylesheet'>
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.0.13/css/all.css' integrity='sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp' crossorigin='anonymous'>
+
+    <%= stylesheet_link_tag 'admin', media: 'all' %>
+
+    <%= js_namespace %>
+    <%= javascript_include_tag 'admin', media: 'all' %>
+  </head>
+
+  <body class='<%= yield :body_class %>'>
+    <%= render partial: '/admin/shared/nav' %>
+    <div class='content-wrapper'>
+      <div class='container'>
+        <% if flash[:error] -%>
+          <div class='alert alert-danger'>
+            <%= flash[:error].html_safe %>
+          </div>
+        <% end -%>
+
+        <% if flash[:notice] %>
+          <div class='alert alert-primary auto-alert-hide'>
+            <%= flash[:notice].html_safe %>
+          </div>
+        <% end -%>
+
+        <% if flash[:warning] %>
+          <div class='alert alert-warning'>
+            <%= flash[:warning].html_safe %>
+          </div>
+        <% end -%>
+
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

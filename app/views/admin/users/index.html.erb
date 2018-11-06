@@ -1,0 +1,38 @@
+<% content_for :body_class, 'admin-users-index' %>
+
+<h2>Users</h2>
+
+<table class='table table-sm'>
+  <thead class='thead-light'>
+    <tr>
+      <th>Name</th>
+      <th class='extra-info'>&nbsp;</th>
+      <th width='10'>&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @users.empty? -%>
+      <tr>
+        <td colspan=2' class='pt-3'><strong class='text-warning'>No users!</strong></td>
+      </tr>
+    <% end -%>
+    <% @users.find_each do |user| -%>
+      <tr>
+        <td>
+          <%= user.name %>
+          <small class='ml-2 text-muted'><%= user.email %></small>
+          <% if !user.verified? -%>
+            <span class='badge badge-danger'>pending</span>
+          <% end -%>
+        </td>
+        <td class='extra-info'></td>
+        <td>
+          <div class='d-flex user-list-buttons'>
+            <a class='btn btn-sm btn-outline-warning <%= 'disabled' if !user.verified? %>' <%= 'disabled=disabled' if !user.verified? %> href='<%= masq_admin_user_path(user) %>'>login-as</a>
+            <a class='btn btn-sm btn-outline-primary' href='<%= admin_user_path(user) %>'>details</a>
+          </div>
+        </td>
+      </tr>
+    <% end -%>
+  </tbody>
+</table>

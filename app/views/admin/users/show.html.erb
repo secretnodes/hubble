@@ -1,0 +1,134 @@
+<% content_for :body_class, 'admin-user-show' %>
+
+<h2 class='header'>
+  <div>
+    <label class='text-muted'>User</label>
+    <%= @user.name %>
+    <small class='text-muted'><%= @user.email %></small>
+  </div>
+  <div class='d-flex justify-content-end align-items-center'>
+    <a class='btn btn-sm btn-outline-warning mr-2 <%= 'disabled' if !@user.verified? %>' <%= 'disabled=disabled' if !@user.verified? %> href='<%= masq_admin_user_path(@user) %>'>login-as</a>
+    <%= button_to 'delete', admin_user_path(@user), method: 'delete', class: 'btn btn-sm btn-danger action-delete-confirmation', form: { class: 'd-inline mr-2' } %>
+    <a class='btn btn-sm btn-outline-secondary' href='<%= admin_users_path %>'>back</a>
+  </div>
+</h2>
+
+<table class='table table-sm table-borderless text-sm mb-0 user-short-info-table'>
+  <tbody>
+    <tr>
+      <th><label class='text-muted'>Last seen:</label></th>
+      <td>
+        <%= @user.last_seen_at.try(:strftime, "%Y-%m-%d %H:%M %Z") || 'Never' %>
+        <small class='text-muted ml-3'><%= @user.last_seen_at ? time_ago_in_words( @user.last_seen_at ) + ' ago' : '' %></small>
+      </td>
+    </tr>
+    <tr>
+      <th><label class='text-muted'>Last login:</label></th>
+      <td>
+        <%= @user.last_login_at.try(:strftime, "%Y-%m-%d %H:%M %Z") || 'Never' %>
+        <small class='text-muted ml-3'><%= @user.last_login_at ? time_ago_in_words( @user.last_login_at ) + ' ago' : '' %></small>
+      </td>
+    </tr>
+    <tr>
+      <th width='200'><label class='text-muted'>Signed up:</label></th>
+      <td>
+        <%= @user.created_at.try(:strftime, "%Y-%m-%d %H:%M %Z") || 'Never?!' %>
+        <small class='text-muted ml-3'><%= @user.created_at ? time_ago_in_words( @user.created_at ) + ' ago' : '' %></small>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class='row mt-5'>
+  <div class='col-12'>
+    <h4>Alert Subscriptions</h4>
+    <table class='table'>
+      <thead>
+        <tr>
+          <th>Chain/Validator</th>
+          <th>Last Notified</th>
+          <th>Settings</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% if @user.alert_subscriptions.empty? -%>
+          <tr>
+            <td colspan=4>Not subscribed to anything.</td>
+          </tr>
+        <% end -%>
+        <% @user.alert_subscriptions.each do |sub| -%>
+          <tr>
+            <td>
+              <div>
+                <strong><%= sub.alertable.short_name %></strong>
+              </div>
+              <span class='text-muted text-sm'>
+                <%= sub.alertable.chain.network_name %> /
+                <%= sub.alertable.chain.name %>
+              </span>
+            </td>
+
+            <td>
+              <div>
+                <label class='text-muted text-sm'>Instant</label>
+                <%= sub.last_instant_at.strftime( '%Y-%m-%d %H:%M %Z' ) %>
+              </div>
+              <div>
+                <label class='text-muted text-sm'>Daily</label>
+                <%= sub.last_daily_at.strftime( '%Y-%m-%d %H:%M %Z' ) %>
+              </div>
+            </td>
+
+            <td>
+              <%= render partial: '/users/settings/alertable_badges', locals: { sub: sub } %>
+            </td>
+
+            <td class='text-right'>
+              <%= button_to 'delete'.html_safe, admin_user_alert_subscription_path(sub.user, sub), method: 'delete', class: 'btn btn-danger btn-sm', onclick: "return confirm('Are you sure?');", form: { class: 'd-inline' } %>
+            </td>
+          </tr>
+        <% end -%>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class='row mt-5'>
+  <div class='col-12 col-md-4'>
+    <h4>IP Addresses</h4>
+    <% ip_addresses = @user.ip_addresses||[] -%>
+    <% if ip_addresses.empty? -%>
+      <em class='text-muted'>None</em>
+    <% else -%>
+      <ul>
+        <% ip_addresses.uniq.each do |ip| -%>
+          <li><%= ip %></li>
+        <% end -%>
+      </ul>
+    <% end -%>
+  </div>
+  <div class='col-12 col-md-8'>
+    <h4>User Agents</h4>
+    <% user_agents = @user.user_agents||[] -%>
+    <% if user_agents.empty? -%>
+      <em class='text-muted'>None</em>
+    <% else -%>
+      <ul>
+        <% user_agents.uniq.each do |ua| -%>
+          <% ua = JSON.parse( ua ) -%>
+          <li>
+            <%= ua['browser'] %>
+            <%= ua['version'] %>
+            <%= ua['platform'] %>
+            <%= ua['os'] %>
+            <% if !ua['mobile'].nil? -%>
+              <small class='text-muted'>mobile</small>
+            <% end -%>
+          </li>
+        <% end -%>
+      </ul>
+    <% end -%>
+  </div>
+</div>

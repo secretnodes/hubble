@@ -1,0 +1,16 @@
+<div>
+  <span class='d-inline d-md-none <%= icon_classes %> mr-1'></span>
+  <span class='font-weight-bold'>Voting power <%= event.positive? ? 'increased' : 'reduced' %></span>
+  <span class='text-muted'>
+    at block
+    <a class='technical' href='<%= cosmos_chain_block_path(@chain, event.height) %>'><%= event.height %></a>
+  </span>
+</div>
+<div class='from-to d-flex align-items-center'>
+  <div class='text-lg technical font-weight-bold'><%= event.from %></div>
+  <div class='text-muted text-sm ml-3 mr-3'><span class='fa fa-arrow-right'></span></div>
+  <div class='text-lg technical font-weight-bold'><%= event.to %></div>
+  <div class='ml-3'>
+    <small class='text-muted font-size-sm technical'>( <%= sprintf("%+.1f%%", event.percentage_change) %> )</small>
+  </div>
+</div>

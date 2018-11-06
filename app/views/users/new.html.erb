@@ -1,0 +1,30 @@
+<div class='row clearfix pt-3'>
+  <div class='col-12 col-md-4 offset-md-4'>
+    <%= form_for @user, as: 'new_signup' do |f| -%>
+      <% if @user.errors.any? -%>
+        <div class='alert alert-warning'>
+          <strong>Sorry, we couldn't <%= @user.persisted? ? 'do that.' : 'sign you up.' %></strong>
+          <ul class='mb-0 pl-4'>
+            <% @user.errors.full_messages.each do |msg| -%>
+              <li><%= msg %></li>
+            <% end -%>
+          </ul>
+        </div>
+      <% end -%>
+
+      <div class='form-group'>
+        <%= f.text_field :name, placeholder: 'Your Name', class: 'form-control form-control-lg' %>
+      </div>
+      <div class='form-group'>
+        <%= f.email_field :email, placeholder: 'your@email.com', class: 'form-control form-control-lg' %>
+      </div>
+      <div class='form-group'>
+        <%= f.password_field :password, placeholder: 'password', class: 'form-control form-control-lg' %>
+      </div>
+
+      <div class='d-flex justify-content-center'>
+        <%= f.submit class: 'btn btn-primary', value: @user.persisted? ? 'Update' : 'Sign Up' %>
+      </div>
+    <% end -%>
+  </div>
+</div>

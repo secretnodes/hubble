@@ -1,0 +1,17 @@
+<a class='d-block' href='<%= cosmos_chain_validator_subscriptions_path(sub.alertable.chain, sub.alertable) %>'>
+  <%= sub.alertable.short_name( 30 ) -%>
+</a>
+
+<div class='sub-info'>
+  <small>
+    <span class='text-muted'>Last notified:</span>
+    <span class='d-block d-md-inline'>
+      <% if sub.instant_count + sub.daily_count > 0 -%>
+        <%= [sub.last_instant_at, sub.last_daily_at].compact.max.strftime("%b %-d, %Y @ %H:%M") %>
+      <% else -%>
+        Never
+      <% end -%>
+    </span>
+    <span class='text-muted'>(<%= sub.instant_count + sub.daily_count %> total)</span>
+  </small>
+</div>

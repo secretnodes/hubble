@@ -1,0 +1,44 @@
+<% content_for :body_class, 'admin-administrators-index' %>
+
+<h2 class='header'>
+  Admins
+  <a class='btn btn-outline-primary' href='<%= new_admin_administrator_path %>'>+ new</a>
+</h2>
+
+<table class='table table-sm'>
+  <thead class='thead-light'>
+    <tr class='d-none d-md-table-row'>
+      <th>Name</th>
+      <th class='d-none d-md-table-cell'>Email</th>
+      <th class='d-none d-md-table-cell' width='10'>&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @administrators.find_each do |admin| -%>
+      <% admin_buttons = capture do -%>
+        <div class='d-flex admin-buttons'>
+          <% if !admin.one_time_setup_token.nil? -%>
+            <a class='btn btn-sm btn-outline-primary' href='<%= new_admin_session_path(token: admin.one_time_setup_token) %>'>invite link</a>
+          <% end -%>
+
+          <% if admin == current_admin -%>
+            <a class='btn btn-sm btn-outline-primary' href='<%= edit_admin_administrator_path(admin) %>'>edit</a>
+          <% else -%>
+            <%= button_to admin_administrator_path(admin), method: 'delete', class: 'btn btn-sm btn-danger ml-2 action-delete-confirmation' do "<span class='fa fa-times'></span> delete".html_safe end %>
+          <% end -%>
+        </div>
+      <% end -%>
+      <tr>
+        <td>
+          <%= admin.name %>
+          <div class='d-sm-none'><small class='text-muted'><%= admin.email %></small></div>
+          <div class='d-sm-none'><%= admin_buttons %></div>
+        </td>
+        <td class='d-none d-md-table-cell'>
+          <small class='text-muted'><%= admin.email %></small>
+        </td>
+        <td class='d-none d-md-table-cell'><%= admin_buttons %></td>
+      </tr>
+    <% end -%>
+  </tbody>
+</table>

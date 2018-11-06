@@ -1,0 +1,54 @@
+<% content_for :body_class, 'faucet-transaction-show' %>
+
+<%= render partial: '/cosmos/shared/chain_header', locals: { summary_link: true, faucet_link: true } %>
+
+<h2 class='mb-3'>
+  Transaction Status
+</h2>
+
+<div class='row info-cards'>
+  <div class='col-8'>
+    <div class='card'>
+      <h5 class='card-header'>Info</h5>
+      <div class='card-body'>
+        <label>Address</label>
+        <span class='technical text-lg'>
+          <%= @transaction.address %>
+        </span>
+
+        <label class='mt-3'>Amount</label>
+        <span class='technical text-lg'>
+          <%= @transaction.amount.to_i %> <%= @transaction.denomination %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class='col-4'>
+    <div class='card'>
+      <h5 class='card-header'>Status</h5>
+      <div class='card-body text-lg text-center'>
+        <% if @transaction.failed? -%>
+          <div class='text-danger status' data-status='failed'>
+            <div class='fa fa-exclamation-triangle fa-huge'></div>
+            <div class='mt-2'>Failed</div>
+          </div>
+        <% elsif !@transaction.completed? -%>
+          <div class='text-muted status' data-status='pending'>
+            <div class='fa fa-sync fa-spin fa-huge'></div>
+            <div class='mt-2'>Pending</div>
+          </div>
+        <% else -%>
+          <div class='status' data-status='success'>
+            <div class='fa fa-check fa-huge text-success'></div>
+            <div class='mt-2'>
+              Completed
+              <% url = cosmos_chain_block_path(@chain, @transaction.height) -%>
+              <small>(block <%= link_to @transaction.height, url %>)</small>
+            </div>
+          </div>
+        <% end -%>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  database: <%= ENV.fetch('DATABASE_NAME') { 'hubble' } %>
+  host: <%= ENV.fetch('DATABASE_HOST') { Rails.application.secrets[:database][:host] || 'localhost' } %>
+  user: <%= ENV.fetch('DATABASE_USER') { Rails.application.secrets[:database][:user] } %>
+  password: <%= ENV.fetch('DATABASE_PASSWORD') { Rails.application.secrets[:database][:password] } %>
+
+development:
+  <<: *default
+staging:
+  <<: *default
+production:
+  <<: *default

@@ -1,0 +1,19 @@
+<% if !@is_syncing -%>
+  <div class='alert alert-warning sync-error-alert'>
+    <span class='fa fa-exclamation-triangle'></span>
+    No sync for
+    <% if @latest_sync -%>
+      <%= distance_of_time_in_words( Time.now.utc, @latest_sync.timestamp ) %>!
+    <% else -%>
+      longer than sync records have been kept ;)
+    <% end -%>
+  </div>
+<% end -%>
+
+<% if @chain_stopped && (!Rails.env.development? || params.has_key?('check-chain')) -%>
+  <div class='alert alert-warning sync-error-alert'>
+    <span class='fa fa-exclamation-triangle'></span>
+    Chain appears to be stopped. No new blocks for over
+    <%= distance_of_time_in_words( Time.now.utc, @latest_block.timestamp, highest_measure_only: true ) %>!
+  </div>
+<% end -%>

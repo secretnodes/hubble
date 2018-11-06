@@ -1,0 +1,52 @@
+<table class='events' width='100%' cellpadding='0' cellspacing='0'>
+  <tr>
+    <td colspan='2'>
+      <table class='events_content' width='100%' cellpadding='0' cellspacing='0'>
+        <tr>
+          <th class='events_heading'>
+            <p>Time</p>
+          </th>
+          <th class='events_heading'>
+            <p>Event</p>
+          </th>
+        </tr>
+        <% @events.each do |event| -%>
+        <tr>
+          <td width='20%' class='sub events_time'><%= event.timestamp.strftime('%Y-%m-%d<br/>at %H:%M %Z').html_safe %></td>
+          <td width='80%' class='events_description'>
+            <% case event.type -%>
+            <% when 'Cosmos::ValidatorEvents::VotingPowerChange' %>
+              Voting power changed from
+              <%= event.from %> &rarr; <%= event.to %>
+              (<%= sprintf('%+.1f%%', event.percentage_change) %>)
+              <p class='sub'>
+                at block
+                <a href='<%= cosmos_chain_block_url(@alertable.chain, event.height) %>'><%= event.height %></a>
+              </p>
+            <% when 'Cosmos::ValidatorEvents::ActiveSetInclusion' %>
+              <%= event.added? ? 'Added to' : 'Removed from' %>
+              active set
+              <p class='sub'>
+                at block
+                <a href='<%= cosmos_chain_block_url(@alertable.chain, event.height) %>'><%= event.height %></a>
+              </p>
+            <% when 'Cosmos::ValidatorEvents::NOfM' %>
+              Missed <%= event.n %> of <%= event.m %> precommits
+              <p class='sub'>
+                as of block
+                <a href='<%= cosmos_chain_block_url(@alertable.chain, event.height) %>'><%= event.height %></a>
+              </p>
+            <% when 'Cosmos::ValidatorEvents::NConsecutive' %>
+              Missed <%= event.n %> consecutive precommits
+              <p class='sub'>
+                as of block
+                <a href='<%= cosmos_chain_block_url(@alertable.chain, event.height) %>'><%= event.height %></a>
+              </p>
+            <% end -%>
+          </td>
+        </tr>
+        <% end -%>
+      </table>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,115 @@
+<h2 class='header'>
+  <div>Sync Logs for <%= @chain.name %></div>
+  <% url = cosmos_chain_path(@chain) -%>
+  <small><a class='btn btn-sm btn-outline-secondary' href='<%= url %>'>back</a></small>
+</h2>
+
+<table class='table'>
+  <thead class='thead-light'>
+    <tr>
+      <th>Date</th>
+      <th># of Syncs</th>
+      <th>Total Syncing Time</th>
+      <th>Total Blocks</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @dailies.empty? -%>
+      <tr>
+        <td colspan=4'>No daily records yet.</td>
+      </tr>
+    <% end -%>
+    <% @dailies.each do |log| -%>
+      <tr>
+        <td>
+          <span class='technical'><%= log.date.strftime("%Y-%m-%d") %></span>
+          <% if !log.persisted? -%>
+            <div><span class='badge badge-primary'>So far today <span class='fa fa-sync fa-spin'></span></span></div>
+          <% end -%>
+        </td>
+        <td>
+          <span class='technical'><%= log.sync_count %></span>
+          <div><small class='text-muted'>
+            <%= log.fail_count %> failed
+            (<%= ((log.fail_count / log.sync_count.to_f) * 100.0).round(2) %>%)
+          </small></div>
+        </td>
+        <td>
+          <%= time_ago_in_words( log.total_sync_time.seconds.ago ) %>
+          <div><small class='text-muted'><%= time_ago_in_words((log.total_sync_time / log.sync_count).seconds.ago) %> average</small></div>
+        </td>
+        <td>
+          <span class='technical'><%= log.total_blocks || '&mdash;'.html_safe %></span>
+          <% if log.end_height && log.start_height -%>
+            <small class='text-muted technical'><%= log.start_height %> &rarr; <%= log.end_height %></small>
+            <div><small class='text-muted'><%= ((log.end_height - log.start_height) / log.sync_count.to_f).ceil %> blocks average</small>
+          <% end -%>
+        </td>
+      </tr>
+    <% end -%>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan='4' class='text-muted'>
+        <% if params.has_key?(:all) -%>
+          <%= @total_dailies %> daily sync logs.
+          <a href='<%= cosmos_chain_logs_path(@chain) %>'>Show less &raquo;</a>
+        <% else -%>
+          Most recent <%= @dailies.count %> days of <%= @total_dailies %> daily logs.
+          <a href='<%= cosmos_chain_logs_path(@chain) %>?all'>Show all &raquo;</a>
+        <% end -%>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
+<h4 class='mt-5'>Detailed Sync Log</h4>
+
+<table class='table'>
+  <thead class='thead-light'>
+    <tr>
+      <th>Start Time</th>
+      <th>Completion Time</th>
+      <th>Blocks</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @minutelies.each do |log| -%>
+      <tr>
+        <td>
+          <span class='technical'><%= log.started_at %></span>
+          <div><small class='text-muted'><%= time_ago_in_words( log.started_at ) %> ago</small></div>
+        </td>
+        <td>
+          <span class='technical'><%= log.completed_at %></span>
+          <% if log.completed_at -%>
+            <div><small class='text-muted'><%= distance_of_time_in_words( log.started_at, log.completed_at ) %> later</small></div>
+          <% elsif log.failed_at -%>
+            <span class='badge badge-danger technical'>failed</span>
+          <% else -%>
+            <span class='badge badge-info technical'>in progress</span>
+          <% end -%>
+        </td>
+        <td>
+          <% if log.completed_at -%>
+            <span class='technical'><%= log.end_height - log.start_height %></span> <span class='text-muted text-sm'>new blocks</span>
+            <div><small class='text-muted technical'><%= log.start_height %> &rarr; <%= log.end_height %></small></div>
+          <% end -%>
+        </td>
+      </tr>
+    <% end -%>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan='3' class='text-muted'>
+        <% if params.has_key?(:all) -%>
+          <%= @total_minutelies %> by-the-minute sync logs.
+          <a href='<%= cosmos_chain_logs_path(@chain) %>'>Show less &raquo;</a>
+        <% else -%>
+          Most recent <%= @minutelies.count %> syncs shown of <%= @total_minutelies %> by-the-minute logs.
+          <a href='<%= cosmos_chain_logs_path(@chain) %>?all'>Show all &raquo;</a>
+        <% end -%>
+      </td>
+    </tr>
+  </tfoot>
+</table>

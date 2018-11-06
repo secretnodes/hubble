@@ -1,0 +1,19 @@
+.admin-root {
+  .chain-scroll {
+    flex-direction: column;
+    .card {
+      width: 100%;
+      &:last-child { margin-bottom: 0; }
+    }
+
+    @include media-breakpoint-up(md) {
+      flex-direction: row;
+      overflow-x: auto;
+      .card {
+        margin-bottom: 0;
+        margin-right: 20px;
+        width: 25%;
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+<% content_for :body_class, 'faucet-transactions' %>
+
+<h2 class='header'>
+  <div>Cosmos <span class='text-muted'>/</span> <%= @chain.name %> Faucet Transaction History</div>
+  <small><a class='btn btn-sm btn-outline-secondary' href='<%= cosmos_chain_faucet_path(@chain) %>'>back</a></small>
+</h2>
+<table class='table mt-4'>
+  <thead class='thead-light'>
+    <tr>
+      <th>Date</th>
+      <th>Details</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @chain.faucet.transactions.each do |tr| -%>
+      <%= render partial: 'row', object: tr %>
+    <% end -%>
+  </tbody>
+</table>

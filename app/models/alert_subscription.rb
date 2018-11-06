@@ -1,0 +1,54 @@
+class AlertSubscription < ApplicationRecord
+  belongs_to :user
+  belongs_to :alertable, polymorphic: true
+
+  validate :subscribes_to_something?
+  validate :appropriate_data?
+
+  scope :eligible_for_instant_alert, -> { where( 'last_instant_at <= ?', ALERT_MINIMUM_TIMEOUT.ago ) }
+  scope :wants_daily_digest, -> { where( wants_daily_digest: true ) }
+  scope :daily_digest_due, -> { wants_daily_digest.where( 'last_daily_at <= ?', 1.day.ago.end_of_day ) }
+
+  def events
+    alertable.validator_event_defs.find do |defn|
+      defn['kind'].in?( event_kinds )
+    end
+  end
+
+  def subscribes_to_kind?( kind )
+    event_kinds.include? kind
+  end
+
+  def wants_event?( event )
+    # are they subscribed to this type?
+    ignored_event = !event_kinds.include?( event.kind_string )
+    puts "\t\tSend #{event.kind_string} (wants #{event_kinds})" if ENV['DEBUG']
+
+    # is it a voting power change, but not enough of a change?
+    if !ignored_event && event.is_a?(Cosmos::ValidatorEvents::VotingPowerChange)
+      puts "\t\tSend voting power change? #{event.percentage_change.abs} >= #{data['percent_change']}" if ENV['DEBUG']
+      good_enough = event.percentage_change.abs >= data['percent_change']
+    else
+      good_enough = true
+    end
+
+    !ignored_event && good_enough
+  end
+
+  def subscribes_to_something?
+    if (event_kinds || []).empty? && !wants_daily_digest
+      errors.add( :base, "No alerts selected." )
+      return false
+    end
+    return true
+  end
+
+  private
+
+  def appropriate_data?
+    return true unless event_kinds.include?('voting_power_change')
+    if data['percent_change'].blank? || data['percent_change'] == 0.0
+      errors.add( :base, "That is not a valid percent of voting power change to notify on." )
+    end
+  end
+end

@@ -1,0 +1,74 @@
+<% content_for :body_class, 'block-show' %>
+
+<%= render partial: '/cosmos/shared/chain_header', locals: { summary_link: true } %>
+
+<h2>
+  <label class='text-muted'>Block</label>
+  <span class='technical'><%= @block.id_hash %></span>
+</h2>
+
+<div class='row info-cards'>
+  <div class='col-md-4'>
+    <div class='card'>
+      <h5 class='card-header'>Height</h5>
+      <div class='card-body'>
+        <span class='large-number'><%= @block.height %></span>
+      </div>
+    </div>
+  </div>
+  <div class='col-md-4'>
+    <div class='card'>
+      <h5 class='card-header'>Timestamp</h5>
+      <div class='card-body'>
+        <%= @block.timestamp.strftime("%Y-%m-%d @ %H:%M %Z") %>
+      </div>
+    </div>
+  </div>
+  <div class='col-md-4'>
+    <div class='card'>
+      <h5 class='card-header'>Raw JSON</h5>
+      <div class='card-body'>
+        <% if @chain.enabled? -%>
+          <a target='_blank' class='btn btn-outline-secondary btn-sm' href='<%= cosmos_chain_block_path( @chain, @block, kind: 'block', format: 'json' ) %>'>Block</a>
+          <a target='_blank' class='btn btn-outline-secondary btn-sm' href='<%= cosmos_chain_block_path( @chain, @block, kind: 'commit', format: 'json' ) %>'>Commit</a>
+          <a target='_blank' class='btn btn-outline-secondary btn-sm' href='<%= cosmos_chain_block_path( @chain, @block, kind: 'set', format: 'json' ) %>'>Validator Set</a>
+        <% else -%>
+          <span class='text-muted'>&mdash;</span>
+        <% end -%>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class='validator-table-header'>
+  <h4>Validators</h4>
+  <input type='text' class='validator-search' placeholder='search...'>
+</div>
+<div class='validator-table'>
+  <table>
+    <thead>
+      <tr>
+        <th>Address</th>
+        <th>Voting Power</th>
+        <th>State</th>
+      </tr>
+      <tbody>
+        <% @chain.active_validators_at_height(@block.height).each do |v| -%>
+          <tr>
+            <td>
+              <a href='<%= cosmos_chain_validator_path( @chain, v ) %>'>
+                <% if v.moniker -%>
+                  <strong><%= v.moniker %></strong>
+                <% end -%>
+                <span class='technical'><%= v.address %></span>
+              </a>
+            </td>
+            <td><%= v.voting_power_at_height(@block.height) %></td>
+            <td><strong><%= @block.precommitters.include?(v.address) ? 'UP' : 'DOWN' %></strong></td>
+          </tr>
+        <% end -%>
+      </tbody>
+    </thead>
+  </table>
+</div>

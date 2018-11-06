@@ -1,0 +1,17 @@
+<%= form_for [:admin, @administrator] do |f| -%>
+  <% if @administrator.errors.any? -%>
+    <div class='alert alert-warning'>
+      <strong>Sorry, we noticed errors with this form!</strong>
+      <ul>
+        <% @administrator.errors.full_messages.each do |msg| -%>
+          <li><%= msg %></li>
+        <% end -%>
+      </ul>
+    </div>
+  <% end -%>
+
+  <%= f.text_field :name, placeholder: 'name' %>
+  <%= f.email_field :email, placeholder: 'email' %>
+
+  <%= f.submit %>
+<% end -%>
