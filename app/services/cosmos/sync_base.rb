@@ -7,11 +7,20 @@ class Cosmos::SyncBase
     @rpc_port = @chain.get_rpc_port_or_default
     @lcd_port = @chain.get_lcd_port_or_default
 
-    @curl = Curl::Easy.new
-    # @curl.verbose = !Rails.env.production?
-    @curl.timeout_ms = request_timeout_ms# unless Rails.env.development?
-    @curl.headers['Accept'] = 'application/json'
-    @curl.headers['Content-Type'] = 'application/json'
+    @rpc_curl = Curl::Easy.new
+    # @rpc_curl.verbose = !Rails.env.production?
+    @rpc_curl.timeout_ms = request_timeout_ms# unless Rails.env.development?
+    @rpc_curl.headers['Accept'] = 'application/json'
+    @rpc_curl.headers['Content-Type'] = 'application/json'
+
+    @lcd_curl = Curl::Easy.new
+    # @lcd_curl.verbose = !Rails.env.production?
+    @lcd_curl.timeout_ms = request_timeout_ms# unless Rails.env.development?
+    @lcd_curl.headers['Accept'] = 'application/json'
+    @lcd_curl.headers['Content-Type'] = 'application/json'
+    # temporary, until we figure out/decide how to handle certs
+    @lcd_curl.ssl_verify_peer = false
+    @lcd_curl.ssl_verify_host = 0
 
     begin
       chain_slug = get_node_chain
@@ -94,45 +103,45 @@ class Cosmos::SyncBase
   def rpc_get( path, params=nil )
     path = path.join('/') if path.is_a?(Array)
     path += "?#{params.to_query}" if params
-    @curl.url = "http://#{@host}:#{@rpc_port}/#{path}"
+    @rpc_curl.url = "http://#{@host}:#{@rpc_port}/#{path}"
 
     start_time = Time.now.utc.to_f
-    Rails.logger.debug "COSMOS RPC GET: #{@curl.url}"
-    @curl.http_get
+    Rails.logger.debug "COSMOS RPC GET: #{@rpc_curl.url}"
+    @rpc_curl.http_get
     end_time = Time.now.utc.to_f
     Rails.logger.info "COSMOS RPC #{path} took #{end_time - start_time} seconds" unless Rails.env.production?
 
-    json = @curl.body_str
+    json = @rpc_curl.body_str
     JSON.load(json)
   end
 
   def lcd_get( path, params=nil )
     path = path.join('/') if path.is_a?(Array)
     path += "?#{params.to_query}" if params
-    @curl.url = "http://#{@host}:#{@lcd_port}/#{path}"
+    @lcd_curl.url = "https://#{@host}:#{@lcd_port}/#{path}"
 
     start_time = Time.now.utc.to_f
-    Rails.logger.debug "COSMOS LCD GET: #{@curl.url}"
-    @curl.http_get
+    Rails.logger.debug "COSMOS LCD GET: #{@lcd_curl.url}"
+    @lcd_curl.http_get
     end_time = Time.now.utc.to_f
     Rails.logger.info "COSMOS LCD #{path} took #{end_time - start_time} seconds" unless Rails.env.production?
 
-    json = @curl.body_str
+    json = @lcd_curl.body_str
     JSON.load(json) rescue json
   end
 
   def lcd_post( path, body )
     path = path.join('/') if path.is_a?(Array)
-    @curl.url = "http://#{@host}:#{@lcd_port}/#{path}"
+    @lcd_curl.url = "https://#{@host}:#{@lcd_port}/#{path}"
     json_payload = body.to_json
 
     start_time = Time.now.utc.to_f
-    Rails.logger.debug "COSMOS LCD GET: #{@curl.url}"
-    @curl.http_post json_payload
+    Rails.logger.debug "COSMOS LCD GET: #{@lcd_curl.url}"
+    @lcd_curl.http_post json_payload
     end_time = Time.now.utc.to_f
     Rails.logger.info "COSMOS LCD #{path} took #{end_time - start_time} seconds" unless Rails.env.production?
 
-    json = @curl.body_str
+    json = @lcd_curl.body_str
     JSON.load(json) rescue json
   end
 end
