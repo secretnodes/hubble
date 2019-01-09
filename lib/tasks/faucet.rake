@@ -2,11 +2,10 @@ namespace :faucet do
   namespace :cosmos do
 
     task send: :environment do
-      TaskLock.with_lock!( :cosmos, :faucet ) do
-        puts "\nStarting task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
-        Cosmos::Faucet.enabled.find_each do |faucet|
-          next if faucet.chain.disabled?
-
+      puts "\nStarting task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
+      Cosmos::Faucet.enabled.find_each do |faucet|
+        next if faucet.chain.disabled?
+        TaskLock.with_lock!( :faucet, faucet.chain.id ) do
           pending = faucet.transactions.incomplete.fifo
           sender = Cosmos::FaucetSenderService.new( faucet.chain )
 
@@ -24,8 +23,8 @@ namespace :faucet do
             nil
           end
         end
-        puts "Completed task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}\n\n"
       end
+      puts "Completed task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}\n\n"
     end
 
   end

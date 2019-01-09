@@ -4,6 +4,10 @@ class Cosmos::Validator < ApplicationRecord
   has_many :latches, class_name: 'Cosmos::ValidatorEventLatch'
   has_many :alert_subscriptions, as: :alertable
 
+  has_one :account, class_name: 'Cosmos::Account'
+
+  validates :address, presence: true, allow_blank: false, uniqueness: { scope: :chain }
+
   def to_param; address; end
 
   class << self
@@ -27,11 +31,20 @@ class Cosmos::Validator < ApplicationRecord
   end
 
   def owner
-    info_field( 'owner' )
+    info_field( 'owner' ) || info_field( 'operator_address' )
   end
 
   def moniker
     info_field( 'description', 'moniker' ) || nil
+  end
+
+  def proposals
+    return [] unless account
+    ids = [
+      *account.governance_deposits.select('DISTINCT proposal_id'),
+      *account.governance_votes.select('DISTINCT proposal_id')
+    ].map(&:proposal_id).uniq
+    chain.governance_proposals.where( id: ids )
   end
 
   def recent_events( type, since )
@@ -65,9 +78,8 @@ class Cosmos::Validator < ApplicationRecord
   end
 
   def voting_power_at_height( height )
-    event = voting_power_history.where( %{ height <= ? }, height ).first
-    return 0 if event.nil?
-    event.data['to']
+    block = chain.blocks.find_by( height: height ) || Cosmos::Block.stub_from_cache( chain, height )
+    block.validator_set[self.address]
   end
 
   def last_updated
@@ -86,18 +98,25 @@ class Cosmos::Validator < ApplicationRecord
     Cosmos::Block.stub( chain, latest_block_height )
   end
 
+  def proposal_probability
+    total = chain.validators.sum(:current_voting_power)
+    return 0 if total.zero?
+    current_voting_power / total.to_f
+  end
+
   def active?
     (current_voting_power||0) > 0
   end
 
-  def uptime( blocks_num: 100 )
+  def calculate_current_uptime( blocks_num: 100 )
     blocks = chain.blocks.limit( blocks_num )
+    num_blocks = blocks.count
+    return 0.0 if num_blocks.zero?
 
     precommits = blocks
       .select { |b| b.precommitters.include?(address) }
       .count
 
-    # .where( 'precommitters @> ARRAY[?]::varchar[]', address )
-    (precommits / 100.0 * 100).round(0)
+    (precommits / blocks.count.to_f).round(2)
   end
 end

@@ -21,11 +21,12 @@ class Stats::DailySyncLog < ApplicationRecord
       return nil if total_logs == 0
       start_time = logs.first.started_at.beginning_of_day
       succeeded = logs.select(&:completed_at)
+      failed = logs.select(&:failed_at)
       new(
         chain: logs.first.chain,
         date: start_time,
         sync_count: total_logs,
-        fail_count: logs.count - succeeded.count,
+        fail_count: failed.count,
         total_sync_time: logs.sum(&:duration),
         start_height: succeeded.map(&:start_height).min,
         end_height: succeeded.map(&:end_height).max

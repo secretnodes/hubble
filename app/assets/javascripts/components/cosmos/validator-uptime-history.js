@@ -17,7 +17,7 @@ class ValidatorUptimeHistory {
             data: data.map( (dp) =>
               _.merge( {}, dp, { y: Math.round(dp.y * 100) } )
             ),
-            borderColor: "#70707a",
+            borderColor: '#70707a',
             fill: false,
             cubicInterpolationMode: 'monotone',
             steppedLine: false

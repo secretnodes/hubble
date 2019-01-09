@@ -14,8 +14,8 @@ job_type :rake, [
 ].join( ' && ' )
 
 every '* * * * *' do
-  rake 'sync:cosmos:all events:cosmos:all alerts:users:instant', sleep: 0, output: log_path('main-sync')
-  rake 'sync:cosmos:all events:cosmos:all alerts:users:instant', sleep: 30, output: log_path('main-sync')
+  rake 'sync:cosmos:all alerts:users:instant', sleep: 0, output: log_path('main-sync')
+  rake 'sync:cosmos:all alerts:users:instant', sleep: 30, output: log_path('main-sync')
 
   # Faucet is a WIP
   # rake 'faucet:cosmos:send', sleep: 0, output: log_path('faucet')

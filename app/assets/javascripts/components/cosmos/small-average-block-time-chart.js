@@ -17,7 +17,7 @@ class SmallAverageBlockTimeChart {
           {
             cubicInterpolationMode: 'monotone',
             data: App.seed.AVERAGE_BLOCK_TIME,
-            borderColor: "#70707a",
+            borderColor: '#70707a',
             fill: false
           }
         ]
@@ -62,7 +62,7 @@ class SmallAverageBlockTimeChart {
               display: false,
               ticks: {
                 display: false,
-                callback: ( date ) => moment(date).format("MMM-D hh:mm")
+                callback: ( date ) => moment(date).format('MMM-D hh:mm')
               }
             }
           ]

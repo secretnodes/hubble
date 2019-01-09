@@ -1,7 +1,7 @@
 namespace :common do
 
   task clean_daily_sync_logs: :environment do
-    TaskLock.with_lock!( :common, :cleanup ) do
+    TaskLock.with_lock!( :cleanup ) do
       puts "Starting daily sync log cleaning task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
       to_clean = Stats::SyncLog.last
       while (to_clean && to_clean.started_at < Time.now.utc.beginning_of_day)

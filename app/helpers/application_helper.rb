@@ -40,11 +40,6 @@ module ApplicationHelper
     @current_user
   end
 
-  def should_show_login_links?
-    controller_name == 'sessions' ||
-    controller_name == 'users'
-  end
-
   def get_user
     if session[:masq]
       if session[:masq].to_i < Time.now.to_i

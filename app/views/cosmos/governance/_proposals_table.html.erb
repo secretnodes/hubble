@@ -1,0 +1,47 @@
+<div class='gov-proposals-table'>
+  <table data-empty='<%= proposals.empty? %>' data-with-validator='<%= !!defined?(with_validator) %>'>
+    <thead>
+      <tr role='row'>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Submitted</th>
+        <% if defined? with_validator -%>
+          <th>Activity</th>
+        <% end -%>
+      </tr>
+    </thead>
+    <tbody>
+      <% if proposals.empty? -%>
+        <tr>
+          <td colspan='<% if defined? with_validator -%>4<% else -%>3<% end -%>' class='text-center py-3'>
+            <% if defined? with_validator -%>
+              No governance proposal activity yet.
+            <% else -%>
+              No proposals have been submitted yet.
+            <% end -%>
+          </td>
+        </tr>
+      <% else %>
+        <% proposals.each do |proposal| -%>
+          <tr>
+            <td data-order='<%= proposal.title %>'>
+              <%= link_to truncate(proposal.title, length: 30), cosmos_chain_governance_proposal_path(@chain, proposal) %>
+            </td>
+            <td data-order='<%= proposal.proposal_status %>'>
+              <span class='badge badge-pill badge-primary text-uppercase'><%= proposal.status_string %></span>
+            </td>
+            <td data-order='<%= proposal.submit_time.to_i %>'>
+              <pre class='m-0'><%= proposal.submit_time.strftime("%Y-%m-%d<br/>at %H:%M %Z").html_safe %></pre>
+            </td>
+            <% if defined? with_validator -%>
+              <td>
+                <%= deposits_for_proposal_by_account( proposal, with_validator.account ) %>
+                <%= vote_for_proposal_by_account( proposal, with_validator.account ) %>
+              </td>
+            <% end -%>
+          </tr>
+        <% end -%>
+      <% end -%>
+    </tbody>
+  </table>
+</div>

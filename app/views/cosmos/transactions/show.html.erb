@@ -1,0 +1,215 @@
+<% content_for :body_class, 'transaction-show' %>
+
+<%= render partial: '/cosmos/shared/chain_header', locals: { summary_link: true } %>
+
+<h2 class='mb-4'>
+  <label class='text-muted'>Tx</label>
+  <span class='technical text-lg'><%= @transaction.hash %></span>
+</h2>
+
+<div class='row'>
+  <div class='col-12 col-md-3 order-0 order-md-1 info-cards'>
+    <div class='card'>
+      <h5 class='card-header d-flex justify-content-between align-items-center'>
+        Height
+        <a href='<%= cosmos_chain_block_path( @chain, @block ) %>' class='text-sm text-white'><span class='fa fa-chevron-left'></span> back</a>
+      </h5>
+      <div class='card-body'>
+        <span class='large-number technical'><%= @block.height %></span>
+      </div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header'>Result</h5>
+      <div class='card-body'>
+        <% if @transaction.error? -%>
+          <span class='badge text-lg badge-danger'>ERROR</span>
+          <div class='mt-2 text-muted'><%= @transaction.error_message %></div>
+        <% else -%>
+          <span class='badge text-lg badge-success'>SUCCESS</span>
+        <% end -%>
+      </div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header'>Timestamp</h5>
+      <div class='card-body'>
+        <span class='technical'><%= @block.timestamp.strftime('%Y-%m-%d @ %H:%M %Z') %></span>
+      </div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header'>Fees</h5>
+      <div class='card-body'>
+        <ul class='list-unstyled mb-0'>
+          <% if @transaction.fees.empty? -%>
+            <span class='text-muted'>None</span>
+          <% end -%>
+          <% @transaction.fees.each do |fee| -%>
+            <li><%= fee %></li>
+          <% end -%>
+        </ul>
+      </div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header'>Gas</h5>
+      <div class='card-body'>
+        <%= @transaction.gas %>
+      </div>
+    </div>
+  </div>
+
+
+  <div class='col-12 col-md-9 order-1 order-md-0'>
+    <section class='card'>
+      <header class='card-header d-flex align-items-center justify-content-between'>
+        <h4 class='m-0'>Transaction Details</h4>
+        <span class='d-none d-md-flex badge badge-pill badge-light text-uppercase'><%= @transaction.type %></span>
+      </header>
+      <main>
+        <section>
+          <div class='transaction-section-title bg-light'>MESSAGES</div>
+          <div class='table-responsive'>
+            <table class='table table-sm'>
+              <thead>
+                <tr class='text-uppercase text-secondary'>
+                  <th>TYPE</th>
+                  <th>VALUES</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% messages = @transaction.messages -%>
+                <% if messages.empty? -%>
+                  <tr class='text-center'>
+                    <td colspan='2'>No Messages.</td>
+                  </tr>
+                <% else %>
+                  <% messages.each do |msg| -%>
+                    <tr>
+                      <td class='text-nowrap'><%= msg.type %></td>
+                      <td class='m-0 p-0'>
+                        <table class='table m-0 no-first-row-top-border'>
+                          <% msg.each_info do |key, nice_key, formatted_value| -%>
+                            <tr>
+                              <td class='text-nowrap'>
+                                <span data-toggle='tooltip' data-tooltip-side='right' title='<%= key %>'><%= nice_key %></span>
+                              </td>
+                              <td><%= formatted_value %></td>
+                            </tr>
+                          <% end -%>
+                        </table>
+                      </td>
+                    </tr>
+                  <% end -%>
+                <% end -%>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <div class='transaction-section-title bg-light'>TAGS</div>
+          <div class='table-responsive'>
+            <table class='table table-sm'>
+              <thead>
+                <tr class='text-uppercase text-secondary'>
+                  <th>Tag</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% tags = @transaction.tags -%>
+                <% if tags.empty? -%>
+                  <tr class='text-center'>
+                    <td colspan='2'>No Tags.</td>
+                  </tr>
+                <% else -%>
+                  <% tags.each do |tag| -%>
+                    <tr>
+                      <td><%= tag.type %></td>
+                      <td><%= tag.value %></td>
+                    </tr>
+                  <% end -%>
+                <% end -%>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <% if @transaction.memo.present? -%>
+          <section>
+            <div class='transaction-section-title bg-light'>MEMO</div>
+            <pre><%= @transaction.memo %></pre>
+          </section>
+        <% end -%>
+
+        <section>
+          <div class='transaction-section-title bg-light'>RESULT</div>
+          <div class='table-responsive'>
+            <table class='table table-sm'>
+              <thead>
+                <tr class='text-uppercase text-secondary'>
+                  <th>Parameter</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class='text-nowrap'>Gas Wanted</td>
+                  <td><%= @transaction.gas_wanted %></td>
+                </tr>
+                <tr>
+                  <td class='text-nowrap'>Gas Used</td>
+                  <td><%= @transaction.gas_used %></td>
+                </tr>
+                <tr>
+                  <td class='text-nowrap'>Log</td>
+                  <td class='technical'><%= @transaction.log %></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <div class='transaction-section-title bg-light'>SIGNATURES</div>
+          <div class='table-responsive'>
+            <table class='table table-sm'>
+              <tbody>
+                <% @transaction.signatures.each do |sig| -%>
+                  <tr>
+                    <td class='m-0 p-0'>
+                      <table class='table mb-0'>
+                        <tr>
+                          <td class='text-nowrap'>Signature</td>
+                          <td class='technical'><%= sig['signature'] %></td>
+                        </tr>
+                        <tr>
+                          <td class='text-nowrap'>Account Number</td>
+                          <td class='technical'><%= sig['account_number']%></td>
+                        </tr>
+                        <tr>
+                          <td class='text-nowrap'>Sequence</td>
+                          <td class='technical'><%= sig['sequence']%></td>
+                        </tr>
+                        <tr>
+                          <td class='text-nowrap'>Public Key Type</td>
+                          <td class='technical'><%= sig['pub_key']['type'] %></td>
+                        </tr>
+                        <tr>
+                          <td class='text-nowrap'>Public Key Value</td>
+                          <td class='technical'><%= sig['pub_key']['value'] %></td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                <% end -%>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+</div>

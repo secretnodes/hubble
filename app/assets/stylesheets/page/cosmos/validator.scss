@@ -23,6 +23,7 @@
       border-right: 1px solid white;
       &.ok { background: $success; &:hover { background: lighten($success, 10%); } }
       &.missed { background: $danger; &:hover { background: lighten($danger, 10%); } }
+      &.proposed { background: $primary; &:hover { background: lighten($primary, 10%); } }
       &:last-child {
         border-right: none;
       }
@@ -38,6 +39,17 @@
   }
   .uptime-history-last48h-chart-container {
     display: none;
+  }
+  .gov-proposals-table {
+    table.dataTable {
+      thead {
+        th {
+          background-color: $gray-200;
+          color: $primary;
+          border-bottom: none;
+        }
+      }
+    }
   }
 }
 

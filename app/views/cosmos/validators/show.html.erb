@@ -5,7 +5,7 @@
 
 <% if @validator.has_info? %>
   <h2 class='mb-3'>
-    <%= @validator.moniker %>
+    <%= @validator.moniker.truncate(40, separator: '...') %>
     <% if @validator.info_field 'description', 'website' %>
       <a class='btn btn-outline-primary ml-3' href='<%= Addressable::URI.heuristic_parse(@validator.info_field( 'description', 'website' )).to_s %>' target='_blank'>Visit Site&nbsp;&nbsp;<span class='fa fa-external-link-alt'></span></a>
     <% end -%>
@@ -24,6 +24,7 @@
 <div class='row'>
   <div class='col-12 col-md-8 order-1 order-md-0'>
     <%= render partial: 'big_charts' %>
+    <%= render partial: 'governance' %>
     <%= render partial: 'events' %>
   </div>
 

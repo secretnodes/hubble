@@ -8,13 +8,20 @@ class Stats::SyncLog < ApplicationRecord
                             Time.now.utc.beginning_of_day, Time.now.utc.end_of_day ) }
 
   class << self
-    def start( chain, start_height )
+    def start( chain )
       create(
         chain: chain,
         started_at: Time.now.utc,
-        start_height: start_height
+        start_height: chain.latest_local_height+1
       )
     end
+  end
+
+  def failed?
+    !failed_at.nil?
+  end
+  def success?
+    !failed? && !completed_at.nil?
   end
 
   def timestamp
@@ -29,20 +36,34 @@ class Stats::SyncLog < ApplicationRecord
     ended_at ? (ended_at.to_f - started_at.to_f) : 0
   end
 
-  def end( end_height )
+  def end
     chain.sync_completed!
     update_attributes(
       completed_at: Time.now.utc,
       start_height: start_height,
-      end_height: end_height
+      end_height: chain.reload.latest_local_height
     )
   end
 
-  def error( exception )
+  def set_status( status )
+    update_attributes( current_status: status )
+  end
+
+  def report_error( exception )
     chain.sync_failed!
+    critical = exception.is_a?(Cosmos::SyncBase::CriticalError)
+    puts "\n\n#{'CRITICAL ' if critical}SYNC ERROR: #{exception.message}"
+
+    bc = ActiveSupport::BacktraceCleaner.new
+    bc.add_filter { |line| line.gsub(Rails.root.to_s, '') }
+    bc.add_silencer { |line| line.include? "lib/ruby/gems" }
+    bc.add_silencer { |line| line.include? "bin/bundle" }
+    puts "#{bc.clean(exception.backtrace).join("\n")}\n\n"
+
     update_attributes(
+      end_height: chain.reload.latest_local_height,
       failed_at: Time.now.utc,
-      error: "#{$!.message}\n#{$!.backtrace.join("\n")}"
+      error: [ error, "Failed during #{current_status}: #{exception.message}" ].reject(&:blank?).join( "\n" )
     )
   end
 end

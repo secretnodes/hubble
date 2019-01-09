@@ -3,7 +3,7 @@ class Cosmos::BlocksController < Cosmos::BaseController
 
   def show
     @block = @chain.blocks.find_by( height: params[:id] ) ||
-             Cosmos::Block.stub( @chain, params[:id] )
+             Cosmos::Block.stub_from_cache( @chain, params[:id] )
 
     respond_to do |format|
       format.html {}

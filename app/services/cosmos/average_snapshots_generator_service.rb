@@ -1,5 +1,5 @@
 class Cosmos::AverageSnapshotsGeneratorService
-  BATCH_SIZE = 500
+  BATCH_SIZE = 200
 
   def initialize( chain )
     @chain = chain

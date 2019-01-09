@@ -16,8 +16,12 @@
 @import 'page/cosmos/chain';
 @import 'page/cosmos/faucet';
 @import 'page/cosmos/validator';
+@import 'page/cosmos/transaction';
+@import 'page/cosmos/governance';
 @import 'page/users';
 
 // components
 @import 'components/network-chain-header';
 @import 'components/validator-table';
+@import 'components/transactions-table';
+@import 'components/gov-proposals-table';

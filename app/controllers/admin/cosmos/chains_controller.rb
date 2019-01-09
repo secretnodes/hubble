@@ -7,7 +7,8 @@ class Admin::Cosmos::ChainsController < Admin::BaseController
   def create
     @chain = ::Cosmos::Chain.create(
       params.require(:cosmos_chain).permit( %i{
-        name slug primary testnet gaiad_host disabled
+        name slug token_denom token_factor
+        primary testnet gaiad_host disabled
       } )
     )
     if @chain.primary?
@@ -24,7 +25,11 @@ class Admin::Cosmos::ChainsController < Admin::BaseController
     @chain = ::Cosmos::Chain.find_by slug: params[:id]
 
     updates = params.require(:cosmos_chain).permit(
-      %i{ gaiad_host rpc_port lcd_port primary disabled validator_event_defs },
+      %i{
+        token_denom token_factor
+        gaiad_host rpc_port lcd_port primary disabled
+        validator_event_defs
+      },
       validator_event_defs: %i{ unique_id kind n m height }
     )
 

@@ -5,8 +5,12 @@ class SmallAverageVotingPowerChart {
   }
 
   render() {
-    const data = App.seed.AVERAGE_VOTING_POWER[this.interval]
     const format = this.interval == 'last48h' ? 'k:mm' : 'MMM D'
+    const data = App.seed.AVERAGE_VOTING_POWER[this.interval]
+
+    // transform data.y's according to scale
+    const [scale, prefix] = getScale( data )
+    _.each( data, ( dp ) => dp.y = dp.y / scale )
 
     if( !data || _.isEmpty(data) ) {
       this.target.parent().hide()
@@ -16,12 +20,12 @@ class SmallAverageVotingPowerChart {
     new Chart( this.target.get(0), {
       type: 'line',
       data: {
-        labels: _.map( data, dp => dp.t ),
+        labels: _.map( data, 't' ),
         datasets: [
           {
             cubicInterpolationMode: 'monotone',
             data: data,
-            borderColor: "#70707a",
+            borderColor: '#70707a',
             fill: false
           }
         ]
@@ -48,7 +52,7 @@ class SmallAverageVotingPowerChart {
           callbacks: {
             label: ( item, data ) => {
               const date = data.datasets[item.datasetIndex].data[item.index].t
-              return `${item.yLabel.toFixed(0)} voting power ` +
+              return `${+item.yLabel.toFixed(3)} ${prefix}stake voting power ` +
                      `${this.interval == 'last30d' ? 'on' : 'at'} ` +
                      `${moment.utc(date).format(format)}`
             }
@@ -58,7 +62,7 @@ class SmallAverageVotingPowerChart {
           yAxes: [
             {
               display: false,
-              ticks: { display: false, stepSize: 1 }
+              ticks: { display: false }
             }
           ],
           xAxes: [
@@ -66,7 +70,7 @@ class SmallAverageVotingPowerChart {
               display: false,
               ticks: {
                 display: false,
-                callback: ( date ) => moment(date).format("MMM-D hh:mm")
+                callback: ( date ) => moment(date).format('MMM-D hh:mm')
               }
             }
           ]

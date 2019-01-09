@@ -1,6 +1,7 @@
 class Cosmos::FaucetSyncService < Cosmos::SyncBase
   def sync_token_info!( faucet=nil )
     faucet ||= @chain.faucet
+    return if faucet.nil?
     return if faucet.disabled?
 
     if faucet.address.nil?

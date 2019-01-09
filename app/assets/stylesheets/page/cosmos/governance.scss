@@ -1,0 +1,106 @@
+.governance-proposal {
+  .proposal-header {
+    margin-top: 0px;
+    background: $primary;
+    color: white;
+    padding: 4px 6px;
+    padding-right: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+
+    h4 {
+      max-width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 0;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .proposal-details {
+    .title {
+      text-align: center;
+      color: #57727c;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 15px;
+      letter-spacing: 2px;
+    }
+    box-shadow: $box-shadow;
+  }
+
+  .vote-tallies {
+    display: flex;
+    background-color: #eeeeef;
+    border-bottom: 1px solid #cad0d2;
+
+    overflow: hidden;
+
+    .tally + .tally {
+      border-left: 1px solid #bdbdbd;
+    }
+
+    .tally {
+      flex: 1 1 0%;
+
+      .title {
+        text-align: center;
+        color: #57727c;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 15px 0 0 0;
+        margin: 0;
+        letter-spacing: 2px;
+      }
+    }
+  }
+
+  .voting-period {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 12px;
+    border-bottom: 1px solid #bdbdbd;
+
+    .title {
+      text-align: center;
+      color: #57727c;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 15px;
+      letter-spacing: 2px;
+    }
+
+    .info {
+      padding: 0.8rem;
+      display: flex;
+      flex: 1 1 auto;
+      height: 100%;
+      flex-direction: column;
+    }
+
+    .value {
+      text-align: center;
+    }
+
+    .info + .info {
+      border-left: 1px solid #bdbdbd;
+    }
+
+    > div {
+      flex: 1 1 0%;
+
+      &:first-of-type {
+        flex-basis: 232px;
+      }
+    }
+  }
+}

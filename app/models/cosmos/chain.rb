@@ -9,9 +9,13 @@ class Cosmos::Chain < ApplicationRecord
   has_many :sync_logs, class_name: 'Stats::SyncLog', dependent: :delete_all
   has_many :daily_sync_logs, class_name: 'Stats::DailySyncLog', dependent: :delete_all
 
+  has_many :accounts, class_name: 'Cosmos::Account', dependent: :delete_all
+  has_many :governance_proposals, class_name: 'Cosmos::Governance::Proposal', dependent: :delete_all
+
   has_one :faucet, class_name: 'Cosmos::Faucet', dependent: :destroy
 
-  validates :slug, uniqueness: true, format: { with: /[a-z0-9-]+/ }
+  validates :name, presence: true, allow_blank: false
+  validates :slug, presence: true, uniqueness: true, format: { with: /[a-z0-9-]+/ }, allow_blank: false
 
   def to_param; slug; end
   def network_name; 'Cosmos'; end
@@ -24,8 +28,9 @@ class Cosmos::Chain < ApplicationRecord
 
   def get_event_height( defn_id )
     defn = self.validator_event_defs.find { |defn| defn['unique_id'] == defn_id }
-    defn ? (defn['height']||0) : 0
+    defn ? (defn['height'] || 0) : 0
   end
+
   def set_event_height!( defn_id, height )
     self.validator_event_defs_will_change!
     defn = self.validator_event_defs.find { |defn| defn['unique_id'] == defn_id }
@@ -34,14 +39,15 @@ class Cosmos::Chain < ApplicationRecord
   end
 
   def syncer
-    @_syncer ||= Cosmos::SyncBase.new(self, 500)
+    @_syncer ||= Cosmos::SyncBase.new( self, 500 )
   end
 
   def can_communicate_with_node?
+    return false if self.ext_id.blank?
     begin
       # ensure lcd and rpc are available
       syncer.get_stake_info
-      syncer.get_node_chain == self.slug
+      syncer.get_node_chain == self.ext_id
     rescue
       Rails.logger.error $!.message
       nil
@@ -53,11 +59,13 @@ class Cosmos::Chain < ApplicationRecord
       Rails.application.secrets.default_gaiad_host :
       gaiad_host
   end
+
   def get_rpc_port_or_default
     rpc_port.blank? ?
       Rails.application.secrets.default_rpc_port :
       rpc_port
   end
+
   def get_lcd_port_or_default
     lcd_port.blank? ?
       Rails.application.secrets.default_lcd_port :
@@ -112,5 +120,29 @@ class Cosmos::Chain < ApplicationRecord
 
   def sync_completed!
     update_attributes failed_sync_count: 0
+  end
+
+  def governance_params_synced?
+    governance != {}
+  end
+
+  def governance_params
+    @governance_params ||= Cosmos::GovernanceParamsDecorator.new(governance)
+  end
+
+  def progressing!
+    update_attributes halted_at: nil
+  end
+
+  def has_halted!
+    update_attributes halted_at: DateTime.now
+  end
+
+  def halted?
+    !halted_at.nil?
+  end
+
+  def record_round_state( round_state )
+    update_attributes last_round_state: round_state
   end
 end

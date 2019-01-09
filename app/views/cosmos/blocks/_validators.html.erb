@@ -1,0 +1,50 @@
+<div class='validators'>
+  <div class='validator-table-header'>
+    <h4>Validators</h4>
+    <input type='text' class='validator-search' placeholder='search...'>
+  </div>
+  <div class='validator-table'>
+    <table>
+      <thead>
+        <tr>
+          <th>Address</th>
+          <th>Voting Power</th>
+          <th>State</th>
+        </tr>
+        <tbody>
+          <% @chain.active_validators_at_height(@block.height).each do |v| -%>
+            <tr>
+              <td>
+                <a href='<%= cosmos_chain_validator_path( @chain, v ) %>'>
+                  <% if v.moniker -%>
+                    <strong><%= v.moniker.truncate(40, separator: '...') %></strong>
+                  <% else %>
+                    <span class='technical'><%= (v.owner || v.address).truncate(40, separator: '...') %></span>
+                  <% end -%>
+                </a>
+                <% if @block.proposer_address == v.address -%>
+                  <span class='badge badge-lg badge-primary'>PROPOSER</span>
+                <% end -%>
+              </td>
+              <td data-order='<%= v.current_voting_power %>'><%= format_amount(v.voting_power_at_height(@block.height)) %></td>
+              <td>
+                <% if @block.precommitters.include?(v.address) -%>
+                  <span class='badge badge-lg badge-success'>UP</span>
+                <% else -%>
+                  <span class='badge badge-lg badge-danger'>DOWN</span>
+                <% end -%>
+              </td>
+              <td class='d-none'>
+                ⭐️ <%= v.active? ? '✔' : '𐄂' %> <!-- for the gear toggles -->
+                <%= v.owner %> <%= v.address %> <!-- so you can paste your address into search -->
+              </td>
+            </tr>
+          <% end -%>
+        </tbody>
+      </thead>
+    </table>
+    <script>
+      App.config.currentValidatorFilter = '⭐️'
+    </script>
+  </div>
+</div>

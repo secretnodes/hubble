@@ -1,30 +1,30 @@
 <div class='card'>
   <h5 class='card-header'>
     <div class='card-header-parts'>
-      <div>Event History</div>
+      <div>Event History <small>(most recent 20)</small></div>
       <% if !current_user -%>
         <div data-toggle='tooltip' title='Sign up to subscribe to alerts!'>
           <a class='btn btn-sm btn-outline-light'
-             href='<%= new_user_path %>'>subscribe</a>
+             href='<%= new_user_path %>'>Subscribe</a>
         </div>
       <% else -%>
         <div>
           <a class='btn btn-sm btn-outline-light'
              href='<%= cosmos_chain_validator_subscriptions_path(@chain, @validator) %>'>
-           <%= current_user.subscribed_to?(@validator) ? 'edit subscription' : 'subscribe to alerts' %>
-         </a>
+           <%= current_user.subscribed_to?(@validator) ? 'Edit Subscription' : 'Subscribe to Alerts' %>
+          </a>
         </div>
       <% end -%>
     </div>
   </h5>
 
-  <div class='card-body'>
+  <div class='card-body p-1'>
     <% events = @validator.events -%>
     <% if events.empty? -%>
       No events yet.
     <% end -%>
     <ul class='list-group list-group-flush'>
-      <% @validator.events.each do |event| -%>
+      <% @validator.events.limit(20).each do |event| -%>
 
         <li class='list-group-item'>
           <div class='inner-event d-flex align-items-start flex-column flex-md-row align-items-md-center'>

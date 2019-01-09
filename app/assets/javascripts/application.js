@@ -15,17 +15,23 @@
 //
 //= require lib/custom-tooltip
 //= require lib/money
+//= require lib/scale
 //
 //= require page/app-init
 //
 //= require page/cosmos/chain-show
+//= require page/cosmos/chain-halted
 //= require page/cosmos/faucet-show
 //= require page/cosmos/faucet-transaction-show
 //= require page/cosmos/block-show
 //= require page/cosmos/validator-show
 //= require page/cosmos/validator-subscriptions
+//= require page/cosmos/governance-index
+//= require page/cosmos/governance-proposal
 //
 //= require components/common/auto-alert-hide
+//= require components/cosmos/transactions-table
+//= require components/cosmos/gov-proposals-table
 //= require components/cosmos/validator-table
 //= require components/cosmos/validator-voting-power-history
 //= require components/cosmos/validator-uptime-history

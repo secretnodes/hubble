@@ -1,9 +1,9 @@
 namespace :stats do
   namespace :cosmos do
     task all: :environment do
-      TaskLock.with_lock!( :cosmos, :stats ) do
-        puts "Starting Cosmos stats task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
-        Cosmos::Chain.find_each do |chain|
+      puts "Starting Cosmos stats task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
+      Cosmos::Chain.enabled.find_each do |chain|
+        TaskLock.with_lock!( :stats, chain.id ) do
           # don't collect average stats if the sync is failing
           if chain.failing_sync?
             puts "#{chain.name} is failing sync, no stats collection."
@@ -16,8 +16,8 @@ namespace :stats do
           stats.generate_validator_uptime_snapshots!
           stats.generate_active_validators_snapshots!
         end
-        puts "Completed Cosmos stats task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}\n\n"
       end
+      puts "Completed Cosmos stats task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}\n\n"
     end
   end
 end

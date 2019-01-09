@@ -1,4 +1,6 @@
 class Cosmos::SyncBase
+  class CriticalError < StandardError; end
+
   BATCH_SIZE = 20
 
   def initialize( chain, request_timeout_ms=10_000 )
@@ -9,13 +11,13 @@ class Cosmos::SyncBase
 
     @rpc_curl = Curl::Easy.new
     # @rpc_curl.verbose = !Rails.env.production?
-    @rpc_curl.timeout_ms = request_timeout_ms# unless Rails.env.development?
+    @rpc_curl.timeout_ms = request_timeout_ms unless Rails.env.development?
     @rpc_curl.headers['Accept'] = 'application/json'
     @rpc_curl.headers['Content-Type'] = 'application/json'
 
     @lcd_curl = Curl::Easy.new
     # @lcd_curl.verbose = !Rails.env.production?
-    @lcd_curl.timeout_ms = request_timeout_ms# unless Rails.env.development?
+    @lcd_curl.timeout_ms = request_timeout_ms unless Rails.env.development?
     @lcd_curl.headers['Accept'] = 'application/json'
     @lcd_curl.headers['Content-Type'] = 'application/json'
     # temporary, until we figure out/decide how to handle certs
@@ -23,23 +25,28 @@ class Cosmos::SyncBase
     @lcd_curl.ssl_verify_host = 0
 
     begin
-      chain_slug = get_node_chain
+      ext_id = get_node_chain
     rescue
       puts "#{$!.message}"
     end
 
-    if !chain_slug
+    if !ext_id
       chain.sync_failed!
-      raise "Unable to communicate with node -- #{@host}"
+      raise CriticalError.new("Unable to communicate with node!")
     end
-    if chain_slug != @chain.slug
+
+    if @chain.ext_id.blank?
+      @chain.update_attributes ext_id: ext_id
+    end
+
+    if ext_id != @chain.ext_id
       chain.sync_failed!
-      raise "Node #{@host} is running on chain #{chain_slug} and cannot sync #{@chain.slug}."
+      raise CriticalError.new("Node is running on chain #{ext_id} and cannot sync #{@chain.ext_id}.")
     end
   end
 
   def get_status
-    rpc_get('status')
+    rpc_get( 'status' )
   end
 
   def get_block( height )
@@ -58,16 +65,22 @@ class Cosmos::SyncBase
     rpc_get( 'validators', height: height )
   end
 
-  def get_account_info( addr )
-    lcd_get( ['accounts', addr] )
+  def get_transaction( hash )
+    lcd_get( [ 'txs', hash ] )
   end
 
-  def get_key( name )
-    lcd_get( ['keys', name] )
+  def get_account_info(addr)
+    lcd_get( [ 'accounts', addr ] )
+  end
+
+  def get_key(name)
+    lcd_get( [ 'keys', name ] )
   end
 
   def get_keys
-    lcd_get( 'keys' )
+    r = lcd_get( 'keys' )
+    return r if r.is_a? Array
+    return []
   end
 
   def get_new_seed
@@ -82,7 +95,8 @@ class Cosmos::SyncBase
   end
 
   def get_stake_info
-    lcd_get( 'stake/validators' )
+    r = lcd_get( 'stake/validators' )
+    r.is_a?( Array ) ? r : nil
   end
 
   def get_genesis
@@ -96,6 +110,37 @@ class Cosmos::SyncBase
   def get_node_chain
     result = get_status
     result['result']['node_info']['network']
+  end
+
+  def get_canonical_block_height
+    get_status['result']['sync_info']['latest_block_height'].to_i - 1
+  end
+
+  def get_peer_count
+    result = rpc_get( 'net_info' )
+    result['result']['n_peers'].to_i
+  end
+
+  def get_governance
+    result = rpc_get( 'genesis' )
+    info = result['result']['genesis']['app_state']['gov']
+    (info||{}).slice('deposit_params', 'voting_params', 'tally_params')
+  end
+
+  def get_proposals
+    lcd_get( 'gov/proposals' )
+  end
+
+  def get_proposal_deposits( proposal_id )
+    lcd_get( [ 'gov/proposals', proposal_id, 'deposits' ] )
+  end
+
+  def get_proposal_votes( proposal_id )
+    lcd_get( [ 'gov/proposals', proposal_id, 'votes' ] )
+  end
+
+  def get_proposal_tally( proposal_id )
+    lcd_get( [ 'gov/proposals', proposal_id, 'tally' ] )
   end
 
   private
@@ -112,7 +157,7 @@ class Cosmos::SyncBase
     Rails.logger.info "COSMOS RPC #{path} took #{end_time - start_time} seconds" unless Rails.env.production?
 
     json = @rpc_curl.body_str
-    JSON.load(json)
+    JSON.load( json )
   end
 
   def lcd_get( path, params=nil )
@@ -127,7 +172,7 @@ class Cosmos::SyncBase
     Rails.logger.info "COSMOS LCD #{path} took #{end_time - start_time} seconds" unless Rails.env.production?
 
     json = @lcd_curl.body_str
-    JSON.load(json) rescue json
+    JSON.load( json ) rescue json
   end
 
   def lcd_post( path, body )
@@ -142,6 +187,6 @@ class Cosmos::SyncBase
     Rails.logger.info "COSMOS LCD #{path} took #{end_time - start_time} seconds" unless Rails.env.production?
 
     json = @lcd_curl.body_str
-    JSON.load(json) rescue json
+    JSON.load( json ) rescue json
   end
 end

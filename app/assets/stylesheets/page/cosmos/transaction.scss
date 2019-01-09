@@ -1,0 +1,18 @@
+.transaction-show {
+  .transaction-section-title {
+    color: #4a4d6d;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 1.2rem;
+    letter-spacing: 2px;
+    border-top: 1px solid #4a4d6d;
+  }
+
+  .no-first-row-top-border {
+    tr:first-of-type {
+      td {
+        border-top: 0;
+      }
+    }
+  }
+}

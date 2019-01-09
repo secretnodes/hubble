@@ -3,33 +3,47 @@
 <div class='card'>
   <h5 class='card-header'>Current Voting Power</h5>
   <div class='card-body'>
-    <span class='large-number technical'><%= @validator.current_voting_power %></span>
+    <span class='large-number'><%= format_amount(@validator.current_voting_power) %></span>
     <% if !@validator.in_active_set?( latest_block ) -%>
       <span class='badge badge-danger'>NOT IN VOTING SET</span>
     <% end -%>
-    <div class='sub-info'>
-      <small class='text-muted'>As of <%= time_ago_in_words( latest_block.timestamp, true ) %> ago</small>
+    <div>
+      <label class='text-muted d-inline mb-0'>Proposal Probability</label>
+      <span class='technical'><%= round_if_whole @validator.proposal_probability * 100, 2 %>%</span>
     </div>
   </div>
 </div>
 
 <div class='card'>
-  <h5 class='card-header'>Pre-commits</h5>
+  <h5 class='card-header'>Blocks</h5>
   <div class='card-body'>
     <label class='text-muted'>Last 50</label>
     <div class='block-heatmap-container'>
       <div class='block-heatmap'>
         <% @chain.blocks.limit( 50 ).reverse_each do |block| -%>
           <% precommitted = block.precommitters.include?(@validator.address) -%>
-          <a class='block <%= precommitted ? 'ok' : 'missed' %>'
+          <% proposed = block.proposer_address == @validator.address -%>
+          <a class='block <%= precommitted ? 'ok' : 'missed' %> <%= proposed ? 'proposed' : '' %>'
              href='<%= cosmos_chain_block_path(@chain, block) %>'
              title="Block <%= block.height %> <span class='fa fa-arrow-right text-sm text-muted'></span> <span class='badge badge-<%= precommitted ? 'success' : 'danger' %>'><%= precommitted ? 'OK' : 'MISSED' %></span>"></a>
         <% end -%>
       </div>
     </div>
 
-    <label class='text-muted d-inline mb-0'>Total</label>
-    <span class='technical large-number'><%= @validator.total_precommits %></span>
+    <div>
+      <label class='text-muted d-inline mb-0'>Total Pre-commits</label>
+      <span class='technical large-number'><%= @validator.total_precommits %></span>
+    </div>
+
+    <div>
+      <label class='text-muted d-inline mb-0'>Total Proposals</label>
+      <span class='technical large-number'><%= @validator.total_proposals %></span>
+      <span class='text-muted'>
+        (<span class='technical'>
+          <%= round_if_whole (@validator.total_proposals / @validator.total_precommits.to_f) * 100, 2 %>%
+        </span>)
+      </span>
+    </div>
 
     <!--
     <% last_seen_block = @validator.last_precommitted_block %>

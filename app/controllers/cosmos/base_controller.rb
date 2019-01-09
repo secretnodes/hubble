@@ -8,9 +8,7 @@ class Cosmos::BaseController < ApplicationController
     return unless @chain
     @latest_block = @chain.blocks.first
     @latest_sync = @chain.sync_logs.completed.first || @chain.daily_sync_logs.first
-
     @is_syncing = @latest_sync && @latest_sync.timestamp > 4.minutes.ago
-    @chain_stopped = @latest_block ? @is_syncing && @latest_block.timestamp < 4.minutes.ago : false
   end
 
   def get_chain_from_route

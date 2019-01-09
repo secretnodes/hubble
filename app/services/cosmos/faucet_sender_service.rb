@@ -16,7 +16,7 @@ class Cosmos::FaucetSenderService < Cosmos::SyncBase
       ],
       name: faucet.key_name,
       password: faucet.password,
-      chain_id: @chain.slug,
+      chain_id: @chain.ext_id,
       account_number: faucet.account_number,
       sequence: (faucet.current_sequence.to_i + 1).to_s,
       gas: 10_000_000.to_s # lol wat?

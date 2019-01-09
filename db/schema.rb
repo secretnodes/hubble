@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_28_174635) do
+ActiveRecord::Schema.define(version: 2018_12_21_201348) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -45,6 +45,16 @@ ActiveRecord::Schema.define(version: 2018_10_28_174635) do
     t.index ["user_id"], name: "index_alert_subscriptions_on_user_id"
   end
 
+  create_table "cosmos_accounts", force: :cascade do |t|
+    t.string "address"
+    t.bigint "chain_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "validator_id"
+    t.index ["address"], name: "index_cosmos_accounts_on_address"
+    t.index ["chain_id"], name: "index_cosmos_account_on_chain"
+  end
+
   create_table "cosmos_blocks", force: :cascade do |t|
     t.bigint "chain_id"
     t.string "id_hash", null: false
@@ -54,6 +64,8 @@ ActiveRecord::Schema.define(version: 2018_10_28_174635) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "validator_set", default: {}
+    t.string "proposer_address"
+    t.string "transactions", array: true
     t.index ["chain_id", "height", "timestamp"], name: "index_cosmos_b_on_c__h__t"
     t.index ["chain_id", "height"], name: "index_cosmos_b_on_c__h", unique: true
     t.index ["chain_id", "id_hash"], name: "index_cosmos_b_on_hash", unique: true
@@ -75,6 +87,12 @@ ActiveRecord::Schema.define(version: 2018_10_28_174635) do
     t.boolean "disabled", default: false
     t.jsonb "validator_event_defs", default: [{"kind"=>"voting_power_change", "height"=>0}, {"kind"=>"active_set_inclusion", "height"=>0}]
     t.integer "failed_sync_count", default: 0
+    t.jsonb "governance", default: {}, null: false
+    t.string "ext_id"
+    t.datetime "halted_at"
+    t.string "last_round_state", default: ""
+    t.string "token_denom", default: "atom"
+    t.bigint "token_factor", default: 0
   end
 
   create_table "cosmos_faucets", force: :cascade do |t|
@@ -89,6 +107,56 @@ ActiveRecord::Schema.define(version: 2018_10_28_174635) do
     t.string "account_number"
     t.string "current_sequence"
     t.index ["chain_id"], name: "index_cosmos_faucets_on_chain_id"
+  end
+
+  create_table "cosmos_governance_deposits", force: :cascade do |t|
+    t.bigint "account_id"
+    t.bigint "proposal_id"
+    t.string "amount_denom"
+    t.bigint "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_cosmos_deposit_on_account"
+    t.index ["proposal_id"], name: "index_cosmos_deposit_on_proposal"
+  end
+
+  create_table "cosmos_governance_proposals", force: :cascade do |t|
+    t.bigint "chain_id"
+    t.bigint "chain_proposal_id"
+    t.string "title"
+    t.text "description"
+    t.string "proposal_type"
+    t.string "proposal_status"
+    t.decimal "tally_result_yes"
+    t.decimal "tally_result_abstain"
+    t.decimal "tally_result_no"
+    t.decimal "tally_result_nowithveto"
+    t.datetime "submit_time"
+    t.jsonb "total_deposit", default: {}
+    t.datetime "voting_start_time"
+    t.datetime "voting_end_time"
+    t.bigint "cosmos_chain_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chain_id", "chain_proposal_id"], name: "index_cosmos_governance_proposals_on_chain_and_cp_id", unique: true
+    t.index ["chain_id"], name: "index_cosmos_proposal_on_chain"
+    t.index ["chain_proposal_id"], name: "index_cosmos_governance_proposals_on_chain_proposal_id"
+    t.index ["cosmos_chain_id"], name: "index_cosmos_governance_proposals_on_cosmos_chain_id"
+    t.index ["proposal_status"], name: "index_cosmos_governance_proposals_on_proposal_status"
+    t.index ["proposal_type"], name: "index_cosmos_governance_proposals_on_proposal_type"
+    t.index ["submit_time"], name: "index_cosmos_governance_proposals_on_submit_time"
+    t.index ["voting_end_time"], name: "index_cosmos_governance_proposals_on_voting_end_time"
+    t.index ["voting_start_time"], name: "index_cosmos_governance_proposals_on_voting_start_time"
+  end
+
+  create_table "cosmos_governance_votes", force: :cascade do |t|
+    t.bigint "account_id"
+    t.bigint "proposal_id"
+    t.string "option"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_cosmos_vote_on_account"
+    t.index ["proposal_id"], name: "index_cosmos_vote_on_proposal"
   end
 
   create_table "cosmos_validator_event_latches", force: :cascade do |t|
@@ -122,13 +190,15 @@ ActiveRecord::Schema.define(version: 2018_10_28_174635) do
   create_table "cosmos_validators", force: :cascade do |t|
     t.bigint "chain_id"
     t.string "address", null: false
-    t.integer "current_voting_power"
+    t.bigint "current_voting_power", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "latest_block_height"
     t.jsonb "info", default: {}
     t.datetime "first_seen_at"
     t.bigint "total_precommits", default: 0
+    t.decimal "current_uptime", default: "0.0"
+    t.bigint "total_proposals", default: 0
     t.index ["address"], name: "index_cosmos_v_on_addr"
     t.index ["chain_id", "address"], name: "index_cosmos_v_on_c__addr", unique: true
     t.index ["chain_id"], name: "index_cosmos_v_on_c"
@@ -184,6 +254,7 @@ ActiveRecord::Schema.define(version: 2018_10_28_174635) do
     t.bigint "end_height"
     t.datetime "failed_at"
     t.text "error"
+    t.string "current_status"
     t.index ["chain_id"], name: "index_stats_sync_logs_on_chain_id"
   end
 
@@ -203,5 +274,6 @@ ActiveRecord::Schema.define(version: 2018_10_28_174635) do
   end
 
   add_foreign_key "cosmos_blocks", "cosmos_chains", column: "chain_id"
+  add_foreign_key "cosmos_governance_proposals", "cosmos_chains"
   add_foreign_key "cosmos_validators", "cosmos_chains", column: "chain_id"
 end

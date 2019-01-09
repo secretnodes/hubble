@@ -38,3 +38,29 @@
   padding-left: 20px;
   padding-right: 20px;
 }
+
+dl {
+  dd {
+    margin-bottom: 0;
+  }
+
+  dt {
+    margin-bottom: 1rem;
+
+    ul {
+      margin-left: 0rem;
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+.table-sm {
+  th,
+  td {
+    padding: 0.25rem 1.2rem;
+  }
+
+  th {
+    font-size: 12px;
+  }
+}

@@ -28,7 +28,7 @@
     <div class='uptime-history-last48h-chart-container'>
       <canvas class='uptime-history-last48h-chart'></canvas>
     </div>
-    <% current_uptime = @validator.uptime -%>
+    <% current_uptime = round_if_whole((@validator.current_uptime * 100).round(0)) -%>
     <script>
       App.seed.UPTIME_HISTORY = {
         alltime: <%= AverageSnapshotDecorator.new(@chain, 'validator-uptime', 'day', nil, @validator).as_json( with_todays_average: true, override_current_time_value: current_uptime ).to_json.html_safe %>,

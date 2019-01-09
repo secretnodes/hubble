@@ -8,8 +8,15 @@ class ValidatorVotingPowerHistory {
       this.target.parents('.card').hide()
       return
     }
-    const max = Math.ceil( _.maxBy( App.seed.VOTING_POWER_HISTORY, dp => dp.y ).y * 1.5 )
-    // const min = Math.floor( _.minBy( App.seed.VOTING_POWER_HISTORY, dp => dp.y ).y * 0.5 )
+
+    const data = App.seed.VOTING_POWER_HISTORY
+
+    // transform data.y's according to scale
+    const [scale, prefix] = getScale( data )
+    _.each( data, ( dp ) => dp.y = dp.y / scale )
+
+    const max = Math.ceil( _.maxBy( data, dp => dp.y ).y * 1.5 )
+    // const min = Math.floor( _.minBy( data, dp => dp.y ).y * 0.5 )
 
     const annotations = []
 
@@ -29,7 +36,7 @@ class ValidatorVotingPowerHistory {
 
         if( !drawTo ) {
           // draw to end of graph
-          drawTo = _.last( App.seed.VOTING_POWER_HISTORY )
+          drawTo = _.last( data )
           i = total
         }
 
@@ -50,11 +57,11 @@ class ValidatorVotingPowerHistory {
     new Chart( ctx, {
       type: 'line',
       data: {
-        labels: _.pick( App.seed.VOTING_POWER_HISTORY, 't' ),
+        labels: _.pick( data, 't' ),
         datasets: [
           {
-            data: App.seed.VOTING_POWER_HISTORY,
-            borderColor: "#70707a",
+            data: data,
+            borderColor: '#70707a',
             fill: false,
             borderWidth: 1,
             steppedLine: true
@@ -91,9 +98,9 @@ class ValidatorVotingPowerHistory {
               const height = data.datasets[item.datasetIndex].data[item.index].h
               const date = data.datasets[item.datasetIndex].data[item.index].t
               const parts = _.compact( [
-                `<label>Voting Power:</label> ${item.yLabel}<br/>`,
+                `<label>Voting Power:</label> ${+item.yLabel.toFixed(3)} ${prefix}stake<br/>`,
                 height ? `<label>Block Height:</label> ${height}<br/>` : null,
-                `<label>Timestamp:</label> ${moment.utc(date).format("MMM-D k:mm")}`
+                `<label>Timestamp:</label> ${moment.utc(date).format('MMM-D k:mm')}`
               ] )
               return parts.join('')
             }

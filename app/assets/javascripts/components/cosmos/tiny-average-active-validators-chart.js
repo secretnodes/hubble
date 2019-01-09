@@ -62,7 +62,7 @@ class TinyAverageActiveValidatorsChart {
               display: false,
               ticks: {
                 display: false,
-                callback: ( date ) => moment(date).format("MMM-D hh:mm")
+                callback: ( date ) => moment(date).format('MMM-D hh:mm')
               }
             }
           ]

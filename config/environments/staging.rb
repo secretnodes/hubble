@@ -40,8 +40,12 @@ Rails.application.configure do
   config.log_level = :info
   config.log_tags = [:remote_ip]
 
-  # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  # Use a different cache store in staging.
+  config.cache_store = :mem_cache_store, ['localhost'], {
+    namespace: "hubble-#{Rails.env}",
+    expires_in: 2.weeks,
+    compress: true
+  }
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   # config.active_job.queue_adapter     = :resque

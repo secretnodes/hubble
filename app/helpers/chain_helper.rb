@@ -20,9 +20,26 @@ module ChainHelper
     ].join('')
   end
 
-  def chain_voting_power_online_percentage( current, total )
+  def chain_voting_power_online_percentage( chain )
+    current = chain.voting_power_online
+    total = chain.total_current_voting_power
     return 'Cannot calculate %' if total.zero?
     ((current.to_f / total.to_f) * 100).round(0).to_s + '%'
+  end
+
+  def chain_voting_power_online_details( chain )
+    current = chain.voting_power_online
+    total = chain.total_current_voting_power
+
+    scale, prefix = if total >= PETA then [PETA, 'P']
+                    elsif total >= TERA then [TERA, 'T']
+                    elsif total >= GIGA then [GIGA, 'G']
+                    elsif total >= MEGA then [MEGA, 'M']
+                    elsif total >= KILO then [KILO, 'k']
+                    else [1.0, '']
+                    end
+
+    "#{round_if_whole(current / scale, 0)} of #{round_if_whole(total / scale, 0)} #{prefix}stake"
   end
 
 end

@@ -76,24 +76,33 @@
   <tbody>
     <% @minutelies.each do |log| -%>
       <tr>
-        <td>
+        <td class='text-nowrap'>
           <span class='technical'><%= log.started_at %></span>
           <div><small class='text-muted'><%= time_ago_in_words( log.started_at ) %> ago</small></div>
         </td>
-        <td>
-          <span class='technical'><%= log.completed_at %></span>
-          <% if log.completed_at -%>
-            <div><small class='text-muted'><%= distance_of_time_in_words( log.started_at, log.completed_at ) %> later</small></div>
-          <% elsif log.failed_at -%>
-            <span class='badge badge-danger technical'>failed</span>
-          <% else -%>
-            <span class='badge badge-info technical'>in progress</span>
-          <% end -%>
+        <td class='text-nowrap'>
+          <div class='technical'><%= log.completed_at %></div>
+          <div>
+            <% if log.success? -%>
+              <small class='text-muted'><%= distance_of_time_in_words( log.started_at, log.completed_at ) %> later</small>
+            <% elsif log.failed? -%>
+              <span class='badge badge-danger technical'>failed</span>
+            <% else -%>
+              <span class='badge badge-info technical'>in progress (<%= log.current_status || 'init' %>)</span>
+            <% end -%>
+          </div>
         </td>
         <td>
-          <% if log.completed_at -%>
+          <% if log.success? -%>
             <span class='technical'><%= log.end_height - log.start_height %></span> <span class='text-muted text-sm'>new blocks</span>
             <div><small class='text-muted technical'><%= log.start_height %> &rarr; <%= log.end_height %></small></div>
+          <% elsif log.error && current_admin -%>
+            <% error_lines = log.error.split("\n") -%>
+            <strong><tt><%= error_lines.shift %></tt></strong>
+            <% error_lines = error_lines.select { |line| line.starts_with?(Rails.root.to_s) }.map { |line| line.sub(Rails.root.to_s, '...') } -%>
+            <pre><%= error_lines.take(10).join("\n") + (error_lines.count > 10 ? "\n..." : '') %></pre>
+          <% else -%>
+            <span class='text-muted'>&mdash;</span>
           <% end -%>
         </td>
       </tr>

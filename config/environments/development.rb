@@ -12,6 +12,9 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
 
+  # show where each query is from
+  config.active_record.verbose_query_logs = true
+
   config.read_encrypted_secrets = true
 
   # Enable/disable caching. By default caching is disabled.

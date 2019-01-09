@@ -91,6 +91,7 @@ GEM
     css_parser (1.6.0)
       addressable
     curb (0.9.6)
+    dalli (2.7.9)
     dotiw (4.0.0)
       actionpack (>= 4)
       i18n
@@ -260,6 +261,7 @@ DEPENDENCIES
   capistrano-npm
   capistrano-rails (~> 1.4)
   curb
+  dalli
   dotiw
   jbuilder (~> 2.5)
   letter_opener_web (~> 1.0)
@@ -279,4 +281,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   1.17.1
+   1.17.2

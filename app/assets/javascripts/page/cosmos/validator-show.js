@@ -2,6 +2,7 @@ $(document).ready( function() {
   if( !_.includes(App.mode, 'validator-show') ) { return }
 
   new App.Cosmos.ValidatorVotingPowerHistory( $('.voting-power-history-chart') ).render()
+  new App.Cosmos.GovProposalsTable( $('.gov-proposals-table') ).render()
 
   // 2 charts
   const charts = {
