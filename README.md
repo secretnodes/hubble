@@ -11,6 +11,7 @@ Made with :heart: by<br/>
 - Ruby 2.5+
 - Node LTS
 - Accessible PostgreSQL database.
+- Memcached running on localhost.
 - [PostMark](https://postmarkapp.com) account for email notifications.
 - [Rollbar](https://rollbar.com) account for exception tracking.
 
