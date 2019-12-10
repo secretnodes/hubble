@@ -6,7 +6,21 @@
 
 .navbar {
   background-color: transparent !important;
-  .navbar-brand:last-child:not(:first-child) {
+
+  .navbar-brand {
+    display: flex;
+    align-items: flex-end;
+    a {
+      text-decoration: none !important;
+    }
+    .figment-logo {
+      margin-left: 12px;
+      display: flex;
+      align-items: center;
+      img { margin-left: 6px; }
+    }
+  }
+  .navbar-brand :last-child:not(:first-child) {
     display: none;
     @include media-breakpoint-up(md) {
       display: inline-block;
@@ -22,6 +36,32 @@
       text-align: center;
       color: $gray-100;
       margin: 0 10px;
+    }
+  }
+
+  .top-nav-chain-select {
+    .dropdown-menu {
+      padding-top: 0px;
+    }
+    .dropdown-divider {
+      margin-bottom: 0;
+    }
+    .dropdown-divider:last-child { display: none; }
+    .dropdown-label {
+      padding: 0.25rem 1rem;
+      background: #F4F4F4;
+      color: $primary;
+      padding-top: 0.4rem;
+      &:first-child {
+        border-top-left-radius: $border-radius;
+        border-top-right-radius: $border-radius;
+      }
+    }
+    a.dropdown-item {
+      padding: 0.25rem 1rem;
+      &.current-chain {
+        color: $secondary;
+      }
     }
   }
 }

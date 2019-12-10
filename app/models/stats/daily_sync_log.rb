@@ -1,5 +1,5 @@
 class Stats::DailySyncLog < ApplicationRecord
-  belongs_to :chain, class_name: 'Cosmos::Chain'
+  belongs_to :chainlike, polymorphic: true
   default_scope -> { order('date DESC') }
 
   def total_blocks
@@ -23,7 +23,7 @@ class Stats::DailySyncLog < ApplicationRecord
       succeeded = logs.select(&:completed_at)
       failed = logs.select(&:failed_at)
       new(
-        chain: logs.first.chain,
+        chainlike: logs.first.chainlike,
         date: start_time,
         sync_count: total_logs,
         fail_count: failed.count,

@@ -1,0 +1,25 @@
+<% @chain.validators.each do |validator| -%>
+  <div>
+    <h4><%= validator.short_name %></h4>
+    <% @chain.validator_event_defs.each do |defn| -%>
+      <div class='mb-3'>
+        <% latch = validator.latches.find_by( event_definition_id: defn['unique_id'] ) -%>
+        <% next if !latch -%>
+        <%= defn['kind'] %>
+        Latch: <%= latch.held? ? 'HELD' : 'CLEAR' %>
+        <br />
+        <% case defn['kind'] -%>
+        <% when 'n_of_m' -%>
+          <div class='d-flex flex-wrap'>
+            <% latch.state.split('').each do |entry| -%>
+              <div style='margin-right: 1px; margin-bottom: 1px; height: 10px; width: 10px; background: <%= entry.to_i == 1 ? 'red' : 'green' %>;'></div>
+            <% end -%>
+          </div>
+        <% when 'n_consecutive' -%>
+          <%= latch.state.to_i %> consecutive
+        <% end -%>
+      </div>
+    <% end -%>
+  </div>
+  <hr />
+<% end -%>

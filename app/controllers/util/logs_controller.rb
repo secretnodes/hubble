@@ -1,7 +1,9 @@
 class Util::LogsController < ApplicationController
 
   def index
-    @chain = Cosmos::Chain.find_by( slug: params[:chain_id] )
+    raise ActionController::NotFound if !params[:network].in?(%w{ cosmos terra iris kava })
+    @chain = params[:network].titleize.constantize::Chain.find_by( slug: params[:chain_id] )
+    page_title @chain.network_name, @chain.name, 'Sync Logs'
 
     @minutelies = @chain.sync_logs
     @total_minutelies = @minutelies.count

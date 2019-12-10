@@ -2,7 +2,12 @@ class Util::SubscriptionsController < ApplicationController
   before_action :set_chain_and_validator
 
   def index
+    unless current_user
+      redirect_to new_user_path
+      return
+    end
     @subscription = current_user.alert_subscriptions.where( alertable: @validator ).first
+    page_title @chain.network_name, @chain.name, "Event Subscription for #{@validator.name_and_owner}"
   end
 
   def create
@@ -24,12 +29,12 @@ class Util::SubscriptionsController < ApplicationController
       else
         flash[:notice] = "Subscribed to events for this validator!"
       end
-      redirect_to cosmos_chain_validator_subscriptions_path(@chain, @validator)
+      redirect_to namespaced_path( 'validator_subscriptions', @validator )
     else
       if !@subscription.subscribes_to_something?
         @subscription.destroy
         flash[:notice] = "No alerts selected. Subscription removed."
-        redirect_to cosmos_chain_validator_subscriptions_path(@chain, @validator)
+        redirect_to namespaced_path( 'validator_subscriptions', @validator )
       else
         render :index
       end
@@ -73,7 +78,8 @@ class Util::SubscriptionsController < ApplicationController
   end
 
   def set_chain_and_validator
-    @chain = Cosmos::Chain.find_by( slug: params[:chain_id] )
+    @chain = params[:network].titleize.constantize::Chain.find_by( slug: params[:chain_id] )
+    @namespace = @chain.namespace
     @validator = @chain.validators.find_by( address: params[:validator_id] )
   end
 

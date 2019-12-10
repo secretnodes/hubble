@@ -11,7 +11,7 @@ if !Rails.env.development?
         ua_str = "#{ua['product']}(#{ua['version']['str']})" rescue 'unknown'
 
         {
-          time: event.time.strftime("%Y-%m-%d%H:%M:%S%Z"),
+          time: Time.now.strftime("%Y-%m-%d%H:%M:%S%Z"),
           ua: ua_str,
           user_id: event.payload[:uid],
           admin_id: event.payload[:aid]

@@ -15,32 +15,32 @@
           <td width='20%' class='sub events_time'><%= event.timestamp.strftime('%Y-%m-%d<br/>at %H:%M %Z').html_safe %></td>
           <td width='80%' class='events_description'>
             <% case event.type -%>
-            <% when 'Cosmos::ValidatorEvents::VotingPowerChange' %>
+            <% when 'Common::ValidatorEvents::VotingPowerChange' %>
               Voting power changed from
               <%= event.from %> &rarr; <%= event.to %>
-              (<%= sprintf('%+.1f%%', event.percentage_change) %>)
+              (<%= sprintf("%+d", event.delta) %> / <%= sprintf('%+.1f%%', event.percentage_change) %>)
               <p class='sub'>
                 at block
-                <a href='<%= cosmos_chain_block_url(@alertable.chain, event.height) %>'><%= event.height %></a>
+                <a href='<%= namespaced_path( 'block', event.height, chain: @alertable.chain, full: true ) %>'><%= event.height %></a>
               </p>
-            <% when 'Cosmos::ValidatorEvents::ActiveSetInclusion' %>
+            <% when 'Common::ValidatorEvents::ActiveSetInclusion' %>
               <%= event.added? ? 'Added to' : 'Removed from' %>
               active set
               <p class='sub'>
                 at block
-                <a href='<%= cosmos_chain_block_url(@alertable.chain, event.height) %>'><%= event.height %></a>
+                <a href='<%= namespaced_path( 'block', event.height, chain: @alertable.chain, full: true ) %>'><%= event.height %></a>
               </p>
-            <% when 'Cosmos::ValidatorEvents::NOfM' %>
+            <% when 'Common::ValidatorEvents::NOfM' %>
               Missed <%= event.n %> of <%= event.m %> precommits
               <p class='sub'>
                 as of block
-                <a href='<%= cosmos_chain_block_url(@alertable.chain, event.height) %>'><%= event.height %></a>
+                <a href='<%= namespaced_path( 'block', event.height, chain: @alertable.chain, full: true ) %>'><%= event.height %></a>
               </p>
-            <% when 'Cosmos::ValidatorEvents::NConsecutive' %>
+            <% when 'Common::ValidatorEvents::NConsecutive' %>
               Missed <%= event.n %> consecutive precommits
               <p class='sub'>
                 as of block
-                <a href='<%= cosmos_chain_block_url(@alertable.chain, event.height) %>'><%= event.height %></a>
+                <a href='<%= namespaced_path( 'block', event.height, chain: @alertable.chain, full: true ) %>'><%= event.height %></a>
               </p>
             <% end -%>
           </td>

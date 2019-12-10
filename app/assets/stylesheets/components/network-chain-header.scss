@@ -11,6 +11,13 @@
     }
   }
 
+  .buttons {
+    white-space: nowrap;
+    .info-tooltip-target {
+      color: white !important;
+    }
+  }
+
   @include media-breakpoint-up(md) {
     align-items: center;
     justify-content: space-between;
@@ -22,9 +29,5 @@
         display: inline;
       }
     }
-  }
-
-  .buttons {
-    white-space: nowrap;
   }
 }

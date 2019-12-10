@@ -15,15 +15,17 @@
 
 /node_modules
 /yarn-error.log
+npm-debug.log
 
 .byebug_history
 
-# Ignore rack-attack config
-config/initializers/rack_attack.rb
-
-# Ignore encrypted secrets
+# Ignore encrypted secrets key
 config/secrets.yml.key
-config/secrets.yml.enc
 
 # Ignore custom deploy scripts.
 bin/deploy*.sh
+
+# Ignore self-signed local cert for ssl in dev
+tmp/localhost.crt
+tmp/localhost.key
+

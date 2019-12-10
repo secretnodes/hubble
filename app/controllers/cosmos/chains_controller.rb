@@ -1,26 +1,16 @@
-class Cosmos::ChainsController < Cosmos::BaseController
-  before_action :ensure_chain, only: %i{ show }
+class Cosmos::ChainsController < Common::ChainsController
+  def broadcast
+    tx = { tx: params[:payload] }
 
-  def index
-    @chains = Cosmos::Chain.order( 'last_sync_time DESC, created_at DESC' )
-  end
-
-  def show
-    @validators = @chain.validators
-    @governance = @chain.governance
-    page_title 'Cosmos', @chain.name, 'Overview'
-
-    if @latest_block.nil?
-      redirect_to prestart_cosmos_chain_path(@chain)
+    if @chain.sdk_gte?( '0.34.0' )
+      tx[:mode] = 'sync'
+    else
+      tx[:return] = 'sync'
     end
-  end
 
-  def halted
-    if action_name == 'halted' && !(@chain.halted? || Rails.env.development?)
-      redirect_to cosmos_chain_path(@chain)
-      return
-    end
-    render template: 'cosmos/chains/halted'
+    r = @chain.syncer(5000).broadcast_tx( tx )
+    ok = !r.has_key?('code') && !r.has_key?('error')
+    Rails.logger.error "\n\nBROADCAST RESULT: #{r.inspect}\n\n"
+    render json: { ok: ok }.merge(r)
   end
-  alias :prestart :halted
 end

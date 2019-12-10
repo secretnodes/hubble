@@ -18,25 +18,37 @@ Rails.application.routes.draw do
   # HUBBLE
   root to: 'home#index'
 
-  namespace :cosmos, path: '' do
-    resources :chains, format: false, constraints: { id: /[^\/]+/ }, only: %i{ index show } do
-      # Faucet is a WIP
-      # resource :faucet, only: %i{ show } do
-      #   resources :transactions, only: %i{ index create show }
-      # end
+  concern :chainlike do
+    resources :chains, format: false, constraints: { id: /[^\/]+/ }, only: %i{ show } do
+      get '/dashboard' => 'dashboard#index', as: 'dashboard'
+
+      resource :faucet, only: %i{ show } do
+        resources :faucet_transactions, as: 'transactions', path: 'transactions', only: %i{ create }
+      end
 
       member do
+        get :search
         get :halted
         get :prestart
+        post :broadcast
       end
+
+      resources :events, only: %i{ index show }
 
       resources :validators, only: %i{ show } do
         resources :subscriptions, only: %i{ index create }, controller: '/util/subscriptions'
       end
 
+      resources :accounts, only: %i{ show } do
+        member do
+          get :report
+        end
+      end
+
       resources :blocks, only: %i{ show } do
         resources :transactions, only: %i{ show }
       end
+      resources :transactions, only: %i{ show }
 
       resources :logs, only: %i{ index }, controller: '/util/logs'
 
@@ -44,8 +56,16 @@ Rails.application.routes.draw do
         root to: 'main#index'
         resources :proposals, only: %i{ show }
       end
+
+      resources :watches, as: 'watches', only: %i{ create }
     end
   end
+
+  get '/chains/*path', to: redirect('/cosmos/chains/%{path}')
+  namespace :cosmos, network: 'cosmos' do concerns :chainlike end
+  namespace :terra, network: 'terra' do concerns :chainlike end
+  namespace :iris, network: 'iris' do concerns :chainlike end
+  namespace :kava, network: 'kava' do concerns :chainlike end
 
   # ADMIN
   namespace :admin do
@@ -68,16 +88,27 @@ Rails.application.routes.draw do
       resources :alert_subscriptions, only: %i{ destroy }
     end
 
-    namespace :cosmos do
+    concern :chainlike do
       resources :chains, format: false, constraints: { id: /[^\/]+/ } do
-        # Faucet is a WIP
-        # resource :faucet, only: %i{ show update destroy }
-        # resources :faucets, only: %i{ create } do
-        #   collection do
-        #     post :init
-        #   end
-        # end
+        resource :faucet, only: %i{ show update destroy }
+        resources :faucets, only: %i{ create }
+
+        resources :validator_events, only: %i{ index }
+
+        member do
+          post :move_up
+          post :move_down
+        end
       end
+    end
+
+    namespace :cosmos do concerns :chainlike end
+    namespace :terra do concerns :chainlike end
+    namespace :iris do concerns :chainlike end
+    namespace :kava do concerns :chainlike end
+
+    namespace :common do
+      resources :validator_events, only: %i{ destroy }
     end
   end
 

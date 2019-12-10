@@ -1,6 +1,8 @@
 class HomeController < ApplicationController
+  layout 'account'
+
   def index
-    redirect_to cosmos_chain_path( Cosmos::Chain.primary )
+    page_title 'Hubble'
   end
 
   def catch_404

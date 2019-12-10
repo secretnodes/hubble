@@ -17,17 +17,18 @@ class Common::AlertSubscriptionNotifier
 
     total = eligible.count
 
-    puts "Sending #{@type} alerts to #{total} potential event subscriptions..."
+    puts "Sending #{@type} alerts to #{total} potential event subscriptions at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}..."
 
+    limit = 100
     offset = 0
-    upto = 0
-    while upto < total
-      subs = eligible.limit( 100 ).offset( offset ).each do |sub|
-        send(:"run_#{@type}_for!", sub)
-        upto += 1
-      end
-      offset += 100
+    while true
+      subs = eligible.limit( limit ).offset( offset )
+      break if subs.empty?
+      subs.each { |sub| send(:"run_#{@type}_for!", sub) }
+      offset += limit
     end
+
+    puts "Completed at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
   end
 
   def run_daily_for!( sub )

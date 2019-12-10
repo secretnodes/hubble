@@ -29,7 +29,7 @@ class Admin::AdministratorsController < Admin::BaseController
   def update
     @administrator = current_admin
 
-    if @administrator.authenticate_otp(params[:otp_code])
+    if Rails.env.development? || @administrator.authenticate_otp(params[:otp_code])
       if !params[:change_password].blank?
         params[:administrator][:password] = params.delete(:change_password)
       end
@@ -64,7 +64,7 @@ class Admin::AdministratorsController < Admin::BaseController
       a.password = params[:password]
       a.otp_secret_key = params[:secret]
       a.one_time_setup_token = nil
-      if a.otp_code == params[:verification]
+      if Rails.env.development? || a.otp_code == params[:verification]
         a.save
         dest = session.delete :after_admin_login_path
         redirect_to dest || admin_root_path

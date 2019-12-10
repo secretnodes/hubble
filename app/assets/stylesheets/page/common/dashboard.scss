@@ -1,0 +1,50 @@
+.watching-table {
+  margin: 0 auto 0 auto;
+
+  .dataTables_wrapper {
+    overflow-x: auto;
+    .dataTables_info {
+      display: block;
+      width: 100%;
+      padding: 10px 10px;
+      font-size: $font-size-sm;
+      color: $gray-300;
+    }
+  }
+
+  table.dataTable {
+    width: 100%;
+    &.no-footer {
+      border-bottom: 0;
+    }
+
+    tbody {
+      tr.odd {
+        background-color: $gray-100;
+      }
+      tr {
+        td { border-bottom: 1px solid $gray-200; }
+        &:last-child {
+          td { border-bottom: none; }
+        }
+      }
+    }
+
+    thead {
+      th {
+        padding: 8px 10px;
+        background-color: $gray-200;
+        color: $primary;
+        border-bottom: none;
+      }
+    }
+
+    tfoot {
+      td {
+        border-top: none;
+        background-color: $gray-200;
+        padding: 8px 10px;
+      }
+    }
+  }
+}

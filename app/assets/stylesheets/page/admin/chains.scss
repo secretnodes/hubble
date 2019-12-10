@@ -1,4 +1,4 @@
-.admin-cosmos-chain-show {
+.admin-chain-show {
   table {
     th { white-space: nowrap; }
     @include media-breakpoint-up(md) {
@@ -42,14 +42,6 @@
   }
 
   .faucet-line {
-    label { margin-bottom: 0; text-wrap: nowrap; flex-shrink: 0; }
-    .delay-number { max-width: 120px; }
-    .btn { margin-left: 5px; }
-    > input, > select {
-      margin: 0 5px;
-      &:first-child { margin-left: 0; }
-      &:last-child { margin-right: 0; }
-    }
     display: flex;
     align-items: center;
   }

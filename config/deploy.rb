@@ -25,9 +25,7 @@ set :default_env, { path: '/hubble/ruby-2.5.0/bin:/hubble/node-8.12/bin:$PATH' }
 # Default value for local_user is ENV['USER']
 set :local_user, -> { ENV['DEPLOY_USER'] } if ENV['DEPLOY_USER']
 
-# Default value for keep_releases is 5
 set :keep_releases, 2
-
 set :keep_assets, 2
 
 task :restart_web do
@@ -38,4 +36,18 @@ end
 
 if !ENV.has_key?('NO_RESTART')
   after 'deploy:symlink:release', :restart_web
+end
+
+namespace :syncing do
+  task :suspend do
+    on roles(:cron) do
+      execute 'sudo systemctl stop cron'
+    end
+  end
+
+  task :resume do
+    on roles(:cron) do
+      execute 'sudo systemctl start cron'
+    end
+  end
 end

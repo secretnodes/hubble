@@ -25,7 +25,7 @@ class AlertSubscription < ApplicationRecord
     puts "\t\tSend #{event.kind_string} (wants #{event_kinds})" if ENV['DEBUG']
 
     # is it a voting power change, but not enough of a change?
-    if !ignored_event && event.is_a?(Cosmos::ValidatorEvents::VotingPowerChange)
+    if !ignored_event && event.is_a?(Common::ValidatorEvents::VotingPowerChange)
       puts "\t\tSend voting power change? #{event.percentage_change.abs} >= #{data['percent_change']}" if ENV['DEBUG']
       good_enough = event.percentage_change.abs >= data['percent_change']
     else

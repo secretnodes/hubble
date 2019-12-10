@@ -1,38 +1,15 @@
 class Cosmos::Faucet < ApplicationRecord
-  belongs_to :chain, class_name: 'Cosmos::Chain'
-  has_many :transactions, as: :faucetlike, class_name: 'Cosmos::FaucetTransaction', dependent: :delete_all
+  include Faucetlike
 
-  attribute :password
-  attr_encrypted :password, key: proc { Rails.application.secrets.faucet_key_base }
+  def broadcast_tx( final_tx )
+    payload = { tx: final_tx, mode: 'sync' }
+    result = chain.syncer(8000).broadcast_tx( payload )
+    Rails.logger.error "\n\nBROADCAST RESULT: #{result.inspect}\n\n"
+    ok = !result.has_key?('code') && !result.has_key?('error')
 
-  scope :enabled, -> { where( disabled: false ) }
+    next_sequence = (self.current_sequence.to_i + 1).to_s
+    update_attributes(current_sequence: next_sequence) if ok
 
-  AMOUNT = 2
-
-  def ready?
-    !(tokens.nil? || account_number.nil? || current_sequence.nil?)
-  end
-
-  def can_fund?( user:, address:, ip: )
-    recent = latest_funding( user: user, address: address, ip: ip )
-    return !recent || recent.created_at < delay.seconds.ago
-  end
-
-  def latest_funding( user:, address:, ip: )
-    q = [
-      ('user_id' if user),
-      ('address' if address),
-      'ip'
-    ].compact
-     .map { |field| "#{field} = ?" }
-     .join( ' OR ' )
-
-    bindings = [ user.try(:id), address, ip ].compact
-
-    transactions.find_by( q, *bindings )
-  end
-
-  def tokens_by_denomination
-    tokens.each_with_object({}) { |t, o| o[t['denom']] = t['amount'] }
+    [ok, result]
   end
 end

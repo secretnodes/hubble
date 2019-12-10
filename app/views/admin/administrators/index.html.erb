@@ -24,7 +24,7 @@
           <% if admin == current_admin -%>
             <a class='btn btn-sm btn-outline-primary' href='<%= edit_admin_administrator_path(admin) %>'>edit</a>
           <% else -%>
-            <%= button_to admin_administrator_path(admin), method: 'delete', class: 'btn btn-sm btn-danger ml-2 action-delete-confirmation' do "<span class='fa fa-times'></span> delete".html_safe end %>
+            <%= button_to admin_administrator_path(admin), method: 'delete', class: 'btn btn-sm btn-danger ml-2 action-delete-confirmation' do "<span class='fas fa-times'></span> delete".html_safe end %>
           <% end -%>
         </div>
       <% end -%>

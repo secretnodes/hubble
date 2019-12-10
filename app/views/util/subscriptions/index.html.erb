@@ -1,12 +1,12 @@
 <% content_for :body_class, 'validator-subscriptions' %>
 
-<% url = cosmos_chain_validator_subscriptions_path(@chain, @validator) %>
+<% url = namespaced_path( 'validator_subscriptions', @validator ) %>
 
 <%= form_for (@subscription || AlertSubscription.new), url: url, html: { method: 'POST', class: 'validator-subscription-form' } do |f| -%>
   <h1 class='header'>
     Subscribe to Events
     <div class='d-flex align-items-center'>
-      <a class='btn btn-sm btn-outline-secondary' href='<%= cosmos_chain_validator_path(@chain, @validator) %>'>back</a>
+      <a class='btn btn-sm btn-outline-secondary' href='<%= namespaced_path( 'validator', @validator ) %>'>back</a>
       <%= f.submit 'save subscription', class: 'btn btn btn-primary ml-2' %>
     </div>
   </h1>
@@ -71,7 +71,7 @@
                 <div class='controls d-flex flex-column'>
                   <% definitions.sort_by { |defn| defn['m'] }.each_with_index do |defn, i| -%>
                     <div class='text-muted <%= 'mt-2' unless i == 0 %>'>
-                      <span class='fa fa-flag text-primary mr-2'></span>
+                      <span class='fas fa-flag text-primary mr-2'></span>
                       No precommit on <%= defn['n'] %> of last <%= defn['m'] %> blocks
                     </div>
                   <% end -%>
@@ -80,7 +80,7 @@
                 <div class='controls d-flex flex-column'>
                   <% definitions.sort_by { |defn| defn['n'] }.each_with_index do |defn, i| -%>
                     <div class='text-muted <%= 'mt-2' unless i == 0 %>'>
-                      <span class='fa fa-flag text-primary mr-2'></span>
+                      <span class='fas fa-flag text-primary mr-2'></span>
                       No precommit for <%= defn['n'] %> consecutive blocks
                     </div>
                   <% end -%>

@@ -8,8 +8,21 @@ module ApplicationHelper
 
       # class namespaces
       Stats: {},
-      Cosmos: {}
+      Common: {}
     }
+
+    if @chain && @chain.primary_token
+      primary_token = @chain.primary_token
+      obj[:config].merge!(
+        network: @chain.network_name,
+        denom: @chain.token_map[primary_token]['display'],
+        remoteDenom: primary_token,
+        remoteScaleFactor: 10 ** @chain.token_map[primary_token]['factor'],
+        chainId: @chain.ext_id,
+        prefixes: @chain.prefixes,
+        startedLate: !@chain.cutoff_at.nil?
+      )
+    end
 
     javascript_tag "window.App = #{obj.to_json.html_safe};"
   end
@@ -19,10 +32,17 @@ module ApplicationHelper
   end
   def page_title( *set )
     if set.any?
-      set << 'Hubble (by Figment Networks)'
-      @_page_title = set.join ' - '
+      @_page_title = set.join ' | '
     end
     @_page_title
+  end
+
+  def meta_description?
+    !!@_meta_description
+  end
+  def meta_description( text=nil )
+    @_meta_description = text if text
+    @_meta_description
   end
 
   def monitor_body_classes( *set )

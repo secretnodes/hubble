@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   include ApplicationHelper
+  include NamespacedChainsHelper
   include AdminHelper
   include ActionView::Helpers::DateHelper
 
@@ -53,7 +54,7 @@ class ApplicationController < ActionController::Base
       format.json {
         render json: { error: 404, message: 'not found' }, status: 404
       }
-      format.all {
+      format.any {
         render body: '', status: 404, content_type: 'text/plain'
       }
     end
@@ -61,11 +62,31 @@ class ApplicationController < ActionController::Base
 
   def render_403( e=nil )
     logger.error( "#{e.message} : #{e.backtrace.first rescue nil}" ) if e
-    render template: '/errors/403', status: 403, layout: 'errors'
+    respond_to do |format|
+      format.html {
+        render template: '/errors/403', status: 403, layout: 'errors'
+      }
+      format.json {
+        render json: { error: 403, message: 'forbidden' }, status: 403
+      }
+      format.any {
+        render body: '', status: 403, content_type: 'text/plain'
+      }
+    end
   end
 
   def render_500( e=nil )
     logger.error( "\nRENDER_500!\n\n" + e.message + "\n" + e.backtrace.join("\n") + "\n" )
-    render template: '/errors/500', status: 500, layout: 'errors'
+    respond_to do |format|
+      format.html {
+        render template: '/errors/500', status: 500, layout: 'errors'
+      }
+      format.json {
+        render json: { error: 500, message: 'server error' }, status: 500
+      }
+      format.any {
+        render body: '', status: 500, content_type: 'text/plain'
+      }
+    end
   end
 end

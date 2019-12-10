@@ -4,6 +4,8 @@ class User < ApplicationRecord
 
   has_many :alert_subscriptions
 
+  has_many :watches, class_name: 'Common::Watch'
+
   validates :email, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   default_scope -> { where.not( deleted: true ) }

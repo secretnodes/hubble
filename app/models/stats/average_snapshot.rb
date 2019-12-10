@@ -1,5 +1,5 @@
 class Stats::AverageSnapshot < ApplicationRecord
-  belongs_to :chain, class_name: 'Cosmos::Chain'
+  belongs_to :chainlike, polymorphic: true
   belongs_to :scopeable, polymorphic: true, required: false
 
   default_scope { order('timestamp DESC') }

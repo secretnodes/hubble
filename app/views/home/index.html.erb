@@ -1,0 +1,30 @@
+<% content_for :body_class, 'homepage' %>
+
+<% grouped_chains = [
+  *Cosmos::Chain.alive.has_synced.to_a,
+  *Terra::Chain.alive.has_synced.to_a,
+  *Iris::Chain.alive.has_synced.to_a,
+  *Kava::Chain.alive.has_synced.to_a
+].group_by(&:network_name) -%>
+
+<% if !grouped_chains.any? -%>
+  <p>No chains configured.</p>
+<% end -%>
+
+<br />
+<% grouped_chains.each do |network, chains| -%>
+  <div class='d-flex flex-column flex-md-row align-items-md-center mb-5'>
+    <h3 class='m-0 mr-md-5 w-md-15 flex-shrink-0 mb-3 mb-md-0'><%= network %></h3>
+    <div class='d-flex align-items-stretch flex-wrap flex-grow-0'>
+      <% chains.each do |chain| -%>
+        <div class='card mr-2 mb-2 shadow-none'>
+          <div class='card-body p-0'>
+            <a class='d-block px-4 py-3' href='<%= namespaced_path( chain: chain ) %>'>
+              <%= chain.name %>
+            </a>
+          </div>
+        </div>
+      <% end -%>
+    </div>
+  </div>
+<% end -%>

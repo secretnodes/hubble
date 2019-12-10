@@ -14,6 +14,7 @@ Made with :heart: by<br/>
 - Memcached running on localhost.
 - [PostMark](https://postmarkapp.com) account for email notifications.
 - [Rollbar](https://rollbar.com) account for exception tracking.
+- [libsecp25k1](https://github.com/bitcoin-core/secp256k1) (with `--enable-module-recovery` configure option)
 
 
 ## How to Setup Hubble
@@ -27,7 +28,7 @@ Made with :heart: by<br/>
     export HUBBLE_RAILS_ENV=production
     export HUBBLE_KEY=~/.ssh/hubble-key.pem
     export HUBBLE_DOMAIN=hubble.your.domain
-    export HUBBLE_REMOTE_USER=ubuntu
+    export HUBBLE_REMOTE_USER=hubble
     ./setup/bootstrap.sh
     ```
     This automated process is meant for a Ubuntu 18.04 LTS install. We use AWS for this. Hubble uses HTTPS everywhere, so watch the output for when it asks you to create a DNS record.
@@ -53,5 +54,5 @@ bin/deploy-{RAILS_ENV}.sh
 Or do it manually:
 
 ```
-RAILS_ENV=staging DEPLOY_USER=ubuntu DEPLOY_HOST=ip-or-hostname DEPLOY_KEYS=~/.ssh/hubble.pem bin/bundle cap staging deploy
+RAILS_ENV=staging DEPLOY_USER=hubble DEPLOY_HOST=ip-or-hostname DEPLOY_KEYS=~/.ssh/hubble.pem bin/bundle cap staging deploy
 ```

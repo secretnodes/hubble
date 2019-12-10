@@ -1,4 +1,4 @@
-<a class='d-block' href='<%= cosmos_chain_validator_subscriptions_path(sub.alertable.chain, sub.alertable) %>'>
+<a class='d-block' href='<%= namespaced_path( 'validator_subscriptions', sub.alertable, chain: sub.alertable.chain ) %>'>
   <%= sub.alertable.short_name( 30 ) -%>
 </a>
 

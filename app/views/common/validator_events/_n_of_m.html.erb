@@ -1,0 +1,16 @@
+<div>
+  <span class='d-inline d-md-none <%= icon_classes %> mr-1'></span>
+  <span class='font-weight-bold'>
+    <% if @validator.nil? %>
+      <a href='<%= namespaced_path( 'validator', event.validatorlike ) %>'><%= event.validatorlike.short_name %></a> missed
+    <% else -%>
+      Missed
+    <% end -%>
+    <span class='technical'><%= event.data['n'] %></span> of
+    <span class='technical'><%= event.data['m'] %></span> precommits
+  </span>
+  <span class='text-muted'>
+    as of block
+    <a class='technical' href='<%= namespaced_path( 'block', event.height ) %>'><%= event.height %></a>
+  </span>
+</div>

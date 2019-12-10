@@ -4,11 +4,51 @@
   <div class='col-12'>
 
     <div class='card'>
-      <h5 class='card-header header'>
+      <h5 class='card-header header mb-0'>
         Cosmos
-        <a class='btn btn-sm btn-outline-light' href='<%= new_admin_cosmos_chain_path %>'>+ new</a>
+        <div class='buttons text-right'>
+          <% show_dead_cosmos = params[:dead] == 'cosmos' -%>
+          <a class='btn btn-sm btn-outline-light' href='<%= admin_root_path( dead: show_dead_cosmos ? nil : 'cosmos' ) %>'><%= show_dead_cosmos ? 'hide' : 'show' %> dead</a>
+          <a class='btn btn-sm btn-light' href='<%= new_admin_cosmos_chain_path %>'>+ new</a>
+        </div>
       </h5>
-      <div class='card-body'><%= render partial: '/admin/cosmos/chains/quick_info' %></div>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Cosmos::Chain.public_send( show_dead_cosmos ? 'all' : 'alive' ) %></div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header header mb-0'>
+        Terra
+        <div class='buttons text-right'>
+          <% show_dead_terra = params[:dead] == 'terra' -%>
+          <a class='btn btn-sm btn-outline-light' href='<%= admin_root_path( dead: show_dead_terra ? nil : 'terra' ) %>'><%= show_dead_terra ? 'hide' : 'show' %> dead</a>
+          <a class='btn btn-sm btn-light' href='<%= new_admin_terra_chain_path %>'>+ new</a>
+        </div>
+      </h5>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Terra::Chain.public_send( show_dead_terra ? 'all' : 'alive' ) %></div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header header mb-0'>
+        IRIS
+        <div class='buttons text-right'>
+          <% show_dead_iris = params[:dead] == 'iris' -%>
+          <a class='btn btn-sm btn-outline-light' href='<%= admin_root_path( dead: show_dead_iris ? nil : 'iris' ) %>'><%= show_dead_iris ? 'hide' : 'show' %> dead</a>
+          <a class='btn btn-sm btn-light' href='<%= new_admin_iris_chain_path %>'>+ new</a>
+        </div>
+      </h5>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Iris::Chain.public_send( show_dead_iris ? 'all' : 'alive' ) %></div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header header mb-0'>
+        Kava
+        <div class='buttons text-right'>
+          <% show_dead_kava = params[:dead] == 'kava' -%>
+          <a class='btn btn-sm btn-outline-light' href='<%= admin_root_path( dead: show_dead_kava ? nil : 'kava' ) %>'><%= show_dead_kava ? 'hide' : 'show' %> dead</a>
+          <a class='btn btn-sm btn-light' href='<%= new_admin_kava_chain_path %>'>+ new</a>
+        </div>
+      </h5>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Kava::Chain.public_send( show_dead_kava ? 'all' : 'alive' ) %></div>
     </div>
 
   </div>

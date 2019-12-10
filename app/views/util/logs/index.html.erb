@@ -1,6 +1,6 @@
 <h2 class='header'>
   <div>Sync Logs for <%= @chain.name %></div>
-  <% url = cosmos_chain_path(@chain) -%>
+  <% url = namespaced_path -%>
   <small><a class='btn btn-sm btn-outline-secondary' href='<%= url %>'>back</a></small>
 </h2>
 
@@ -16,7 +16,7 @@
   <tbody>
     <% if @dailies.empty? -%>
       <tr>
-        <td colspan=4'>No daily records yet.</td>
+        <td colspan='4'>No daily records yet.</td>
       </tr>
     <% end -%>
     <% @dailies.each do |log| -%>
@@ -24,7 +24,7 @@
         <td>
           <span class='technical'><%= log.date.strftime("%Y-%m-%d") %></span>
           <% if !log.persisted? -%>
-            <div><span class='badge badge-primary'>So far today <span class='fa fa-sync fa-spin'></span></span></div>
+            <div><span class='badge badge-primary'>So far today <span class='fas fa-sync fa-spin'></span></span></div>
           <% end -%>
         </td>
         <td>
@@ -53,10 +53,10 @@
       <td colspan='4' class='text-muted'>
         <% if params.has_key?(:all) -%>
           <%= @total_dailies %> daily sync logs.
-          <a href='<%= cosmos_chain_logs_path(@chain) %>'>Show less &raquo;</a>
+          <a href='<%= namespaced_path( 'logs' ) %>'>Show less &raquo;</a>
         <% else -%>
           Most recent <%= @dailies.count %> days of <%= @total_dailies %> daily logs.
-          <a href='<%= cosmos_chain_logs_path(@chain) %>?all'>Show all &raquo;</a>
+          <a href='<%= namespaced_path( 'logs' ) %>?all'>Show all &raquo;</a>
         <% end -%>
       </td>
     </tr>
@@ -94,7 +94,8 @@
         </td>
         <td>
           <% if log.success? -%>
-            <span class='technical'><%= log.end_height - log.start_height %></span> <span class='text-muted text-sm'>new blocks</span>
+            <% count = log.end_height - (log.start_height - 1) -%>
+            <span class='technical'><%= count %></span> <span class='text-muted text-sm'>new block<%= count == 1 ? '' : 's' %></span>
             <div><small class='text-muted technical'><%= log.start_height %> &rarr; <%= log.end_height %></small></div>
           <% elsif log.error && current_admin -%>
             <% error_lines = log.error.split("\n") -%>
@@ -113,10 +114,10 @@
       <td colspan='3' class='text-muted'>
         <% if params.has_key?(:all) -%>
           <%= @total_minutelies %> by-the-minute sync logs.
-          <a href='<%= cosmos_chain_logs_path(@chain) %>'>Show less &raquo;</a>
+          <a href='<%= namespaced_path( 'logs' ) %>'>Show less &raquo;</a>
         <% else -%>
           Most recent <%= @minutelies.count %> syncs shown of <%= @total_minutelies %> by-the-minute logs.
-          <a href='<%= cosmos_chain_logs_path(@chain) %>?all'>Show all &raquo;</a>
+          <a href='<%= namespaced_path( 'logs' ) %>?all'>Show all &raquo;</a>
         <% end -%>
       </td>
     </tr>

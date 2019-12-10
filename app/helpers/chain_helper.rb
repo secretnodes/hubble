@@ -4,12 +4,16 @@ module ChainHelper
     chains.sort_by { |c| c.primary? ? 1.minute.from_now : (c.last_sync_time || Time.at(1)) }.reverse
   end
 
+  def sorted_token_map( chain )
+    chain.token_map.sort_by { |k,v| v['primary'] ? -1 : 1 }.to_h
+  end
+
   def chain_header_tooltip_info
-    logs_path = cosmos_chain_logs_path(@chain)
+    logs_path = namespaced_path( 'logs' )
     sync_time = @chain.last_sync_time ? "#{distance_of_time_in_words(Time.now, @chain.last_sync_time, true, highest_measures: 2)} ago" : 'Never'
 
     # TODO: move this to constants somewhere or something
-    sync_interval = 2
+    sync_interval = 1
 
     [
       "<p><label class='text-muted'>Last synced:</label> #{sync_time}</p>",
@@ -25,21 +29,6 @@ module ChainHelper
     total = chain.total_current_voting_power
     return 'Cannot calculate %' if total.zero?
     ((current.to_f / total.to_f) * 100).round(0).to_s + '%'
-  end
-
-  def chain_voting_power_online_details( chain )
-    current = chain.voting_power_online
-    total = chain.total_current_voting_power
-
-    scale, prefix = if total >= PETA then [PETA, 'P']
-                    elsif total >= TERA then [TERA, 'T']
-                    elsif total >= GIGA then [GIGA, 'G']
-                    elsif total >= MEGA then [MEGA, 'M']
-                    elsif total >= KILO then [KILO, 'k']
-                    else [1.0, '']
-                    end
-
-    "#{round_if_whole(current / scale, 0)} of #{round_if_whole(total / scale, 0)} #{prefix}stake"
   end
 
 end

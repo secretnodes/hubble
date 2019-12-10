@@ -15,13 +15,13 @@ const EDIT_TEMPLATES = {
   active_set_inclusion: _.template(`X`),
   n_of_m: _.template(`
     <span class='fa fa-arrow-right mr-3 text-muted'></span>
-    <input type='text' autocomplete='off' class='form-control form-control-sm w-15 mr-1' name='cosmos_chain[validator_event_defs][<%= index %>][n]' value='<%= data.n %>' placeholder='N' />
+    <input type='text' autocomplete='off' class='form-control form-control-sm w-15 mr-1' name='<%= network %>_chain[validator_event_defs][<%= index %>][n]' value='<%= data.n %>' placeholder='N' />
     <small class='text-muted ml-1 mr-1'>of</small>
-    <input type='text' autocomplete='off' class='form-control form-control-sm w-15 ml-1' name='cosmos_chain[validator_event_defs][<%= index %>][m]' value='<%= data.m %>' placeholder='M' />
+    <input type='text' autocomplete='off' class='form-control form-control-sm w-15 ml-1' name='<%= network %>_chain[validator_event_defs][<%= index %>][m]' value='<%= data.m %>' placeholder='M' />
   `),
   n_consecutive: _.template(`
     <span class='fa fa-arrow-right mr-3 text-muted'></span>
-    <input type='text' autocomplete='off' class='form-control form-control-sm w-50' name='cosmos_chain[validator_event_defs][<%= index %>][n]' value='<%= data.n %>' placeholder='N' />
+    <input type='text' autocomplete='off' class='form-control form-control-sm w-50' name='<%= network %>_chain[validator_event_defs][<%= index %>][n]' value='<%= data.n %>' placeholder='N' />
   `)
 }
 
@@ -42,9 +42,9 @@ const INFO_TEMPLATES = {
 
 const DEFINITION_TEMPLATE = _.template(`
   <div class='definition-item p-0 pt-1 pb-1 d-flex align-items-center'>
-    <input type='hidden' name='cosmos_chain[validator_event_defs][<%= index %>][unique_id]' value='<%= data.unique_id %>' />
-    <input type='hidden' name='cosmos_chain[validator_event_defs][<%= index %>][kind]' value='<%= data.kind %>' />
-    <input type='hidden' name='cosmos_chain[validator_event_defs][<%= index %>][height]' value='<%= data.height %>' disabled />
+    <input type='hidden' name='<%= network %>_chain[validator_event_defs][<%= index %>][unique_id]' value='<%= data.unique_id %>' />
+    <input type='hidden' name='<%= network %>_chain[validator_event_defs][<%= index %>][kind]' value='<%= data.kind %>' />
+    <input type='hidden' name='<%= network %>_chain[validator_event_defs][<%= index %>][height]' value='<%= data.height %>' disabled />
 
     <div class='controls d-flex align-items-center'>
       <% if( isNew ) { %>
@@ -68,9 +68,9 @@ const DEFINITION_TEMPLATE = _.template(`
 
       <div class='inputs d-flex align-items-center ml-2'>
         <% if( isNew ) { %>
-          <%= EDIT_TEMPLATES[data.kind]( { index: index, data: data } ) %>
+          <%= EDIT_TEMPLATES[data.kind]( { index: index, data: data, network: network } ) %>
         <% } else { %>
-          <%= INFO_TEMPLATES[data.kind]( { index: index, data: data } ) %>
+          <%= INFO_TEMPLATES[data.kind]( { index: index, data: data, network: network } ) %>
         <% } %>
       </div>
     </div>
@@ -94,46 +94,46 @@ const HEIGHT_INFO_TEMPLATE = _.template(`
   </div>
 `)
 
-function renderItem( bindings ) {
-  bindings.isNew = bindings.isNew || false
-  bindings.canChangeHeight = !App.config.chainIsSyncing || bindings.isNew
-
-  // generate unique id if we don't have one
-  if( !bindings.data.unique_id ) { bindings.data.unique_id = uuid() }
-
-  const html = DEFINITION_TEMPLATE( bindings )
-  const el = $(html)
-
-  el.find('.height-tooltip-target').click( (e) => e.preventDefault() ).tooltipster( {
-    contentAsHTML: true,
-    interactive: true,
-    arrow: false,
-    theme: 'tooltipster-hubble',
-    side: 'top',
-    viewportAware: true,
-    delay: 25,
-    maxWidth: 275,
-    onlyOne: true,
-    trigger: 'custom',
-    triggerOpen: { click: true },
-    triggerClose: { click: true },
-    functionReady: function( instance, helper ) {
-      const tooltip = $(helper.tooltip)
-      tooltip.on( 'click', '.action-edit-height', function( e ) {
-        const newHeight = tooltip.find('input').val()
-        el.find('[name*=height]').val( newHeight ).removeAttr('disabled')
-        el.find('.height-display').text( newHeight )
-        instance.close()
-      } )
-    }
-  } )
-  return el
-}
-
 $(document).ready( function() {
   const container = $('.validator-event-defs-list')
   if( container.length == 0 ) { return }
 
+  function renderItem( bindings ) {
+    bindings.isNew = bindings.isNew || false
+    bindings.canChangeHeight = !App.config.chainIsSyncing || bindings.isNew
+    bindings.network = App.config.network.toLowerCase()
+
+    // generate unique id if we don't have one
+    if( !bindings.data.unique_id ) { bindings.data.unique_id = uuid() }
+
+    const html = DEFINITION_TEMPLATE( bindings )
+    const el = $(html)
+
+    el.find('.height-tooltip-target').click( (e) => e.preventDefault() ).tooltipster( {
+      contentAsHTML: true,
+      interactive: true,
+      arrow: false,
+      theme: 'tooltipster-hubble',
+      side: 'top',
+      viewportAware: true,
+      delay: 25,
+      maxWidth: 275,
+      onlyOne: true,
+      trigger: 'custom',
+      triggerOpen: { click: true },
+      triggerClose: { click: true },
+      functionReady: function( instance, helper ) {
+        const tooltip = $(helper.tooltip)
+        tooltip.on( 'click', '.action-edit-height', function( e ) {
+          const newHeight = tooltip.find('input').val()
+          el.find('[name*=height]').val( newHeight ).removeAttr('disabled')
+          el.find('.height-display').text( newHeight )
+          instance.close()
+        } )
+      }
+    } )
+    return el
+  }
 
   //
   // INITIAL DATA LOAD
@@ -188,7 +188,7 @@ $(document).ready( function() {
     const row = button.parents('.definition-item')
     const kind = button.data('threshold-kind')
     row.find('[name*=kind]').val( kind )
-    row.find('.inputs').html( EDIT_TEMPLATES[kind]( { index: row.index(), data: {} } ) )
+    row.find('.inputs').html( EDIT_TEMPLATES[kind]( { index: row.index(), data: {}, network: App.config.network.toLowerCase() } ) )
     button.siblings().removeClass('active').end().addClass('active')
     saveButton.removeClass('d-none')
   } )

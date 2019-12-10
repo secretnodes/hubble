@@ -9,6 +9,7 @@ class TaskLock
     sync: File.join( 'task-lock--sync--{{ID}}.lock' ),
     stats: File.join( 'task-lock--stats--{{ID}}.lock' ),
     alerts: File.join( 'task-lock--alerts.lock' ),
+    digests: File.join( 'task-lock--digests.lock' ),
     faucet: File.join( 'task-lock--faucet--{{ID}}.lock' ),
     cleanup: File.join( 'task-lock--cleanup.lock' )
   }
@@ -57,7 +58,7 @@ class TaskLock
           Override: delete lockfiles in #{lockfile_location} or specify FORCE_LOCK=1:
           #{lockfiles.map { |f| "\t"+File.basename(f) }.join( "\n" ) }
         MSG
-        exit 0
+        return false
       else
         FileUtils.touch lockfiles
         return true

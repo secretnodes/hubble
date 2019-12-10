@@ -1,6 +1,8 @@
 class SessionsController < ApplicationController
+  layout 'account'
 
   def new
+    page_title 'Hubble', 'Login'
     referrer = URI(request.referrer) rescue nil
     if referrer
       referrer.host, referrer.port = Rails.application.secrets.application_host.split(':')
@@ -11,7 +13,12 @@ class SessionsController < ApplicationController
 
   def create
     user = User.find_by email: params[:email].try(:downcase)
-    raise ActiveRecord::RecordNotFound unless user
+
+    if user.nil?
+      flash[:error] = "Invalid email or password."
+      redirect_to login_path
+      return
+    end
 
     if !user.verified?
       redirect_to welcome_users_path
