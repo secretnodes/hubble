@@ -2,10 +2,10 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  database: <%= ENV.fetch('HUBBLE_DATABASE_NAME') { Rails.application.secrets[:database][:name] || 'hubble' } %>
-  host: <%= ENV.fetch('HUBBLE_DATABASE_HOST') { Rails.application.secrets[:database][:host] || 'localhost' } %>
-  user: <%= ENV.fetch('HUBBLE_DATABASE_USER') { Rails.application.secrets[:database][:user] } %>
-  password: <%= ENV.fetch('HUBBLE_DATABASE_PASSWORD') { Rails.application.secrets[:database][:password] } %>
+  database: <%= ENV.fetch('HUBBLE_DATABASE_NAME') { Rails.application.credentials[Rails.env.to_sym][:database][:name] || 'hubble' } %>
+  host: <%= ENV.fetch('HUBBLE_DATABASE_HOST') { Rails.application.credentials[Rails.env.to_sym][:database][:host] || 'localhost' } %>
+  user: <%= ENV.fetch('HUBBLE_DATABASE_USER') { Rails.application.credentials[Rails.env.to_sym][:database][:user] } %>
+  password: <%= ENV.fetch('HUBBLE_DATABASE_PASSWORD') { Rails.application.credentials[Rails.env.to_sym][:database][:password] } %>
 
 development:
   <<: *default

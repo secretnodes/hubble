@@ -14,7 +14,7 @@ gem 'bootsnap', require: false
 gem 'babel-transpiler'
 gem 'actionmailer_inline_css'
 
-gem 'curb'
+gem 'httparty'
 gem 'typhoeus'
 gem 'dotiw'
 gem 'useragent'
