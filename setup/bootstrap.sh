@@ -11,7 +11,7 @@ if [ -z HUBBLE_ADMIN_EMAIL ]; then echo "Specify an email (for admin account & S
 
 echo
 echo "Run setup..."
-cat setup/templates/setup.sh | \
+# cat setup/templates/setup.sh | \
 sed "s/{{RAILS_ENV}}/$HUBBLE_RAILS_ENV/g" | \
 ssh -i $HUBBLE_KEY $HUBBLE_REMOTE_USER@$HUBBLE_HOST "bash -"
 
