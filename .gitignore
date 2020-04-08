@@ -29,3 +29,6 @@ bin/deploy*.sh
 tmp/localhost.crt
 tmp/localhost.key
 
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key

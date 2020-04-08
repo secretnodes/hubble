@@ -106,19 +106,19 @@ module Chainlike
 
   def get_gaiad_host_or_default
     gaiad_host.blank? ?
-      Rails.application.secrets.default_gaiad_host :
+      Rails.application.credentials.default_gaiad_host :
       gaiad_host
   end
 
   def get_rpc_port_or_default
     rpc_port.blank? ?
-      Rails.application.secrets.default_rpc_port :
+      Rails.application.credentials.default_rpc_port :
       rpc_port
   end
 
   def get_lcd_port_or_default
     lcd_port.blank? ?
-      Rails.application.secrets.default_lcd_port :
+      Rails.application.credentials.default_lcd_port :
       lcd_port
   end
 

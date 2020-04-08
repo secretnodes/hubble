@@ -2,7 +2,7 @@
 
 ActiveSupport::Reloader.to_prepare do
   ApplicationController.renderer.defaults.merge!(
-    http_host: Rails.application.secrets.application_host,
-    https: Rails.application.secrets.application_protocol == 'https'
+    http_host: Rails.application.credentials.application_host,
+    https: Rails.application.credentials.application_protocol == 'https'
   )
 end
