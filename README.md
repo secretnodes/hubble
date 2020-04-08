@@ -2,8 +2,7 @@
 
 This document covers usage info on how to run Hubble on your own servers.
 
-Made with :heart: by<br/>
-<a href='https://figment.network'><img alt='Figment Networks' src='http://figment-public-assets.s3.ca-central-1.amazonaws.com/figment-inline.svg' height='32px' align='bottom' /></a>
+Forked with :heart: by [secretnodes.org](https://secretnodes.org) from [hubble](https://github.com/figment-networks/hubble) by [Figment Networks](https://github.com/figment-networks/)
 
 
 ## Dependencies
