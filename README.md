@@ -16,9 +16,68 @@ Forked with :heart: by [secretnodes.org](https://secretnodes.org) from [hubble](
 - [libsecp25k1](https://github.com/bitcoin-core/secp256k1) (with `--enable-module-recovery` configure option)
 
 
-## How to Setup Hubble
+## How to Setup Hubble in Production
 
 1. Fork this repo!
+1. Provision your host machine
+Install some dependencies for Ruby and Rails.
+
+To make sure we have everything necessary for Webpacker support in Rails, we're first going to start by adding the Node.js and Yarn repositories to our system before installing them.
+
+```
+sudo apt install curl
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+sudo apt-get update
+sudo apt-get install git-core zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev nodejs yarn
+```
+Configure rbenv
+Installing with rbenv is a simple two step process. First you install rbenv, and then ruby-build:
+
+```
+cd
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+exec $SHELL
+
+git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
+exec $SHELL
+
+rbenv install 2.5.8
+rbenv global 2.5.8
+ruby -v
+```
+install Bundler
+```
+gem install bundler
+```
+Installing Rails
+```
+gem install rails -v 5.1.7
+```
+
+When using rbenv, you'll need to run the following command to make the rails executable available:
+
+```
+rbenv rehash
+```
+Now that you've installed Rails, you can run the rails -v command to make sure you have everything installed correctly:
+```
+rails -v
+# Rails 5.1.7
+```
+Setting Up PostgreSQL
+
+```
+sudo apt-get install postgresql
+```
+
+[Guide Source](https://gorails.com/setup/ubuntu/18.04)
+
 1. Generate encrypted secrets with `bin/rails secrets:setup`. Use `config/encrypted_secrets_quickstart.yml` to see what values are needed for what environments. Store `config/secrets.yml.enc` somewhere safe as it won't be committed.
 1. Setup your instance:
     ```
