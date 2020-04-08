@@ -116,9 +116,9 @@
       <td>
         <%= form_for [:admin, @chain] do |f| %>
           <div class='rpc-host-edit d-flex'>
-            <%= f.text_field :gaiad_host, class: 'mr-2 w-50 form-control technical', placeholder: Rails.application.credentials.default_gaiad_host %>
-            <%= f.text_field :rpc_port, class: 'mr-2 w-15 form-control technical', placeholder: Rails.application.credentials.default_rpc_port %>
-            <%= f.text_field :lcd_port, class: 'mr-2 w-15 form-control technical', placeholder: Rails.application.credentials.default_lcd_port %>
+            <%= f.text_field :gaiad_host, class: 'mr-2 w-50 form-control technical', placeholder: Rails.application.secrets.default_gaiad_host %>
+            <%= f.text_field :rpc_port, class: 'mr-2 w-15 form-control technical', placeholder: Rails.application.secrets.default_rpc_port %>
+            <%= f.text_field :lcd_port, class: 'mr-2 w-15 form-control technical', placeholder: Rails.application.secrets.default_lcd_port %>
 
             <div class='text-nowrap mr-4'><label class='text-sm text-muted mb-0'>
               <%= f.check_box :use_ssl_for_lcd, class: 'form-control d-inline h-auto w-auto' %>
