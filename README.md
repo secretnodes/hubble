@@ -1,6 +1,6 @@
 # Puzzle
 
-This document covers usage info on how to run Hubble on your own servers.
+This document covers usage info on how to run Puzzle on your own servers.
 
 Puzzle, forked with :heart: by [secretnodes.org](https://secretnodes.org) from [hubble](https://github.com/figment-networks/hubble) by [Figment Networks](https://github.com/figment-networks/)
 
@@ -16,7 +16,7 @@ Puzzle, forked with :heart: by [secretnodes.org](https://secretnodes.org) from [
 - [libsecp25k1](https://github.com/bitcoin-core/secp256k1) (with `--enable-module-recovery` configure option)
 
 
-## How to Setup Hubble in Production
+## How to Setup Puzzel in Production
 
 1. Fork this repo!
 1. Provision your host machine
@@ -89,7 +89,7 @@ sudo apt-get install postgresql
     export HUBBLE_REMOTE_USER=hubble
     ./setup/bootstrap.sh
     ```
-    This automated process is meant for a Ubuntu 18.04 LTS install. We use AWS for this. Hubble uses HTTPS everywhere, so watch the output for when it asks you to create a DNS record.
+    This automated process is meant for a Ubuntu 18.04 LTS install. We use AWS for this. Puzzle uses HTTPS everywhere, so watch the output for when it asks you to create a DNS record.
 1. Assuming that all goes well, there will be a URL you can visit to claim an admin account and setup a password/2FA.
 1. In admin, create a new Cosmos chain with the chain name and gaiad RPC/LCD info. Make sure to click 'enable' at the top.
 1. Next ssh into the machine, start `screen` and do the initial sync:
