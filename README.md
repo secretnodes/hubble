@@ -1,8 +1,8 @@
-# Hubble
+# Puzzle
 
 This document covers usage info on how to run Hubble on your own servers.
 
-Forked with :heart: by [secretnodes.org](https://secretnodes.org) from [hubble](https://github.com/figment-networks/hubble) by [Figment Networks](https://github.com/figment-networks/)
+Puzzle, forked with :heart: by [secretnodes.org](https://secretnodes.org) from [hubble](https://github.com/figment-networks/hubble) by [Figment Networks](https://github.com/figment-networks/)
 
 
 ## Dependencies
