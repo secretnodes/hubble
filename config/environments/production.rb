@@ -58,8 +58,8 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "hubble_#{Rails.env}"
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :postmark
-  config.action_mailer.postmark_settings = { api_key: Rails.application.credentials[Rails.env.to_sym][:postmark][:api_key] }
-  config.action_mailer.default_url_options = { host: Rails.application.secrets.production.application_host,
+  config.action_mailer.postmark_settings = { api_key: Rails.application.secrets.postmark.api_key }
+  config.action_mailer.default_url_options = { host: Rails.application.secrets.application_host,
                                                protocol: Rails.application.secrets.application_protocol }
 
   # Ignore bad email addresses and do not raise email delivery errors.
