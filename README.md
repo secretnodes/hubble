@@ -1,6 +1,6 @@
 # Puzzle Goals
 
-Puzzle is a place where secret stakeholders can put the pieces together. The intent of this project is not to merely create just another block explorer, it's to create a custom experience that highlights network information around Secret Node performance & governance on the Enigma Blockchain.
+Puzzle is a place where secret stakeholders can put all the pieces together. The intent of this project is not to merely create just another block explorer, it's to create a custom experience that highlights network information around Secret Node performance & governance on the Enigma Blockchain.
 
 # How to
 This document covers usage info on how to run Puzzle on your own servers.
