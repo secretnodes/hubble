@@ -1,5 +1,5 @@
 # config valid for current version and patch releases of Capistrano
-lock '~> 3.11.0'
+lock '~> 3.13.0'
 
 set :application, 'puzzle'
 set :repo_url, 'git@github.com:secretnodes/puzzle.git'
