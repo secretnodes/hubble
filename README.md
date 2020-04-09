@@ -62,7 +62,7 @@ gem install bundler
 ```
 Installing Rails
 ```
-gem install rails -v 5.2
+gem install rails -v 5.1.7
 ```
 
 When using rbenv, you'll need to run the following command to make the rails executable available:
@@ -73,7 +73,7 @@ rbenv rehash
 Now that you've installed Rails, you can run the rails -v command to make sure you have everything installed correctly:
 ```
 rails -v
-# Rails 5.2
+# Rails 5.1.7
 ```
 
 [Guide Source](https://gorails.com/setup/ubuntu/18.04)
