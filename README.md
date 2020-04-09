@@ -52,8 +52,8 @@ git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
 exec $SHELL
 
-rbenv install 2.5.0
-rbenv global 2.5.0
+rbenv install 2.5.8
+rbenv global 2.5.8
 ruby -v
 ```
 install Bundler
