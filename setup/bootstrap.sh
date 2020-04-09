@@ -13,7 +13,7 @@ echo
 echo "Run setup..."
 # cat setup/templates/setup.sh | \
 sed "s/{{RAILS_ENV}}/$PUZZLE_RAILS_ENV/g" | \
-ssh -i -t $PUZZLE_KEY $PUZZLE_REMOTE_USER@$PUZZLE_HOST "bash -"
+ssh -t -i $PUZZLE_KEY $PUZZLE_REMOTE_USER@$PUZZLE_HOST "bash -"
 
 echo
 echo "Deploying..."
