@@ -1,5 +1,8 @@
-# Puzzle
+# Puzzle Goals
 
+Puzzle is a place where stakeholders can put all the pieces together. The intent of this project is not to merely create just another block explorer, it's to create a custom experience that highlights network information around Secret Node performance & governance on the Enigma Blockchain.
+
+# How to
 This document covers usage info on how to run Puzzle on your own servers.
 
 Puzzle, forked with :heart: by [secretnodes.org](https://secretnodes.org) from [hubble](https://github.com/figment-networks/hubble) by [Figment Networks](https://github.com/figment-networks/)
