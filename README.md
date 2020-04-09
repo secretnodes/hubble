@@ -76,6 +76,11 @@ rails -v
 # Rails 5.1.7
 ```
 
+Run this
+```
+sudo apt install postgresql-contrib libpq-dev
+```
+
 [Guide Source](https://gorails.com/setup/ubuntu/18.04)
 
 1. Generate encrypted secrets with `bin/rails secrets:setup`. Use `config/encrypted_secrets_quickstart.yml` to see what values are needed for what environments. Store `config/secrets.yml.enc` somewhere safe as it won't be committed.
