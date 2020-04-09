@@ -29,7 +29,7 @@ echo "while [ \$(dig +trace +short @8.8.8.8 @8.8.4.4 -t TXT _acme-challenge.$PUZ
 echo "***************************"
 echo
 sleep 5
-ssh -i -t $PUZZLE_KEY $PUZZLE_REMOTE_USER@$PUZZLE_HOST "sudo certbot --agree-tos --no-eff-email --email $PUZZLE_ADMIN_EMAIL --manual-public-ip-logging-ok --manual --preferred-challenges dns --domain $PUZZLE_DOMAIN certonly && echo SUCCESS || echo FAILED"
+ssh -t -i $PUZZLE_KEY $PUZZLE_REMOTE_USER@$PUZZLE_HOST "sudo certbot --agree-tos --no-eff-email --email $PUZZLE_ADMIN_EMAIL --manual-public-ip-logging-ok --manual --preferred-challenges dns --domain $PUZZLE_DOMAIN certonly && echo SUCCESS || echo FAILED"
 sleep 5
 
 echo
@@ -37,7 +37,7 @@ echo "Install nginx config..."
 cat setup/templates/site.conf | \
 sed "s/{{DOMAIN}}/$PUZZLE_DOMAIN/g" | \
 sed "s/{{RAILS_ENV}}/$PUZZLE_RAILS_ENV/g" | \
-ssh -i -t $PUZZLE_KEY $PUZZLE_REMOTE_USER@$PUZZLE_HOST "cat - | sudo tee /etc/nginx/sites-available/$PUZZLE_DOMAIN.conf && sudo rm -f /etc/nginx/sites-enabled/default && sudo ln -sf /etc/nginx/sites-available/$PUZZLE_DOMAIN.conf /etc/nginx/sites-enabled/$PUZZLE_DOMAIN.conf && sudo systemctl reload nginx" > /dev/null
+ssh -i $PUZZLE_KEY $PUZZLE_REMOTE_USER@$PUZZLE_HOST "cat - | sudo tee /etc/nginx/sites-available/$PUZZLE_DOMAIN.conf && sudo rm -f /etc/nginx/sites-enabled/default && sudo ln -sf /etc/nginx/sites-available/$PUZZLE_DOMAIN.conf /etc/nginx/sites-enabled/$PUZZLE_DOMAIN.conf && sudo systemctl reload nginx" > /dev/null
 if [ $? -eq 0 ]; then
   echo "OK"
 else
