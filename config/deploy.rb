@@ -12,7 +12,7 @@ set :deploy_to, '/hubble/app'
 
 # Default value for :linked_files is []
 before 'deploy:check:linked_files', 'linked_files:upload_files'
-append :linked_files, 'config/database.yml', 'config/secrets.yml.enc', 'config/secrets.yml.key'
+append :linked_files, 'config/database.yml', 'config/secrets.yml.enc', 'config/master.key'
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
