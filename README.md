@@ -75,11 +75,6 @@ Now that you've installed Rails, you can run the rails -v command to make sure y
 rails -v
 # Rails 5.1.7
 ```
-Setting Up PostgreSQL
-
-```
-sudo apt-get install postgresql
-```
 
 [Guide Source](https://gorails.com/setup/ubuntu/18.04)
 
