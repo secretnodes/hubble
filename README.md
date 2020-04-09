@@ -22,7 +22,7 @@ Puzzle, forked with :heart: by [secretnodes.org](https://secretnodes.org) from [
 
 ## How to Setup Puzzel in Production
 
-### Production
+### Provision Host
 
 1. Fork this repo!
 1. Provision your host machine
@@ -54,8 +54,8 @@ git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
 exec $SHELL
 
-rbenv install 2.5.8
-rbenv global 2.5.8
+rbenv install 2.5.1
+rbenv global 2.5.1
 ruby -v
 ```
 install Bundler
@@ -84,6 +84,13 @@ sudo apt install postgresql-contrib libpq-dev
 ```
 
 [Guide Source](https://gorails.com/setup/ubuntu/18.04)
+
+### Production
+
+1. cd into dir.
+```
+cd puzzle
+```
 
 1. Run the following commands.
 ```
