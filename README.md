@@ -25,6 +25,7 @@ Puzzle, forked with :heart: by [secretnodes.org](https://secretnodes.org) from [
 
 1. Fork this repo!
 1. Provision your host machine
+This is tested on Ubuntu Server 18.04 LTS.
 Install some dependencies for Ruby and Rails.
 
 To make sure we have everything necessary for Webpacker support in Rails, we're first going to start by adding the Node.js and Yarn repositories to our system before installing them.
