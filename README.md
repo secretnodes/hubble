@@ -86,12 +86,12 @@ sudo apt-get install postgresql
 1. Generate encrypted secrets with `bin/rails secrets:setup`. Use `config/encrypted_secrets_quickstart.yml` to see what values are needed for what environments. Store `config/secrets.yml.enc` somewhere safe as it won't be committed.
 1. Setup your instance:
     ```
-    export HUBBLE_ADMIN_EMAIL=your@email.com
-    export HUBBLE_HOST=ip-or-hostname-of-server
-    export HUBBLE_RAILS_ENV=production
-    export HUBBLE_KEY=~/.ssh/hubble-key.pem
-    export HUBBLE_DOMAIN=hubble.your.domain
-    export HUBBLE_REMOTE_USER=hubble
+    export puzzle_ADMIN_EMAIL=your@email.com
+    export puzzle_HOST=ip-or-hostname-of-server
+    export puzzle_RAILS_ENV=production
+    export puzzle_KEY=~/.ssh/<key-name>.pem
+    export puzzle_DOMAIN=<domain-name>
+    export puzzle_REMOTE_USER=<username>
     ./setup/bootstrap.sh
     ```
     This automated process is meant for a Ubuntu 18.04 LTS install. We use AWS for this. Puzzle uses HTTPS everywhere, so watch the output for when it asks you to create a DNS record.
@@ -99,7 +99,7 @@ sudo apt-get install postgresql
 1. In admin, create a new Cosmos chain with the chain name and gaiad RPC/LCD info. Make sure to click 'enable' at the top.
 1. Next ssh into the machine, start `screen` and do the initial sync:
     ```
-    cd /hubble/app/current
+    cd /puzzle/app/current
     bin/rake sync:cosmos:all events:cosmos:all stats:cosmos:all
     ```
     That will take a good long while depending on how long the chain you're syncing has been going for.
@@ -125,5 +125,5 @@ bin/deploy-{RAILS_ENV}.sh
 Or do it manually:
 
 ```
-RAILS_ENV=staging DEPLOY_USER=hubble DEPLOY_HOST=ip-or-hostname DEPLOY_KEYS=~/.ssh/hubble.pem bin/bundle cap staging deploy
+RAILS_ENV=staging DEPLOY_USER=puzzle DEPLOY_HOST=ip-or-hostname DEPLOY_KEYS=~/.ssh/puzzle.pem bin/bundle cap staging deploy
 ```
