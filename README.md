@@ -1,6 +1,10 @@
-# Puzzle Goals
+# Puzzle Mission
 
-Puzzle is a place where stakeholders can put all the pieces together. The intent of this project is not to merely create just another block explorer, it's to create a custom experience that highlights network information around Secret Node performance & governance on the Enigma Blockchain.
+A place where stakeholders can put all the pieces together.
+
+After seeing a handful of proposals successfully passed on the Enigma mainnet its become painfully obvious the governance experience needs to be made more accessible. While stakeholders currently have access to the information regarding proposals from current block explorers like the one hosted by cashmaney, stakholders still lack a comprehensive resource that allows them to more actively participate in the governance process.
+
+To address this secretnodes.org is working to launch puzzle, an open source project forked from hubble. Once we’ve deemed our fork as stable, we plan to use this as a foundational layer to conduct governance UI/UX experiments and display metrics regarding Secret Nodes. These experiments are aimed at making the process of voting and assessing network performance as easy as possible.
 
 # How to
 This document covers usage info on how to run Puzzle on your own servers.
