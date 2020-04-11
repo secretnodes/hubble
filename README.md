@@ -1,6 +1,6 @@
 # Puzzle Mission
 
-A place where stakeholders can put all the pieces together.
+Fitting all the pieces together.
 
 After seeing a handful of proposals successfully passed on the Enigma mainnet its become painfully obvious the governance experience needs to be made more accessible. While stakeholders currently have access to the information regarding proposals from current block explorers like the one hosted by cashmaney, stakholders still lack a comprehensive resource that allows them to more actively participate in the governance process.
 
