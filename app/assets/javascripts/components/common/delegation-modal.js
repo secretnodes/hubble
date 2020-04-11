@@ -3,7 +3,7 @@ class DelegationModal {
     this.DELEGATION_GAS_WANTED = 150000
     this.REDELEGATION_GAS_WANTED = 200000
     this.GAS_PRICE = 0.025
-    this.MEMO = 'Delegate to your favourite Secret Node with Puzzle - https://puzzle.secretnodes.org'
+    this.MEMO = 'Delegate to your favourite Secret Node on Secret Foundation - https://secret.foundation'
 
     this.modal = el
     this.reset()

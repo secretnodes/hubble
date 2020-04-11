@@ -2,7 +2,7 @@ class GovProposalVoteModal {
   constructor( el ) {
     this.GAS_WANTED = 150000
     this.GAS_PRICE = 0.025
-    this.MEMO = 'Submit, deposit and vote on proposals with Puzzle - https://puzzle.secretnodes.org'
+    this.MEMO = 'Submit, deposit and vote on proposals on Secret Foundation - https://secret.foundation'
 
     this.modal = el
     this.reset()
