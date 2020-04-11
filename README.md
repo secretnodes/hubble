@@ -102,7 +102,7 @@ bundle update
 bundle install
 ```
 
-Generate encrypted secrets with `bin/rails secrets:setup`. Use `config/encrypted_secrets_quickstart.yml` to see what values are needed for what environments. Store `config/secrets.yml.enc` somewhere safe as it won't be committed.
+Use `config/encrypted_secrets_quickstart.yml` to see what values are needed for what environments. Generate encrypted secrets with `bin/rails secrets:setup`. Store `config/secrets.yml.enc` somewhere safe as it won't be committed.
 1. Setup your instance:
     ```
     export puzzle_ADMIN_EMAIL=your@email.com
