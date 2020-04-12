@@ -6,7 +6,7 @@ After seeing a handful of proposals successfully passed on the Enigma mainnet it
 
 To address this secretnodes.org is working to launch puzzle, an open source project forked from hubble. Once we’ve deemed our fork as stable, we plan to use this as a foundational layer to conduct governance UI/UX experiments and display metrics regarding Secret Nodes. These experiments are aimed at making the process of voting and assessing network performance as easy as possible.
 
-# How to
+# How to (WORK IN PROGRESS / INCOMPLETE)
 This document covers usage info on how to run Puzzle on your own servers.
 
 Puzzle, forked with :heart: by [secretnodes.org](https://secretnodes.org) from [hubble](https://github.com/figment-networks/hubble) by [Figment Networks](https://github.com/figment-networks/)
