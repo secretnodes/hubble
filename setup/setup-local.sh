@@ -8,7 +8,7 @@ if [ -z PUZZLE_ADMIN_EMAIL ]; then echo "Specify an email (for admin account & S
 
 echo
 echo "Run setup..."
-# cat setup/templates/setup.sh | \
+cat setup/templates/setup.sh | \
 sed "s/{{RAILS_ENV}}/$PUZZLE_RAILS_ENV/g" | \
 bash -
 
