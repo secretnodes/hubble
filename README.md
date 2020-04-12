@@ -24,7 +24,7 @@ Puzzle, forked with :heart: by [secretnodes.org](https://secretnodes.org) from [
 - [libsecp25k1 ruby](https://github.com/cryptape/ruby-bitcoin-secp256k1#prerequiste)
 
 
-## How to Setup Puzzel in Production
+## How to Setup Puzzel in Production (WIP)
 
 ### Provision Host
 
