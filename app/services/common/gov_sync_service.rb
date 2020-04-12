@@ -90,11 +90,11 @@ class Common::GovSyncService
 
   private
 
-  def sync_governance_proposal_tallies(hubble_proposal)
-    tally = @syncer.get_proposal_tally(hubble_proposal.ext_id)
+  def sync_governance_proposal_tallies(puzzle_proposal)
+    tally = @syncer.get_proposal_tally(puzzle_proposal.ext_id)
     return if tally.nil?
 
-    hubble_proposal.update_attributes(
+    puzzle_proposal.update_attributes(
       tally_result_yes: tally['yes'],
       tally_result_no: tally['no'],
       tally_result_abstain: tally['abstain'],
@@ -102,8 +102,8 @@ class Common::GovSyncService
     )
   end
 
-  def sync_governance_proposal_deposits(hubble_proposal)
-    deposits = @syncer.get_proposal_deposits( hubble_proposal.ext_id )
+  def sync_governance_proposal_deposits(puzzle_proposal)
+    deposits = @syncer.get_proposal_deposits( puzzle_proposal.ext_id )
     return if deposits.nil?
 
     by_depositor = deposits.group_by { |dep| dep['depositer'] || dep['depositor'] }
@@ -118,43 +118,43 @@ class Common::GovSyncService
 
         deposit = @chain.namespace::Governance::Deposit.find_by(
           account: account,
-          proposal: hubble_proposal
+          proposal: puzzle_proposal
         )
 
         if deposit
           # ensure only 1 deposit for this account/proposal pair
           extras = @chain.namespace::Governance::Deposit
-            .where( account: account, proposal: hubble_proposal )
+            .where( account: account, proposal: puzzle_proposal )
             .where( 'id != ?', deposit.id )
           if extras.any?
-            puts "Purging #{extras.count} extra deposits for #{account.address} (#{account.address}/#{hubble_proposal.id})..."
+            puts "Purging #{extras.count} extra deposits for #{account.address} (#{account.address}/#{puzzle_proposal.id})..."
             extras.map(&:destroy)
           end
 
           deposit.assign_attributes( amount_denom: amount_denom, amount: amount )
           if deposit.changed?
-            puts "Deposit by #{account.address} on #{hubble_proposal.title} updated (#{deposit.changes})"
+            puts "Deposit by #{account.address} on #{puzzle_proposal.title} updated (#{deposit.changes})"
             deposit.save
           end
         else
           deposit = @chain.namespace::Governance::Deposit.create(
             account: account,
-            proposal: hubble_proposal,
+            proposal: puzzle_proposal,
             amount_denom: amount_denom,
             amount: amount
           )
-          puts "Deposit by #{account.address} recorded against #{hubble_proposal.title}"
+          puts "Deposit by #{account.address} recorded against #{puzzle_proposal.title}"
         end
 
         if !deposit.valid? || !deposit.persisted?
-          puts "Invalid deposit #{deposit_amount.inspect} for proposal #{hubble_proposal.title} -- #{deposit.errors.full_messages.join(', ')}"
+          puts "Invalid deposit #{deposit_amount.inspect} for proposal #{puzzle_proposal.title} -- #{deposit.errors.full_messages.join(', ')}"
         end
       end
     end
   end
 
-  def sync_governance_proposal_votes(hubble_proposal)
-    votes = @syncer.get_proposal_votes(hubble_proposal.ext_id)
+  def sync_governance_proposal_votes(puzzle_proposal)
+    votes = @syncer.get_proposal_votes(puzzle_proposal.ext_id)
     return if votes.nil?
 
     by_voter = votes.group_by { |vote| vote['voter'] }
@@ -164,34 +164,34 @@ class Common::GovSyncService
       option = vote_data['option']
       account = @chain.accounts.find_or_create_by!( address: address )
 
-      vote = @chain.namespace::Governance::Vote.find_by( account: account, proposal: hubble_proposal )
+      vote = @chain.namespace::Governance::Vote.find_by( account: account, proposal: puzzle_proposal )
 
       if vote
         # ensure only 1 vote for this account/proposal pair
         extras = @chain.namespace::Governance::Vote
-          .where( account: account, proposal: hubble_proposal )
+          .where( account: account, proposal: puzzle_proposal )
           .where( 'id != ?', vote.id )
         if extras.any?
-          puts "Purging #{extras.count} extra votes for #{account.address} (#{account.address}/#{hubble_proposal.id})..."
+          puts "Purging #{extras.count} extra votes for #{account.address} (#{account.address}/#{puzzle_proposal.id})..."
           extras.map(&:destroy)
         end
 
         vote.assign_attributes( option: option )
         if vote.changed?
-          puts "Vote by #{account.address} on #{hubble_proposal.title} updated (#{vote.changes})"
+          puts "Vote by #{account.address} on #{puzzle_proposal.title} updated (#{vote.changes})"
           vote.save
         end
       else
         vote = @chain.namespace::Governance::Vote.create(
           account: account,
-          proposal: hubble_proposal,
+          proposal: puzzle_proposal,
           option: option
         )
-        puts "Vote (#{option}) by #{account.address} recorded against proposal #{hubble_proposal.title}"
+        puts "Vote (#{option}) by #{account.address} recorded against proposal #{puzzle_proposal.title}"
       end
 
       if !vote.valid? || !vote.persisted?
-        puts "Invalid vote #{vote_data.inspect} for proposal #{hubble_proposal.title} -- #{vote.errors.full_messages.join(', ')}"
+        puts "Invalid vote #{vote_data.inspect} for proposal #{puzzle_proposal.title} -- #{vote.errors.full_messages.join(', ')}"
       end
     end
   end

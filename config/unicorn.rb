@@ -1,6 +1,6 @@
 rails_env = ENV['RACK_ENV'] || ENV['RAILS_ENV'] or raise "Specify Rails environment!"
 
-app_root = "/hubble/app"
+app_root = "/puzzle/app"
 working_directory "#{app_root}/current"
 
 pid "#{app_root}/shared/tmp/pids/unicorn.pid"
@@ -12,7 +12,7 @@ num_workers = rails_env == 'production' ? 8 : 1
 worker_processes num_workers
 
 # ubuntu:ubuntu
-user 'hubble', 'hubble'
+user 'puzzle', 'puzzle'
 
 # Load app into the master before forking workers
 preload_app true
@@ -22,7 +22,7 @@ preload_app true
 timeout 120
 
 # Listen on a Unix data socket
-listen "/tmp/hubble-unicorn-#{rails_env}.sock", backlog: 4096
+listen "/tmp/puzzle-unicorn-#{rails_env}.sock", backlog: 4096
 
 before_exec do |server|
   ENV['BUNDLE_GEMFILE'] = "#{app_root}/current/Gemfile"
