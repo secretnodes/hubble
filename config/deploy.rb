@@ -2,7 +2,7 @@
 lock '~> 3.13.0'
 
 set :application, 'puzzle'
-set :repo_url, 'git@github.com:secretnodes/puzzle.git'
+set :repo_url, 'https://github.com:secretnodes/puzzle.git'
 
 # Default branch is :master
 set :branch, `git rev-parse --abbrev-ref HEAD`.chomp
