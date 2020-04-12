@@ -111,7 +111,7 @@ Use `config/encrypted_secrets_quickstart.yml` to see what values are needed for 
     export puzzle_KEY=~/.ssh/<key-name>.pem
     export puzzle_DOMAIN=<domain-name>
     export puzzle_REMOTE_USER=<username>
-    ./setup/bootstrap.sh
+    ./setup/setup-local.sh
     ```
     This automated process is meant for a Ubuntu 18.04 LTS install. We use AWS for this. Puzzle uses HTTPS everywhere, so watch the output for when it asks you to create a DNS record.
 1. Assuming that all goes well, there will be a URL you can visit to claim an admin account and setup a password/2FA.
