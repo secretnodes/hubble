@@ -12,9 +12,9 @@
 
 set -e
 TIMEOUT=${TIMEOUT-100}
-APP_ROOT=/puzzle/app/current
+APP_ROOT=/hubble/app/current
 PID=$APP_ROOT/tmp/pids/unicorn.pid
-export PATH=/puzzle/ruby-2.5.0/bin:/puzzle/node-8.12/bin:$PATH
+export PATH=/hubble/ruby-2.5.0/bin:/hubble/node-8.12/bin:$PATH
 CMD="bundle exec unicorn -D -E {{RAILS_ENV}} -c $APP_ROOT/config/unicorn.rb"
 action="$1"
 set -u

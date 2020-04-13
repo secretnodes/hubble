@@ -9,7 +9,7 @@ class AlertMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: "PUZZLE ALERT - #{@alertable.long_name} on #{@alertable.chain.network_name}/#{@alertable.chain.name} (#{pluralize(@events.count, 'new event')})"
+      subject: "HUBBLE ALERT - #{@alertable.long_name} on #{@alertable.chain.network_name}/#{@alertable.chain.name} (#{pluralize(@events.count, 'new event')})"
     )
   end
 
@@ -23,7 +23,7 @@ class AlertMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: "PUZZLE DAILY DIGEST - #{@alertable.long_name} on #{@alertable.chain.network_name}/#{@alertable.chain.name} (#{pluralize(@events.count, 'new event')})"
+      subject: "HUBBLE DAILY DIGEST - #{@alertable.long_name} on #{@alertable.chain.network_name}/#{@alertable.chain.name} (#{pluralize(@events.count, 'new event')})"
     )
   end
 

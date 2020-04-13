@@ -43,7 +43,7 @@ class Stats::SyncLog < ApplicationRecord
 
     begin
       socket = UDPSocket.new
-      socket.send("puzzle.sync.#{chainlike.ext_id}:1|c", 0, 'localhost', 8125)
+      socket.send("hubble.sync.#{chainlike.ext_id}:1|c", 0, 'localhost', 8125)
       socket.close
     rescue
       puts "Could not report Hubble sync to Datadog StatsD. #{e.message}"

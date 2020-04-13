@@ -113,7 +113,7 @@ $(document).ready( function() {
       contentAsHTML: true,
       interactive: true,
       arrow: false,
-      theme: 'tooltipster-puzzle',
+      theme: 'tooltipster-hubble',
       side: 'top',
       viewportAware: true,
       delay: 25,

@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     end
   end
 
-  # PUZZLE
+  # HUBBLE
   root to: 'home#index'
 
   concern :chainlike do

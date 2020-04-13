@@ -8,7 +8,7 @@ $(document).ready( function() {
       interactive: true,
       trigger: 'hover',
       arrow: false,
-      theme: 'tooltipster-puzzle',
+      theme: 'tooltipster-hubble',
       side: el.data('tooltip-side') || 'right',
       viewportAware: true,
       delay: 25
