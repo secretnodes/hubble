@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   before_action :require_user, only: %i{ edit update post_signup }
 
   def new
-    page_title 'Hubble', 'Signup'
+    page_title 'puzzle', 'Signup'
     @no_chain_select = true
     redirect_to settings_users_path if current_user
     @user = User.new
@@ -26,7 +26,7 @@ class UsersController < ApplicationController
   end
 
   def settings
-    page_title 'Hubble', 'Settings'
+    page_title 'puzzle', 'Settings'
     @no_chain_select = true
     @user = current_user
   end
@@ -36,7 +36,7 @@ class UsersController < ApplicationController
   end
 
   def welcome
-    page_title 'Hubble', 'Welcome'
+    page_title 'puzzle', 'Welcome'
     @no_chain_select = true
   end
 
@@ -54,7 +54,7 @@ class UsersController < ApplicationController
   end
 
   def confirmed
-    page_title 'Hubble', 'Account Confirmed'
+    page_title 'puzzle', 'Account Confirmed'
     @no_chain_select = true
   end
 

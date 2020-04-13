@@ -2,9 +2,9 @@
 
 set -e
 
-echo "Creating /hubble..."
-sudo mkdir -p /hubble
-sudo chown -R $USER:$USER /hubble
+echo "Creating /puzzle..."
+sudo mkdir -p /puzzle
+sudo chown -R $USER:$USER /puzzle
 
 echo
 echo
@@ -23,23 +23,23 @@ echo
 echo
 
 echo "INSTALLING RUBY..."
-if [ -d "/hubble/ruby-2.5.0" ]; then
+if [ -d "/puzzle/ruby-2.5.0" ]; then
   echo "SKIP"
 else
   git clone https://github.com/rbenv/ruby-build.git /tmp/ruby-build
-  sudo bash -c "PREFIX=/hubble/ruby-build /tmp/ruby-build/install.sh"
+  sudo bash -c "PREFIX=/puzzle/ruby-build /tmp/ruby-build/install.sh"
   rm -rf /tmp/ruby-build
-  /hubble/ruby-build/bin/ruby-build 2.5.0 /hubble/ruby-2.5.0
-  echo "export PATH=\$PATH:/hubble/ruby-2.5.0/bin" >> ~/.bashrc
+  /puzzle/ruby-build/bin/ruby-build 2.5.0 /puzzle/ruby-2.5.0
+  echo "export PATH=\$PATH:/puzzle/ruby-2.5.0/bin" >> ~/.bashrc
   echo "export RAILS_ENV={{RAILS_ENV}}" >> ~/.bashrc
   source ~/.bashrc
-  /hubble/ruby-2.5.0/bin/ruby -v > /dev/null
+  /puzzle/ruby-2.5.0/bin/ruby -v > /dev/null
   if [ ! $? -eq 0 ]; then
     echo "Ruby not installed correctly?"
     exit 1
   fi
   echo "gem: --no-rdoc --no-ri" > ~/.gemrc
-  /hubble/ruby-2.5.0/bin/gem install bundler
+  /puzzle/ruby-2.5.0/bin/gem install bundler
   echo "DONE"
 fi
 
@@ -48,16 +48,16 @@ echo
 echo
 
 echo "INSTALLING NODE..."
-if [ -d "/hubble/node-8.12" ]; then
+if [ -d "/puzzle/node-8.12" ]; then
   echo "SKIP"
 else
   curl -s https://nodejs.org/dist/v8.12.0/node-v8.12.0-linux-x64.tar.xz > /tmp/node.tar.xz
-  mkdir -p /hubble/node-8.12
-  tar xf /tmp/node.tar.xz --directory /hubble/node-8.12 --strip-components=1
+  mkdir -p /puzzle/node-8.12
+  tar xf /tmp/node.tar.xz --directory /puzzle/node-8.12 --strip-components=1
   rm /tmp/node.tar.xz
-  echo "export PATH=$PATH:/hubble/node-8.12/bin" >> ~/.bashrc
+  echo "export PATH=$PATH:/puzzle/node-8.12/bin" >> ~/.bashrc
   source ~/.bashrc
-  /hubble/node-8.12/bin/node -v > /dev/null
+  /puzzle/node-8.12/bin/node -v > /dev/null
   if [ ! $? -eq 0 ]; then
     echo "Node not installed correctly?"
     exit 1

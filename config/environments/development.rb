@@ -15,7 +15,7 @@ Rails.application.configure do
   # show where each query is from
   config.active_record.verbose_query_logs = true
 
-  config.read_encrypted_secrets = true
+  config.read_encrypted_secrets = false
 
   # Enable/disable caching. By default caching is disabled.
   if Rails.root.join('tmp/caching-dev.txt').exist?

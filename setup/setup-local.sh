@@ -3,21 +3,18 @@
 set -e
 
 if [ -z PUZZLE_RAILS_ENV ]; then echo "Specify RAILS_ENV"; exit 1; fi
-if [ -z PUZZLE_KEY ]; then echo "Specify ssh key in KEY"; exit 1; fi
-if [ -z PUZZLE_HOST ]; then echo "Specify HOST to set up"; exit 1; fi
 if [ -z PUZZLE_DOMAIN ]; then echo "Specify DOMAIN to run on"; exit 1; fi
-if [ -z PUZZLE_REMOTE_USER ]; then echo "Specify REMOTE_USER to setup as"; exit 1; fi
 if [ -z PUZZLE_ADMIN_EMAIL ]; then echo "Specify an email (for admin account & SSL certificate)"; exit 1; fi
 
 echo
 echo "Run setup..."
 cat setup/templates/setup.sh | \
 sed "s/{{RAILS_ENV}}/$PUZZLE_RAILS_ENV/g" | \
-ssh -i $PUZZLE_KEY $PUZZLE_REMOTE_USER@$PUZZLE_HOST "bash -"
+bash -
 
 echo
 echo "Deploying..."
-DEPLOY_HOST=$PUZZLE_HOST DEPLOY_KEYS=$PUZZLE_KEY NO_RESTART=1 NO_WHENEVER_SETUP=1 bin/bundle exec cap $PUZZLE_RAILS_ENV deploy
+bin/bundle exec cap $PUZZLE_RAILS_ENV deploy
 echo "OK"
 
 echo
