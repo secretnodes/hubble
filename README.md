@@ -98,7 +98,6 @@ cd puzzle
 
 1. Run the following commands.
 ```
-bundle update
 bundle install
 ```
 
