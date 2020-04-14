@@ -48,14 +48,14 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   config.cache_store = :mem_cache_store, ['localhost'], {
-    namespace: "hubble-#{Rails.env}",
+    namespace: "puzzle-#{Rails.env}",
     expires_in: 2.weeks,
     compress: true
   }
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "hubble_#{Rails.env}"
+  # config.active_job.queue_name_prefix = "puzzle_#{Rails.env}"
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :postmark
   config.action_mailer.postmark_settings = { api_key: Rails.application.secrets.postmark[:api_key] }
