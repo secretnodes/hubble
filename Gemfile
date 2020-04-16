@@ -10,6 +10,8 @@ gem 'pg', '>= 0.18', '< 2.0'
 gem 'sass-rails', '~> 5.0'
 gem 'jbuilder', '~> 2.5'
 gem 'bootsnap', require: false
+gem 'jquery-rails', '~> 4.3', '>= 4.3.3'
+gem 'rails-ujs', '~> 0.1.0'
 
 gem 'babel-transpiler'
 gem 'actionmailer_inline_css'
