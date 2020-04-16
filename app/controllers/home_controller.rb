@@ -2,7 +2,7 @@ class HomeController < ApplicationController
   layout 'account'
 
   def index
-    page_title 'Hubble'
+    page_title 'Puzzle'
   end
 
   def catch_404

@@ -1,5 +1,5 @@
 {
-  "name": "hubble",
+  "name": "puzzle",
   "private": true,
   "dependencies": {
     "bn.js": "^4.11.8",

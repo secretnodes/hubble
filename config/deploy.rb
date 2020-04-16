@@ -1,18 +1,18 @@
 # config valid for current version and patch releases of Capistrano
-lock '~> 3.11.0'
+lock '~> 3.13.0'
 
-set :application, 'hubble'
-set :repo_url, 'git@github.com:figment-networks/hubble.git'
+set :application, 'puzzle'
+set :repo_url, 'https://github.com/secretnodes/puzzle/tree/original-min-changes'
 
 # Default branch is :master
 set :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, '/hubble/app'
+set :deploy_to, '/puzzle/app'
 
 # Default value for :linked_files is []
 before 'deploy:check:linked_files', 'linked_files:upload_files'
-append :linked_files, 'config/database.yml', 'config/secrets.yml.enc', 'config/master.key'
+append :linked_files, 'config/database.yml', 'config/secrets.yml.enc', 'config/secrets.yml.key'
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
@@ -20,7 +20,7 @@ append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/syst
 set :npm_flags, '--production --silent --no-progress'
 
 # Default value for default_env is {}
-set :default_env, { path: '/hubble/ruby-2.5.0/bin:/hubble/node-8.12/bin:$PATH' }
+set :default_env, { path: '/puzzle/ruby-2.5.0/bin:/puzzle/node-8.12/bin:$PATH' }
 
 # Default value for local_user is ENV['USER']
 set :local_user, -> { ENV['DEPLOY_USER'] } if ENV['DEPLOY_USER']
@@ -30,7 +30,7 @@ set :keep_assets, 2
 
 task :restart_web do
   on roles(:web) do
-    execute "sudo systemctl reload hubble-unicorn-#{fetch(:rails_env)}"
+    execute "sudo systemctl reload puzzle-unicorn-#{fetch(:rails_env)}"
   end
 end
 
