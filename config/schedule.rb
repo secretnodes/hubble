@@ -1,4 +1,4 @@
-BASE_PATH = '/home/web/hubble'
+BASE_PATH = '/home/web/puzzle'
 CURRENT = File.join(BASE_PATH, 'current')
 
 run_task = "NO_PROGRESS=1 LIMIT_NEW_BLOCKS=250 /usr/bin/nice -n 10 bin/rake :task --silent :output"

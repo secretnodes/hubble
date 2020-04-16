@@ -20,7 +20,7 @@ class ActionController::NotFound < StandardError; end
 class ActionController::Deleted < StandardError; end
 class ActionController::Denied < StandardError; end
 
-module Hubble
+module Puzzle
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
