@@ -58,22 +58,6 @@ GEM
     arel (9.0.0)
     attr_encrypted (3.0.3)
       encryptor (~> 3.0.0)
-    aws-eventstream (1.0.3)
-    aws-partitions (1.162.0)
-    aws-sdk-core (3.52.1)
-      aws-eventstream (~> 1.0, >= 1.0.2)
-      aws-partitions (~> 1.0)
-      aws-sigv4 (~> 1.1)
-      jmespath (~> 1.0)
-    aws-sdk-kms (1.20.0)
-      aws-sdk-core (~> 3, >= 3.52.1)
-      aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.38.0)
-      aws-sdk-core (~> 3, >= 3.52.1)
-      aws-sdk-kms (~> 1)
-      aws-sigv4 (~> 1.0)
-    aws-sigv4 (1.1.0)
-      aws-eventstream (~> 1.0, >= 1.0.2)
     babel-source (5.8.35)
     babel-transpiler (0.7.0)
       babel-source (>= 4.0, < 6)
@@ -111,7 +95,7 @@ GEM
     crass (1.0.6)
     css_parser (1.6.0)
       addressable
-    curb (0.9.6)
+    curb (0.9.10)
     dalli (2.7.9)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
@@ -142,7 +126,6 @@ GEM
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
-    jmespath (1.4.0)
     json (2.1.0)
     kgio (2.11.2)
     launchy (2.4.3)
@@ -267,7 +250,6 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    sqlite3 (1.4.1)
     sshkit (1.16.1)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
@@ -316,7 +298,6 @@ DEPENDENCIES
   acts_as_list
   addressable
   attr_encrypted (~> 3.0.0)
-  aws-sdk-s3 (~> 1)
   babel-transpiler
   bcrypt
   bip_mnemonic
@@ -347,7 +328,6 @@ DEPENDENCIES
   rollbar
   rqrcode (~> 0.10.1)
   sass-rails (~> 5.0)
-  sqlite3
   twitter
   typhoeus
   unicorn
