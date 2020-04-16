@@ -30,8 +30,8 @@ gem 'postmark-rails'
 gem 'twitter'
 
 # temp, used for uploading reports to s3
-gem 'aws-sdk-s3', '~> 1'
-gem 'sqlite3'
+# gem 'aws-sdk-s3', '~> 1'
+# gem 'sqlite3'
 
 # admin session management
 gem 'active_model_otp', '~> 1.2.0'
