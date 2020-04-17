@@ -8,6 +8,11 @@ You can learn more about how we plan to empower stakeholders to stay informed on
 
 Made with :heart: by [secretnodes.org](https://secretnodes.org). Originally forked from [hubble](https://github.com/figment-networks/hubble).
 
+# Implementations of Puzzle
+https://puzzle.secretnodes.org is our canary build of Puzzle.
+
+https://secret.foundation will the the production implimentation of puzzle. This version will have features created in collaboration between secretnodes.org, contriburors to puzzle, and stakeholders in the enigma community.
+
 # Setup
 
 WIP
