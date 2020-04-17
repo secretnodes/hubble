@@ -12,7 +12,7 @@ num_workers = rails_env == 'production' ? 8 : 1
 worker_processes num_workers
 
 # ubuntu:ubuntu
-user 'puzzle', 'puzzle'
+# user 'puzzle', 'puzzle'
 
 # Load app into the master before forking workers
 preload_app true
