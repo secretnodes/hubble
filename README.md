@@ -1,9 +1,16 @@
-# Puzzle
+# Why Puzzle?
 
-This document covers usage info on how to run Puzzle on your own servers.
+After seeing a handful of proposals successfully passed on the Enigma mainnet its become painfully obvious the governance experience needs to be made more accessible. While stakeholders currently have access to the information regarding proposals from current block explorers like the one hosted by cashmaney, stakeholders still lack a comprehensive resource that really empowers them to more actively participate in the governance process.
 
-Made with :heart: by<br/>
-<a href='https://secretnodes.org'><img alt='secretnodes.org' src='http://figment-public-assets.s3.ca-central-1.amazonaws.com/figment-inline.svg' height='32px' align='bottom' /></a>
+To address this secretnodes.org is working to launch puzzle, an open source project forked from hubble. Once we’ve deemed our fork as stable, we plan to use this as a foundational layer to conduct governance UI/UX experiments and display metrics regarding Secret Nodes. These experiments are aimed at making the process of voting and assessing network performance as easy as possible.
+
+You can learn more about how we plan to empower stakeholders to stay informed on proposes uses of community funds, vital changes to the enigma network, and better interact with the governance process overall by reading how we plan to approach proposals on the network [here](https://secretnodes.org/#/misc/community-first-approach).
+
+Forked with :heart: by[secretnodes.org](https://secretnodes.org) by 
+
+# Setup
+
+WIP
 
 
 ## Dependencies
