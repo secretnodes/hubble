@@ -2,7 +2,7 @@ class SessionsController < ApplicationController
   layout 'account'
 
   def new
-    page_title 'puzzle', 'Login'
+    page_title 'Puzzle', 'Login'
     referrer = URI(request.referrer) rescue nil
     if referrer
       referrer.host, referrer.port = Rails.application.secrets.application_host.split(':')

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "[Unit]
-Description=Hubble Unicorn
+Description=Puzzle Unicorn
 
 [Service]
 Type=forking

@@ -46,7 +46,7 @@ class Stats::SyncLog < ApplicationRecord
       socket.send("puzzle.sync.#{chainlike.ext_id}:1|c", 0, 'localhost', 8125)
       socket.close
     rescue
-      puts "Could not report Hubble sync to Datadog StatsD. #{e.message}"
+      puts "Could not report Puzzl sync to Datadog StatsD. #{e.message}"
     end
 
     update_attributes(

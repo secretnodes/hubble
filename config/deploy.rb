@@ -2,7 +2,7 @@
 lock '~> 3.13.0'
 
 set :application, 'puzzle'
-set :repo_url, 'https://github.com/secretnodes/puzzle'
+set :repo_url, 'git@github.com:secretnodes/puzzle.git'
 
 # Default branch is :master
 set :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -12,7 +12,7 @@ set :deploy_to, '/puzzle/app'
 
 # Default value for :linked_files is []
 before 'deploy:check:linked_files', 'linked_files:upload_files'
-append :linked_files, 'config/database.yml', 'config/secrets.yml.enc', 'config/master.key'
+append :linked_files, 'config/database.yml', 'config/secrets.yml'
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
@@ -20,7 +20,7 @@ append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/syst
 set :npm_flags, '--production --silent --no-progress'
 
 # Default value for default_env is {}
-set :default_env, { path: '/puzzle/ruby-2.5.0/bin:/puzzle/node-8.12/bin:$PATH' }
+set :default_env, { path: '/puzzle/ruby-2.5.1/bin:/puzzle/node-8.12/bin:$PATH' }
 
 # Default value for local_user is ENV['USER']
 set :local_user, -> { ENV['DEPLOY_USER'] } if ENV['DEPLOY_USER']

@@ -1,5 +1,5 @@
 require_relative 'boot'
-
+require 'uri'
 require "rails"
 # Pick the frameworks you want:
 require "active_model/railtie"
@@ -20,7 +20,7 @@ class ActionController::NotFound < StandardError; end
 class ActionController::Deleted < StandardError; end
 class ActionController::Denied < StandardError; end
 
-module Hubble
+module Puzzle
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
