@@ -2,7 +2,7 @@
 lock '~> 3.13.0'
 
 set :application, 'puzzle'
-set :repo_url, 'https://github.com/secretnodes/puzzle/tree/original-min-changes'
+set :repo_url, 'git@github.com:secretnodes/puzzle.git'
 
 # Default branch is :master
 set :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -12,7 +12,7 @@ set :deploy_to, '/puzzle/app'
 
 # Default value for :linked_files is []
 before 'deploy:check:linked_files', 'linked_files:upload_files'
-append :linked_files, 'config/database.yml', 'config/secrets.yml.enc', 'config/secrets.yml.key'
+append :linked_files, 'config/database.yml', 'config/secrets.yml'
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
