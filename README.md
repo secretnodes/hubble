@@ -32,7 +32,7 @@ WIP
 ## How to Setup Puzzle
 
 1. Fork this repo!
-1. Generate encrypted secrets with `bin/rails secrets:setup`. Use `config/encrypted_secrets_quickstart.yml` to see what values are needed for what environments. Store `config/secrets.yml.enc` somewhere safe as it won't be committed.
+1. Generate encrypted credentials with `bin/rails credentials:edit`. Use `config/encrypted_secrets_quickstart.yml` to see what values are needed for what environments. 
 1. Setup your instance:
     ```
     export PUZZLE_ADMIN_EMAIL=your@email.com

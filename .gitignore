@@ -19,9 +19,6 @@ npm-debug.log
 
 .byebug_history
 
-# Ignore encrypted secrets key
-config/secrets.yml.key
-
 # Ignore custom deploy scripts.
 bin/deploy*.sh
 
