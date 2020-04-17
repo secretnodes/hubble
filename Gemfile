@@ -9,7 +9,7 @@ gem 'rails', '~> 5.2'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'sass-rails', '~> 5.0'
 gem 'jbuilder', '~> 2.5'
-gem 'bootsnap', require: false
+# gem 'bootsnap', '~> 1.4.1', require: false
 gem 'jquery-rails', '~> 4.3', '>= 4.3.3'
 gem 'rails-ujs', '~> 0.1.0'
 
@@ -55,6 +55,8 @@ group :development, :test do
   gem 'capistrano-rails', '~> 1.4', require: false
   gem 'capistrano-linked-files', require: false
   gem 'capistrano-npm', require: false
+  gem 'ed25519', '~> 1.2'
+  gem 'bcrypt_pbkdf', '~> 1'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'letter_opener_web', '~> 1.0'
 end
