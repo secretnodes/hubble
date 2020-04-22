@@ -4,7 +4,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   database: <%= ENV.fetch('PUZZLE_DATABASE_NAME') { Rails.application.secrets[:database][:name] || 'puzzle' } %>
   host: <%= ENV.fetch('PUZZLE_DATABASE_HOST') { Rails.application.secrets[:database][:host] || 'localhost' } %>
-  user: <%= ENV.fetch('PUZZLE_DATABASE_USER') { Rails.application.secrets[:database][:user] } %>
+  user: <%= ENV.fetch('PUZZLE_DATABASE_USER') { Rails.application.secrets[:database][:user] || 'postgres' } %>
   password: <%= ENV.fetch('PUZZLE_DATABASE_PASSWORD') { Rails.application.secrets[:database][:password] } %>
 
 development:
