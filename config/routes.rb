@@ -58,6 +58,7 @@ Rails.application.routes.draw do
   end
 
   get '/chains/*path', to: redirect('/cosmos/chains/%{path}')
+  namespace :enigma, network: 'enigma' do concerns :chainlike end
   namespace :cosmos, network: 'cosmos' do concerns :chainlike end
   namespace :terra, network: 'terra' do concerns :chainlike end
   namespace :iris, network: 'iris' do concerns :chainlike end
@@ -98,6 +99,7 @@ Rails.application.routes.draw do
       end
     end
 
+    namespace :enigma do concerns :chainlike end
     namespace :cosmos do concerns :chainlike end
     namespace :terra do concerns :chainlike end
     namespace :iris do concerns :chainlike end
