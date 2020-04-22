@@ -14,9 +14,9 @@ PICO  = (10 ** -12).to_f
 FEMTO = (10 ** -15).to_f
 ATTO  = (10 ** -18).to_f
 
-REQUIRE_HTTP_BASIC = if !Rails.application.secrets[:http_basic_password].blank?
+REQUIRE_HTTP_BASIC = if !Rails.application.credentials[Rails.env.to_sym][:http_basic_password].blank?
   HTTP_BASIC_USERNAME = 'puzzle'
-  HTTP_BASIC_PASSWORD = Rails.application.secrets[:http_basic_password]
+  HTTP_BASIC_PASSWORD = Rails.application.credentials[Rails.env.to_sym][:http_basic_password]
   true
 else
   false
