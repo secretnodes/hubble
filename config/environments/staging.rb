@@ -27,7 +27,7 @@ Rails.application.configure do
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.action_controller.asset_host = "#{Rails.application.credentials[Rails.env.to_sym][:application_protocol] }://#{Rails.application.credentials[Rails.env.to_sym][:application_host] }"
+  config.action_controller.asset_host = "#{Rails.application.secrets[:application_protocol] }://#{Rails.application.secrets[:application_host] }"
   config.action_mailer.asset_host = config.action_controller.asset_host
 
   # Specifies the header that your server uses for sending files.
@@ -52,9 +52,9 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "puzzle_#{Rails.env}"
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :postmark
-  config.action_mailer.postmark_settings = { api_key: Rails.application.credentials[Rails.env.to_sym][:postmark][:api_key] }
-  config.action_mailer.default_url_options = { host: Rails.application.credentials[Rails.env.to_sym][:application_host],
-                                               protocol: Rails.application.credentials[Rails.env.to_sym][:application_protocol] }
+  config.action_mailer.postmark_settings = { api_key: Rails.application.secrets[:postmark][:api_key] }
+  config.action_mailer.default_url_options = { host: Rails.application.secrets[:application_host],
+                                               protocol: Rails.application.secrets[:application_protocol] }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

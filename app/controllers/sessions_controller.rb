@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
     page_title 'Puzzle', 'Login'
     referrer = URI(request.referrer) rescue nil
     if referrer
-      referrer.host, referrer.port = Rails.application.credentials[Rails.env.to_sym][:application_host].split(':')
+      referrer.host, referrer.port = Rails.application.secrets.application_host.split(':')
       referrer.port = nil if referrer.port == 80
       @return_path = referrer.to_s
     end

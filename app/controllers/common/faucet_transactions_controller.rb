@@ -69,7 +69,7 @@ class Common::FaucetTransactionsController < Common::BaseController
   def valid_captcha?
     begin
       req = Curl.post 'https://www.google.com/recaptcha/api/siteverify',
-                      secret: Rails.application.credentials[Rails.env.to_sym][:recaptcha][:secret],
+                      secret: Rails.application.secrets.recaptcha.secret,
                       response: params['g-recaptcha-response'],
                       remoteip: current_ip
       res = JSON.parse( req.body_str )
