@@ -8,7 +8,7 @@ module Faucetlike
     has_many :transactions, class_name: 'Stats::FaucetTransaction', dependent: :delete_all, as: :faucetlike
 
     attribute :private_key
-    attr_encrypted :private_key, key: proc { Rails.application.application.secrets[:faucet_key_base] }
+    attr_encrypted :private_key, key: proc { Rails.application.credentials[Rails.env.to_sym][:faucet_key_base] }
     validates :encrypted_private_key, presence: true, allow_nil: false, allow_blank: false
 
     scope :enabled, -> { where( disabled: false ) }
