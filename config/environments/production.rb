@@ -58,7 +58,7 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "puzzle_#{Rails.env}"
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :postmark
-  # config.action_mailer.postmark_settings = { api_key: Rails.application.credentials[Rails.env.to_sym][:postmark][:api_key] }
+  config.action_mailer.postmark_settings = { api_key: Rails.application.credentials[Rails.env.to_sym][:postmark][:api_key] }
   config.action_mailer.default_url_options = { host: Rails.application.credentials[Rails.env.to_sym][:application_host],
                                                protocol: Rails.application.credentials[Rails.env.to_sym][:application_protocol] }
 
