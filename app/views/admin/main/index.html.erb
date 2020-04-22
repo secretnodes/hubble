@@ -12,7 +12,7 @@
           <a class='btn btn-sm btn-light' href='<%= new_admin_enigma_chain_path %>'>+ new</a>
         </div>
       </h5>
-      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Enigma::Chain.public_send( show_dead_enigma ? 'all' : 'alive' ).ids %></div>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Enigma::Chain.public_send( show_dead_enigma ? 'all' : 'alive' ) %></div>
     </div>
 
     <div class='card'>
@@ -24,7 +24,7 @@
           <a class='btn btn-sm btn-light' href='<%= new_admin_cosmos_chain_path %>'>+ new</a>
         </div>
       </h5>
-      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Cosmos::Chain.public_send( show_dead_cosmos ? 'all' : 'alive' ).ids %></div>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Cosmos::Chain.public_send( show_dead_cosmos ? 'all' : 'alive' ) %></div>
     </div>
 
     <div class='card'>
@@ -36,7 +36,7 @@
           <a class='btn btn-sm btn-light' href='<%= new_admin_terra_chain_path %>'>+ new</a>
         </div>
       </h5>
-      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Terra::Chain.public_send( show_dead_terra ? 'all' : 'alive' ).ids %></div>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Terra::Chain.public_send( show_dead_terra ? 'all' : 'alive' ) %></div>
     </div>
 
     <div class='card'>
@@ -48,7 +48,7 @@
           <a class='btn btn-sm btn-light' href='<%= new_admin_iris_chain_path %>'>+ new</a>
         </div>
       </h5>
-      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Iris::Chain.public_send( show_dead_iris ? 'all' : 'alive' ).ids %></div>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Iris::Chain.public_send( show_dead_iris ? 'all' : 'alive' ) %></div>
     </div>
 
     <div class='card'>
@@ -60,7 +60,7 @@
           <a class='btn btn-sm btn-light' href='<%= new_admin_kava_chain_path %>'>+ new</a>
         </div>
       </h5>
-      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Kava::Chain.public_send( show_dead_kava ? 'all' : 'alive' ).ids %></div>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Kava::Chain.public_send( show_dead_kava ? 'all' : 'alive' ) %></div>
     </div>
 
   </div>
