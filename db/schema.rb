@@ -108,6 +108,8 @@ ActiveRecord::Schema.define(version: 2020_04_09_015027) do
     t.string "precommitters", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "raw_block"
+    t.text "raw_commit"
     t.jsonb "validator_set", default: {}
     t.string "proposer_address"
     t.string "transactions", array: true
@@ -133,14 +135,13 @@ ActiveRecord::Schema.define(version: 2020_04_09_015027) do
     t.jsonb "validator_event_defs", default: [{"kind"=>"voting_power_change", "height"=>0}, {"kind"=>"active_set_inclusion", "height"=>0}]
     t.integer "failed_sync_count", default: 0
     t.jsonb "governance", default: {}, null: false
-    t.string "ext_id"
     t.datetime "halted_at"
     t.string "last_round_state", default: ""
+    t.string "ext_id"
     t.string "token_denom", default: "atom"
     t.bigint "token_factor", default: 0
     t.string "sdk_version"
     t.text "notes"
-    t.string "network"
     t.boolean "use_ssl_for_lcd", default: false
     t.jsonb "staking_pool", default: {}
     t.string "remote_denom"
@@ -220,7 +221,7 @@ ActiveRecord::Schema.define(version: 2020_04_09_015027) do
   create_table "cosmos_validators", force: :cascade do |t|
     t.bigint "chain_id"
     t.string "address", null: false
-    t.decimal "current_voting_power", default: "0.0"
+    t.bigint "current_voting_power", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "latest_block_height"
@@ -538,6 +539,7 @@ ActiveRecord::Schema.define(version: 2020_04_09_015027) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "validator_id"
+    t.boolean "run_next_rewards_report", default: true
     t.index ["address"], name: "index_kava_accounts_on_address"
     t.index ["chain_id"], name: "index_kava_account_on_chain"
   end

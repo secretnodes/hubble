@@ -46,7 +46,7 @@
       <div class='col-12 text-center'>
         <button class='submit-button btn btn-lg btn-primary <%= 'disabled' if !enough %>'
                 <%= 'disabled' if !enough -%>
-                data-sitekey='<%= Rails.application.secrets.recaptcha[:site] %>'>
+                data-sitekey='<%= Rails.application.credentials[Rails.env.to_sym][:recaptcha][:site] %>'>
           Send
           <%= format_amount( @faucet.disbursement_amount.to_f, denom: @faucet.denom, html: false ) %>
           <span class='ml-2 fas fa-chevron-right'></span>

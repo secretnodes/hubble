@@ -14,10 +14,10 @@ Rails.application.configure do
   config.consider_all_requests_local       = false
   config.action_controller.perform_caching = true
 
-  # Attempt to read encrypted secrets from `config/secrets.yml.enc`.
+  # Attempt to read encrypted credentials from `config/credentials.yml.enc`.
   # Requires an encryption key in `ENV["RAILS_MASTER_KEY"]` or
-  # `config/secrets.yml.key`.
-  config.read_encrypted_secrets = true
+  # `config/master.key`.
+  config.require_master_key = true
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
@@ -32,7 +32,7 @@ Rails.application.configure do
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.action_controller.asset_host = "#{Rails.application.secrets.application_protocol}://#{Rails.application.secrets.application_host}"
+  config.action_controller.asset_host = "#{Rails.application.credentials[Rails.env.to_sym][:application_protocol] }://#{Rails.application.credentials[Rails.env.to_sym][:application_host] }"
   config.action_mailer.asset_host = config.action_controller.asset_host
 
   # Specifies the header that your server uses for sending files.
@@ -58,9 +58,9 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "puzzle_#{Rails.env}"
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :postmark
-  # config.action_mailer.postmark_settings = { api_key: Rails.application.secrets.postmark[:api_key] }
-  config.action_mailer.default_url_options = { host: Rails.application.secrets.application_host,
-                                               protocol: Rails.application.secrets.application_protocol }
+  config.action_mailer.postmark_settings = { api_key: Rails.application.credentials[Rails.env.to_sym][:postmark][:api_key] }
+  config.action_mailer.default_url_options = { host: Rails.application.credentials[Rails.env.to_sym][:application_host],
+                                               protocol: Rails.application.credentials[Rails.env.to_sym][:application_protocol] }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

@@ -5,6 +5,18 @@
 
     <div class='card'>
       <h5 class='card-header header mb-0'>
+        Enigma
+        <div class='buttons text-right'>
+          <% show_dead_enigma = params[:dead] == 'enigma' -%>
+          <a class='btn btn-sm btn-outline-light' href='<%= admin_root_path( dead: show_dead_enigma ? nil : 'enigma' ) %>'><%= show_dead_enigma ? 'hide' : 'show' %> dead</a>
+          <a class='btn btn-sm btn-light' href='<%= new_admin_enigma_chain_path %>'>+ new</a>
+        </div>
+      </h5>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Enigma::Chain.public_send( show_dead_enigma ? 'all' : 'alive' ) %></div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header header mb-0'>
         Cosmos
         <div class='buttons text-right'>
           <% show_dead_cosmos = params[:dead] == 'cosmos' -%>

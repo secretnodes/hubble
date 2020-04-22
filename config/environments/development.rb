@@ -15,7 +15,7 @@ Rails.application.configure do
   # show where each query is from
   config.active_record.verbose_query_logs = true
 
-  config.read_encrypted_secrets = true
+  config.require_master_key = true
 
   # Enable/disable caching. By default caching is disabled.
   if Rails.root.join('tmp/caching-dev.txt').exist?
@@ -35,7 +35,7 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :letter_opener_web
-  config.action_mailer.default_url_options = { host: Rails.application.secrets.application_host }
+  config.action_mailer.default_url_options = { host: Rails.application.credentials[Rails.env.to_sym][:application_host] }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
