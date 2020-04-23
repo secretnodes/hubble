@@ -15,7 +15,7 @@ sudo apt update > /dev/null
 sudo apt install -y libpq-dev libcurl4-openssl-dev nginx \
                     zlib1g-dev libssl-dev libreadline-dev \
                     build-essential software-properties-common \
-                    python-certbot-nginx libsecp256k1-dev postgresql postgresql-contrib > /dev/null
+                    python-certbot-nginx libsecp256k1-dev postgresql postgresql-contrib memcached > /dev/null
 echo "DONE"
 
 sleep 1

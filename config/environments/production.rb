@@ -47,7 +47,7 @@ Rails.application.configure do
   config.log_tags = [:remote_ip]
 
   # Use a different cache store in production.
-  config.cache_store = :mem_cache_store, ['localhost'], {
+  config.cache_store = :dalli_store, ['localhost'], {
     namespace: "puzzle-#{Rails.env}",
     expires_in: 2.weeks,
     compress: true
