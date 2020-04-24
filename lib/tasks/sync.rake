@@ -1,11 +1,11 @@
 namespace :sync do
   task :all do
-    %w{ cosmos terra iris kava }.each do |network|
+    %w{ enigma cosmos terra iris kava }.each do |network|
       Rake::Task["sync:#{network}"].invoke
     end
   end
 
-  %w{ cosmos terra iris kava }.each do |network|
+  %w{ enigma cosmos terra iris kava }.each do |network|
     task :"#{network.to_sym}" => :environment do
       $stdout.sync = true
       puts "\nStarting sync:#{network} task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
@@ -17,6 +17,7 @@ namespace :sync do
             bss = chain.namespace::BlockSyncService.new(chain)
             log.set_status 'blocks'
             bss.sync!
+            puts "got past bss sync"
           rescue
             log.report_error $!
             log.end && next if $!.is_a?(chain.namespace::SyncBase::CriticalError)

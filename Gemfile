@@ -59,6 +59,8 @@ group :development, :test do
   gem 'bcrypt_pbkdf', '~> 1'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'letter_opener_web', '~> 1.0'
+  gem 'pry-rails'
+  gem 'pry-byebug'
 end
 
 group :development do

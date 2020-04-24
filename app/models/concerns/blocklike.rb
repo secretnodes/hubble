@@ -75,7 +75,12 @@ module Blocklike
       end
 
       begin
-        precommitters = raw_commit['result']['signed_header']['commit']['precommits']
+        precommitters = if chain.namespace == Enigma
+          raw_commit['result']['signed_header']['commit']['signatures']
+        else
+          raw_commit['result']['signed_header']['commit']['precommits']
+        end
+
         addresses = precommitters.map { |pc| pc['validator_address'] rescue nil }.compact
       rescue
         raise chain.namespace::SyncBase::CriticalError.new("Invalid validator/precommitter list for block #{height}.")
@@ -90,10 +95,12 @@ module Blocklike
         raise chain.namespace::SyncBase::CriticalError.new("Invalid validator voting set information for block #{height}.")
       end
 
-      begin
-        transactions = block_txs.try(:map) { |data| Digest::SHA256.hexdigest(Base64.decode64(data)) }
-      rescue
-        raise chain.namespace::SyncBase::CriticalError.new("Unable to decode or invalid transaction data for block #{height}.")
+      if block_txs.present?
+        begin
+          transactions = block_txs.try(:map) { |data| Digest::SHA256.hexdigest(Base64.decode64(data)) }
+        rescue
+          raise chain.namespace::SyncBase::CriticalError.new("Unable to decode or invalid transaction data for block #{height}.")
+        end
       end
 
       obj = {
