@@ -13,9 +13,9 @@ class Enigma::Chain < ApplicationRecord
     validator_operator_public_key: 'enigmavaloperpub1'
   }
 
-  DEFAULT_TOKEN_DISPLAY = 'ATOM'
-  DEFAULT_TOKEN_REMOTE = 'uatom'
-  DEFAULT_TOKEN_FACTOR = 6
+  DEFAULT_TOKEN_DISPLAY = 'SCRT'
+  DEFAULT_TOKEN_REMOTE = 'uscrt'
+  DEFAULT_TOKEN_FACTOR = 10
 
   def network_name; 'enigma'; end
 end
