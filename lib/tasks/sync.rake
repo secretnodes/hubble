@@ -17,6 +17,7 @@ namespace :sync do
             bss = chain.namespace::BlockSyncService.new(chain)
             log.set_status 'blocks'
             bss.sync!
+            puts "got past bss sync"
           rescue
             log.report_error $!
             log.end && next if $!.is_a?(chain.namespace::SyncBase::CriticalError)

@@ -24,11 +24,18 @@ class Admin::Common::ChainsController < Admin::BaseController
 
     if !params[:start_height].blank?
       target_height = params[:start_height].to_i - 1
+
+      cutoff = if @namespace == Enigma
+        @chain.syncer.get_block( target_height )['result']['block']['header']['time'].to_datetime + 1.minute
+      else
+        @chain.syncer.get_block( target_height )['result']['block_meta']['header']['time'].to_datetime + 1.minute
+      end
+      
       @chain.update_attributes(
         latest_local_height: target_height,
         history_height: target_height,
         validator_event_defs: @chain.validator_event_defs.map { |defn| defn['height'] = target_height; defn },
-        cutoff_at: @chain.syncer.get_block( target_height )['result']['block_meta']['header']['time'].to_datetime + 1.minute
+        cutoff_at: cutoff
       )
     end
 
