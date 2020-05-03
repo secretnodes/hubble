@@ -6,3 +6,4 @@ set :ssh_options, {
 }
 
 set :rails_env, 'staging'
+set :branch, 'master'

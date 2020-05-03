@@ -6,12 +6,12 @@ To address this secretnodes.org is working to launch puzzle, an open source proj
 
 You can learn more about how we plan to empower stakeholders to stay informed on proposes uses of community funds, vital changes to the enigma network, and better interact with the governance process overall by reading how we plan to approach proposals on the network [here](https://secretnodes.org/#/misc/community-first-approach).
 
-Made with :heart: by [secretnodes.org](https://secretnodes.org). Originally forked from [hubble](https://github.com/figment-networks/hubble).
+Made with :heart: by [secretnodes.org](https://secretnodes.org). Originally forked from the [hubble](https://github.com/figment-networks/hubble) Q4 2019 update.
 
 # Implementations of Puzzle
 https://puzzle.secretnodes.org is our canary build of Puzzle.
 
-https://secret.foundation will the the production implimentation of puzzle. This version will have features created in collaboration between secretnodes.org, contriburors to puzzle, and stakeholders in the enigma community.
+https://secret.foundation will be the production implimentation of puzzle. This version will have features created in collaboration between secretnodes.org, contriburors to puzzle, and stakeholders in the enigma community.
 
 # Setup
 
