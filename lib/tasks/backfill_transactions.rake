@@ -5,7 +5,7 @@ namespace :backfill_transactions do
       puts "\nStarting sync:#{network} task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
       network.titleize.constantize::Chain.enabled.find_each do |chain|
         syncer = chain.syncer( 10_000 )
-        sync_start_height = chain.latest_local_height
+        sync_start_height = 0
         target_height = syncer.get_head_height
         target_height -= chain.class::SYNC_OFFSET # leave some blocks off (non-canonical, or stay behind on purpose)
 

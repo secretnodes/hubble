@@ -1,6 +1,6 @@
 server ENV['DEPLOY_HOST'], user: 'root', roles: %w{ app db web }
 set :ssh_options, {
-  keys: ['~/.ssh/puzzle_id_rsa2'],
+  keys: ENV['DEPLOY_KEYS'].split(','),
   forward_agent: true
 }
 
