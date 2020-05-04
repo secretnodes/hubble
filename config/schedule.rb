@@ -14,10 +14,11 @@ job_type :rake, [
 ].join( ' && ' )
 
 every '* * * * *' do
-  rake 'sync:cosmos', output: log_path('cosmos-sync')
-  rake 'sync:terra', output: log_path('terra-sync')
-  rake 'sync:iris', output: log_path('iris-sync')
-  rake 'sync:kava', output: log_path('kava-sync')
+  rake 'sync:enigma', output: log_path('enigma-sync')
+  # rake 'sync:cosmos', output: log_path('cosmos-sync')
+  # rake 'sync:terra', output: log_path('terra-sync')
+  # rake 'sync:iris', output: log_path('iris-sync')
+  # rake 'sync:kava', output: log_path('kava-sync')
   rake 'common:alerts:users:instant', output: log_path('alerts')
 end
 
