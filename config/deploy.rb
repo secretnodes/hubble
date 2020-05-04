@@ -30,7 +30,7 @@ set :keep_assets, 2
 
 task :restart_web do
   on roles(:web) do
-    execute "sudo systemctl reload puzzle-unicorn-#{fetch(:rails_env)}"
+    execute "sudo systemctl restart puzzle-unicorn-#{fetch(:rails_env)}"
   end
 end
 
