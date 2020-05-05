@@ -92,7 +92,7 @@ namespace :sync do
 
           begin
             log.set_status 'cleanup'
-            bss.cleanup!
+            # bss.cleanup!
           rescue
             log.report_error $!
             log.end
