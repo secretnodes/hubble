@@ -73,7 +73,9 @@ PS: If your environment is on a server and you need to test on your local machin
 
 ## How to Deploy
 
-Use the appropriate generated deploy script if you used our setup scripts:
+1. Check to see that you have deployment scripts in /bin. You should see one called deploy-production.sh and one called deploy-staging.sh
+1. If you do not have one or both of these scripts, create them and use bin/sample-deploy.sh to set them up (ask jacob if you need help)
+1. from the project root folder, run
 
 ```
 bin/deploy-{RAILS_ENV}.sh
