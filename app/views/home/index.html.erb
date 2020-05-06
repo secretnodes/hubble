@@ -1,6 +1,7 @@
 <% content_for :body_class, 'homepage' %>
 
 <% grouped_chains = [
+  *Enigma::Chain.alive.has_synced.to_a,
   *Cosmos::Chain.alive.has_synced.to_a,
   *Terra::Chain.alive.has_synced.to_a,
   *Iris::Chain.alive.has_synced.to_a,
