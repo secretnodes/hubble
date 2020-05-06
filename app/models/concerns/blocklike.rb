@@ -54,18 +54,19 @@ module Blocklike
           syncer = chain.namespace::SyncBase.new( chain, 250 )
           raw_block = syncer.get_block( height )['result']
           block_txs = raw_block['block']['data']['txs']
-          block_meta = raw_block['block_meta']
+          block_meta = raw_block
         rescue
           raise chain.namespace::SyncBase::CriticalError.new("Unable to retrieve or invalid object for block #{height}.")
         end
-
+        header = block_meta['block']['header']
         raw_commit = syncer.get_commit( height )
         raw_validator_set = syncer.get_validator_set( height )
       else
+        header = block_meta['header']
         # we don't need to look up the whole block unless
         # there are transactions in the block
         begin
-          if block_meta['header']['num_txs'].to_i > 0 || block_meta['num_txs'].to_i > 0
+          if header['num_txs'].to_i > 0 || block_meta['num_txs'].to_i > 0
             syncer = chain.namespace::SyncBase.new( chain, 250 )
             block_txs = syncer.get_block( height )['result']['block']['data']['txs']
           end
@@ -107,8 +108,8 @@ module Blocklike
         chain_id: chain.id,
         height: height,
         id_hash: block_meta['block_id']['hash'],
-        timestamp: block_meta['header']['time'].to_datetime,
-        proposer_address: block_meta['header']['proposer_address'],
+        timestamp: header['time'].to_datetime,
+        proposer_address: header['proposer_address'],
         precommitters: addresses,
         validator_set: validator_set,
         transactions: transactions
