@@ -65,7 +65,7 @@ class Stats::SyncLog < ApplicationRecord
     critical = exception.is_a?(chainlike.namespace::SyncBase::CriticalError)
     msg = "#{'CRITICAL ' if critical}SYNC ERROR DURING #{current_status} ON #{chainlike.network_name}/#{chainlike.ext_id}: #{exception.message}"
     puts "\n\n#{msg}"
-    Rollbar.error( exception, msg ) if Rails.env.production?
+    Rollbar.error( exception, msg ) if Rails.env.production? || Rails.env.staging?
 
     bc = ActiveSupport::BacktraceCleaner.new
     bc.add_filter { |line| line.gsub(Rails.root.to_s, '') }

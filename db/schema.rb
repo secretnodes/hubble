@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_09_015027) do
+ActiveRecord::Schema.define(version: 2020_05_06_194907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -345,6 +345,7 @@ ActiveRecord::Schema.define(version: 2020_04_09_015027) do
     t.json "additional_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "finalized", default: false
     t.index ["chain_id", "ext_id"], name: "index_enigma_governance_proposals_on_chain_and_cp_id", unique: true
     t.index ["chain_id"], name: "index_enigma_proposal_on_chain"
     t.index ["ext_id"], name: "index_enigma_governance_proposals_on_ext_id"
