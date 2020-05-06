@@ -13,7 +13,7 @@ job_type :rake, [
   %{ [ $(pwd) = $(readlink "#{CURRENT}") ] && #{run_task} || #{abort_task} }
 ].join( ' && ' )
 
-every '* * * * *' do
+every 10.minutes do
   rake 'sync:enigma', output: log_path('enigma-sync')
   # rake 'sync:cosmos', output: log_path('cosmos-sync')
   # rake 'sync:terra', output: log_path('terra-sync')
