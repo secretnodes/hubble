@@ -93,7 +93,7 @@ class Common::ValidatorSyncService
 
     indexed_stake_info = stake_info.index_by { |info| info['consensus_pubkey'] }
 
-    validators = @chain.validators
+    validators = @chain.validators.where.not(id: nil)
     total = validators.count
 
     ProgressReport.instance.start "Updating #{validators.count} #{@chain.network_name}/#{@chain.name} validators metadata..."
