@@ -261,7 +261,7 @@ class Common::ValidatorEventsService
     else
       ProgressReport.instance.start "Generating validator in/out of active set events (block #{from} -> #{to})..."
 
-      validators = @chain.validators.index_by(&:address)
+      validators = @chain.validators.where.not(id: nil).index_by(&:address)
 
       prev_block = @chain.blocks.find_by( height: from - 1 )
       insert_events( from, to ) do |block|
