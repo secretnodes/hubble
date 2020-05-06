@@ -67,7 +67,6 @@ namespace :sync do
 
           begin
             log.set_status 'validator-events'
-            reload!
             chain = chain.namespace::Chain.find chain.id
             ves = chain.namespace::ValidatorEventsService.new(chain)
             ves.run!
