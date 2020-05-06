@@ -31,7 +31,7 @@ class Common::ValidatorEventsService
     if to < from
       puts "No new local blocks to generate n-consecutive threshold events."
     else
-      existing_validators = @chain.validators.index_by(&:address)
+      existing_validators = @chain.validators.where.not(id: nil).index_by(&:address)
       latches = existing_validators.values.each_with_object({}) do |v, h|
         h[v.address] = Common::ValidatorEventLatch.find_or_create_by!(
           chainlike: @chain,
@@ -102,7 +102,7 @@ class Common::ValidatorEventsService
     if to < from
       puts "No new local blocks to generate n-of-m threshold events."
     else
-      existing_validators = @chain.validators.index_by(&:address)
+      existing_validators = @chain.validators.where.not(id: nil).index_by(&:address)
       latches = existing_validators.values.each_with_object({}) do |v, h|
         h[v.address] = Common::ValidatorEventLatch.find_or_create_by!(
           chainlike: @chain,
@@ -173,7 +173,7 @@ class Common::ValidatorEventsService
     if to < from
       puts "No new local blocks to generate voting power change events."
     else
-      existing_validators = @chain.validators.index_by(&:address)
+      existing_validators = @chain.validators.where.not(id: nil).index_by(&:address)
 
       latest_voting_power_changes = existing_validators.values.each_with_object({}) do |v, h|
         h[v.address] = v.events.voting_power_change.first.try(:to).to_i
