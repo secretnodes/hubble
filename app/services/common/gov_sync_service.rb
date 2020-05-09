@@ -45,16 +45,17 @@ class Common::GovSyncService
     tracked_proposal_ids = []
 
     @syncer.get_proposals.try(:each) do |proposal|
+      # TODO update enigma gov_sync_service#build_proposal for '0.38.0' sdk version
       proposal_details = build_proposal(proposal)
-      next if proposal_details.nil?
-      puts "got past proposal_details for #{proposal['id']}"
+      next if proposal_details.nil? || proposal_details['voting_end_time'] == DateTime.new(1)
+
       tracked_proposal_ids << proposal_details['ext_id']
 
       begin
         working_proposal = @chain.governance_proposals.find_by(
           ext_id: proposal_details['ext_id']
         )
-
+        
         if working_proposal
           if working_proposal.finalized?
             puts "Skipping finalized proposal: #{working_proposal.ext_id} - #{working_proposal.title}"
