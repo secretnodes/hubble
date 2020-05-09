@@ -58,7 +58,6 @@ class Common::GovSyncService
         if working_proposal
           if working_proposal.finalized?
             puts "Skipping finalized proposal: #{working_proposal.ext_id} - #{working_proposal.title}"
-            next
           else
             puts "Updating existing proposal: #{working_proposal.ext_id} - #{working_proposal.title}"
             working_proposal.update_attributes(proposal_details)
