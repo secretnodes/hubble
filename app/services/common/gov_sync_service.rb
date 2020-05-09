@@ -47,7 +47,7 @@ class Common::GovSyncService
     @syncer.get_proposals.try(:each) do |proposal|
       proposal_details = build_proposal(proposal)
       next if proposal_details.nil?
-
+      puts "got past proposal_details for #{proposal['id']}"
       tracked_proposal_ids << proposal_details['ext_id']
 
       begin
