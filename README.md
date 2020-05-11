@@ -4,7 +4,7 @@ After seeing a handful of proposals successfully passed on the Enigma mainnet it
 
 To address this secretnodes.org is working to launch puzzle, an open source project forked from hubble. Once we’ve deemed our fork as stable, we plan to use this as a foundational layer to conduct governance UI/UX experiments and display metrics regarding Secret Nodes. These experiments are aimed at making the process of voting and assessing network performance as easy as possible.
 
-You can learn more about how we plan to empower stakeholders to stay informed on proposes uses of community funds, vital changes to the enigma network, and better interact with the governance process overall by reading how we plan to approach proposals on the network [here](https://secretnodes.org/#/misc/community-first-approach).
+You can learn more about how we plan to empower stakeholders to stay informed on proposes uses of community funds, vital changes to the Secret Network, and better interact with the governance process overall by reading how we plan to approach proposals on the network [here](https://secretnodes.org/#/misc/community-first-approach).
 
 Made with :heart: by [secretnodes.org](https://secretnodes.org). Originally forked from the [hubble](https://github.com/figment-networks/hubble) Q4 2019 update.
 

@@ -15,7 +15,7 @@ class Enigma::Chain < ApplicationRecord
 
   DEFAULT_TOKEN_DISPLAY = 'SCRT'
   DEFAULT_TOKEN_REMOTE = 'uscrt'
-  DEFAULT_TOKEN_FACTOR = 10
+  DEFAULT_TOKEN_FACTOR = 6
 
   def network_name; 'enigma'; end
 end
