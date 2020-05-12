@@ -4,8 +4,6 @@ After working to pass a handful of proposals on the Secret Network, it has becom
 
 To address this, secretnodes.org has worked to launch Puzzle, an open-source project forked from Hubble. Once we’ve deemed Puzzle as stable and production-ready, we plan to use this as a foundational layer to solve for the pain points preventing stakeholders from keeping up with network related events. Through experimentation and collaboration with the community, our mission is to make the process of staying up to date on all network activity as seamless as possible.
 
-You can learn more about how we plan to empower stakeholders to stay informed on proposed uses of community funds, vital changes to the Secret Network, and better interact with the governance process overall by reading how we plan to approach proposals on the network [here](https://secretnodes.org/#/misc/community-first-approach).
-
 Made with :heart: by [secretnodes.org](https://secretnodes.org). Originally forked from the [hubble](https://github.com/figment-networks/hubble) Q4 2019 update.
 
 # Implementations of Puzzle
