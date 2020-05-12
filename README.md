@@ -1,6 +1,6 @@
 # Why Puzzle?
 
-After seeing a handful of proposals successfully passed on the Enigma mainnet its become painfully obvious the governance experience needs to be made more accessible. While stakeholders currently have access to the information regarding proposals from current block explorers like the one hosted by cashmaney, stakeholders still lack a comprehensive resource that really empowers them to more actively participate in the governance process.
+After working to pass a handful of proposals on the Secret Network, it has become painfully obvious the governance experience needs to be made more accessible and users need to be further empowered to stay informed on the state of the network. While stakeholders currently have access to the information regarding proposals from current block explorers like the one hosted by cashmaney, stakeholders still lack a comprehensive resource that really empowers them to more actively participate in the governance process.
 
 To address this secretnodes.org has worked to launch puzzle, an open source project forked from hubble. Once we’ve deemed our fork as stable and production ready, we plan to use this as a foundation to solve for the pain points preventing stakeholders from keeping up with on chain events. Through experimentation and collaboration with the community, our mission is to make the process of staying up to date on all network activity as seemless as possible.
 
