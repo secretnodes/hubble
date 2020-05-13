@@ -58,4 +58,13 @@ class UsersController < ApplicationController
     @no_chain_select = true
   end
 
+  def resend_confirmation
+    @user = User.find_by verification_token: params[:token]
+    if @user
+      UserMailer.with(user: @user).confirm.deliver_now
+    end
+    
+    redirect_back(fallback_location: root_path)
+  end
+
 end

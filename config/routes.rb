@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       get :welcome
       get :confirm
       get :confirmed
+      get :resend_confirmation
       get :settings
     end
   end
