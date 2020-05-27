@@ -33,3 +33,6 @@ tmp/localhost.key
 # Ignore key files
 /config/credentials.yml.enc
 /config/secrets.yml
+
+# Ignore yarn.lock
+/yarn.lock
