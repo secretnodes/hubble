@@ -49,6 +49,8 @@ gem 'rollbar'
 gem 'lograge'
 gem 'rack-attack'
 
+gem 'webpacker', '~>5.1.1'
+
 group :development, :test do
   gem 'puma'
   gem 'capistrano', '~> 3.13', require: false

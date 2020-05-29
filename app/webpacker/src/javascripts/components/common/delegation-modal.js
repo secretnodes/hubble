@@ -4,7 +4,7 @@ class DelegationModal {
     this.REDELEGATION_GAS_WANTED = 200000
     this.GAS_PRICE = 0.025
     this.MEMO = 'Delegate to your favourite validator with Puzzle - https://puzzle.secretnodes.org'
-
+    console.log('beginning of delegation Modal')
     this.modal = el
     this.reset()
     this.modal.on( 'hidden.bs.modal', () => this.reset() )

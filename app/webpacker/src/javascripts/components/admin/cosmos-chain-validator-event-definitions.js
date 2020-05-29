@@ -1,3 +1,8 @@
+import 'jquery';
+import 'lodash/lodash';
+import 'moment/min/moment.min';
+import 'jquery'
+
 const CAN_DELETE = [
   'n_of_m',
   'n_consecutive'

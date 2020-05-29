@@ -5571,6 +5571,6 @@ return Q;
 
 });
 
-}).call(this,require('_process'),require("timers").setImmediate)
+}).call(this,require('../../packs/src/lib/node_modules/_process'),require("timers").setImmediate)
 },{"_process":4,"timers":5}]},{},[7])(7)
 });

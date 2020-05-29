@@ -2,7 +2,7 @@ class Admin::BaseController < ApplicationController
   include AdminHelper
 
   before_action :require_administrator
-  before_action :require_2fa
+  # before_action :require_2fa
 
   skip_before_action :get_user
 

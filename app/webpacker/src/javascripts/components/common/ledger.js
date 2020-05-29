@@ -1,14 +1,13 @@
-//= require lib/elliptic
-//= require lib/bops
-//= require bn.js/lib/bn
-//= require lib/bech32
-//= require lib/chrome-u2f-api
-//= require lib/ledger
-//= require crypto-js/crypto-js
-//= require crypto-js/enc-hex
-//= require crypto-js/sha256
-//= require crypto-js/ripemd160
-
+import '../../lib/elliptic';
+import 'bops/dist/bops';
+import 'bn.js/lib/bn';
+import '../../lib/bech32';
+import '../../lib/chrome-u2f-api';
+import '../../lib/ledger';
+import 'crypto-js/crypto-js';
+import 'crypto-js/enc-hex';
+import 'crypto-js/sha256';
+import 'crypto-js/ripemd160';
 
 const HD_PATH = [44, 118, 0, 0, 0]
 
@@ -33,6 +32,7 @@ class Ledger {
     }
 
     if( !this.device ) {
+      console.log(this.device)
       const conn = await window.ledger.comm_u2f.create_async( this.LEDGER_TIMEOUT_MS, true )
       this.device = new window.ledger.App(conn)
       scheduleCheck()
@@ -69,6 +69,7 @@ class Ledger {
   getAddressFromPublicKey( hex ) {
     const pubKey = this.EC.keyFromPublic(hex, 'hex')
     const hash = sha256ripemd160(ab2hexstring(pubKey.getPublic().encodeCompressed()))
+    console.log(hash)
     return encodeAddress(hash)
   }
 

@@ -2,17 +2,31 @@
   "name": "puzzle",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.13.0",
+    "@lunie/cosmos-ledger": "^0.1.8",
+    "@rails/actioncable": "^6.0.3-1",
+    "@rails/activestorage": "^6.0.3-1",
+    "@rails/ujs": "^6.0.3-1",
+    "@rails/webpacker": "5.1.1",
     "bn.js": "^4.11.8",
-    "bootstrap": "^4.3.1",
+    "bootstrap": "^4.5.0",
+    "bops": "^1.0.1",
     "chart.js": "^2.7.2",
     "chartjs-plugin-annotation": "^0.5.7",
     "clipboard": "^2.0.1",
     "crypto-js": "^3.1.9-1",
     "datatables": "^1.10.13",
-    "jquery": "^3.4.0",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.5.1",
     "lodash": "^4.17.13",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.20",
-    "tooltipster": "^4.2.6"
+    "popper.js": "^1.16.1",
+    "process": "^0.11.10",
+    "tooltipster": "^4.2.6",
+    "turbolinks": "^5.2.0"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3.11.0"
   }
 }
