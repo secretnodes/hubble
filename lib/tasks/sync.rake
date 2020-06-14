@@ -56,9 +56,9 @@ namespace :sync do
               vss = chain.namespace::ValidatorSyncService.new(chain)
               vss.sync_validator_timestamps!
               vss.sync_validator_metadata!
-              log.set_status 'before history height'
+              puts 'before history height'
               vss.update_history_height!
-              log.set_status 'after history height'
+              puts 'after history height'
             rescue
               log.report_error $!
               log.end && next if $!.is_a?(chain.namespace::SyncBase::CriticalError)
