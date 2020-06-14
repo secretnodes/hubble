@@ -4,7 +4,7 @@ class Common::ValidatorSyncService
   end
 
   def update_history_height!
-    @chain.update_attributes history_height: @chain.latest_local_height
+    @chain.update! history_height: @chain.latest_local_height
   end
 
   def sync_validator_timestamps!
