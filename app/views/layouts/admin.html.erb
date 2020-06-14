@@ -16,7 +16,7 @@
     <%= stylesheet_link_tag 'admin', media: 'all' %>
 
     <%= js_namespace %>
-    <%= javascript_include_tag 'admin', media: 'all' %>
+    <%= javascript_pack_tag 'application' %>
   </head>
 
   <body class='<%= yield :body_class %>'>

@@ -20,14 +20,14 @@ class Admin::BaseController < ApplicationController
     end
   end
 
-  def require_2fa
-    return if helpers.current_admin.nil?
-    if helpers.current_admin.one_time_setup_token?
-      session[:after_admin_login_path] = request.fullpath
-      redirect_to setup_admin_administrators_path
-      return false
-    end
-  end
+  # def require_2fa
+  #   return if helpers.current_admin.nil?
+  #   if helpers.current_admin.one_time_setup_token?
+  #     session[:after_admin_login_path] = request.fullpath
+  #     redirect_to setup_admin_administrators_path
+  #     return false
+  #   end
+  # end
 
   def set_timezone( &block )
     Rails.logger.debug "SETTING TIMEZONE TO EST FOR ADMIN"

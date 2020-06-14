@@ -17,7 +17,7 @@ class Admin::SessionsController < Admin::BaseController
   def create
     params[:email] = params[:email].downcase
     a = Administrator.where( email: params[:email].downcase ).first
-    binding.pry
+
     if a &&
        a.authenticate( params[:password] )
       #  (!a.otp_secret_key? || Rails.env.development? || a.authenticate_otp(params[:otp_code]))

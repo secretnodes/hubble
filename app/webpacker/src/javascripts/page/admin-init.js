@@ -1,5 +1,3 @@
-moment.tz.setDefault('EST')
-
 $(document).ready( function() {
   $('[data-toggle="tooltip"]').each( function() {
     const el = $(this)

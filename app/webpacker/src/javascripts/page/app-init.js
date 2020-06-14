@@ -1,11 +1,6 @@
 //= require moment/min/moment.min
 //= require moment-timezone/builds/moment-timezone.min
 
-import 'moment/min/moment.min';
-import 'moment-timezone/builds/moment-timezone.min';
-
-moment.tz.setDefault('UTC')
-
 $(document).ready( function() {
   $('[data-toggle="tooltip"]').each( function() {
     const el = $(this)

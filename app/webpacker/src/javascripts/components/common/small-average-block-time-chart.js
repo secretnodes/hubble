@@ -1,3 +1,6 @@
+import moment from 'moment';
+import Chart from 'chart.js';
+
 class SmallAverageBlockTimeChart {
   constructor( target ) {
     this.target = target

@@ -35,8 +35,7 @@ import '../src/javascripts/components/common/validator-uptime-history.js';
 import '../src/javascripts/components/common/validator-voting-power-history.js';
 import '../src/javascripts/lib/bech32.js';
 import 'bops/dist/bops';
-import '../src/javascripts/lib/Chart.min.js';
-import '../src/javascripts/lib/chartjs-plugin-annotation.min.js';
+import 'moment';
 import '../src/javascripts/lib/chrome-u2f-api.js';
 import '../src/javascripts/lib/custom-tooltip.js';
 import '../src/javascripts/lib/elliptic.js';
@@ -64,7 +63,7 @@ import '../src/javascripts/enigma.js';
 import '../src/javascripts/iris.js';
 import '../src/javascripts/kava.js';
 import '../src/javascripts/terra.js';
-import 'bootstrap/dist/js/bootstrap';
+import 'bootstrap';
 
 
 require("@rails/ujs").start()

@@ -1,6 +1,6 @@
 import 'jquery';
-import 'lodash/lodash';
-import 'moment/min/moment.min';
+import 'lodash';
+import 'moment';
 import 'jquery'
 
 const CAN_DELETE = [
@@ -108,6 +108,12 @@ $(document).ready( function() {
     bindings.canChangeHeight = !App.config.chainIsSyncing || bindings.isNew
     bindings.network = App.config.network.toLowerCase()
 
+    bindings.BADGE_NAMES = BADGE_NAMES
+    bindings.HEIGHT_INFO_TEMPLATE = HEIGHT_INFO_TEMPLATE
+    bindings.EDIT_TEMPLATES = EDIT_TEMPLATES
+    bindings.INFO_TEMPLATES = INFO_TEMPLATES
+    bindings.CAN_DELETE = CAN_DELETE
+
     // generate unique id if we don't have one
     if( !bindings.data.unique_id ) { bindings.data.unique_id = uuid() }
 
@@ -193,6 +199,7 @@ $(document).ready( function() {
     const row = button.parents('.definition-item')
     const kind = button.data('threshold-kind')
     row.find('[name*=kind]').val( kind )
+    console.log(App.config)
     row.find('.inputs').html( EDIT_TEMPLATES[kind]( { index: row.index(), data: {}, network: App.config.network.toLowerCase() } ) )
     button.siblings().removeClass('active').end().addClass('active')
     saveButton.removeClass('d-none')

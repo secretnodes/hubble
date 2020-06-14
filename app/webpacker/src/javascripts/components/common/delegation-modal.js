@@ -1,10 +1,11 @@
+import Ledger from "@lunie/cosmos-ledger"
+
 class DelegationModal {
   constructor( el ) {
     this.DELEGATION_GAS_WANTED = 150000
     this.REDELEGATION_GAS_WANTED = 200000
     this.GAS_PRICE = 0.025
     this.MEMO = 'Delegate to your favourite validator with Puzzle - https://puzzle.secretnodes.org'
-    console.log('beginning of delegation Modal')
     this.modal = el
     this.reset()
     this.modal.on( 'hidden.bs.modal', () => this.reset() )
@@ -15,9 +16,28 @@ class DelegationModal {
 
       if( !triggeredGAEvent ) { ga('send', 'event', 'delegation', 'started') }
 
-      this.ledger = new Ledger()
+      const ledgerSigner = async () => {
+        const signMessage = {} || ``
+        this.ledger = new Ledger(
+           false,
+          [44, 118, 0, 0, 0],
+          'enigma'
+          )
 
-      const setupError = await this.ledger.setupLedger()
+        await this.ledger.connect()
+
+        const publicKey = await this.ledger.getPubKey();
+        const publicAddress = await this.ledger.getCosmosAddress();
+        const showAppVersion = await this.ledger.getCosmosAppVersion();
+        var getOpenApp = await this.ledger.getOpenApp();
+        var cosmosAddress = await this.ledger.getCosmosAddress();
+
+        return publicAddress;
+      }
+
+      const publicAddress = await ledgerSigner();
+
+      const setupError = null;
       if( setupError ) {
         this.modal.find('.delegation-step').hide()
         this.modal.find('.step-error')
@@ -25,11 +45,13 @@ class DelegationModal {
           .end().show()
         return
       }
-
+      const accountBalance = await this.getAccountBalance();
       // console.log('GOT ADDRESS INFO', this.ledger.accountInfo)
       this.modal.find('.step-setup').hide()
+      console.log(publicAddress);
+      console.log(accountBalance);
 
-      if( _.includes( App.config.existingDelegators, this.ledger.accountAddress() ) ) {
+      if( _.includes( App.config.existingDelegators, this.ledger.getCosmosAddress() ) ) {
         this.modal.find('.step-choice')
           .find('.reward-balance').text( `${this.rewardsBalance()} ${App.config.denom}` ).end()
           .show()
@@ -41,13 +63,15 @@ class DelegationModal {
           this.modal.find('.step-choice').hide()
           this.redelegation()
         } )
-        this.modal.find('.choice-new-delegation').click( () => {
+        this.modal.find('.choice-new-delegation').click( async () => {
           this.modal.find('.step-choice').hide()
-          this.newDelegation()
+          this.getAccountBalance(publicAddress)
+            .then(response=> this.newDelegation(response))
         } )
       }
       else {
-        this.newDelegation()
+        this.getAccountBalance(publicAddress)
+          .then(response=> this.newDelegation(response))
       }
 
       this.modal.find('.show-transaction-json').click( ( e ) => {
@@ -73,11 +97,14 @@ class DelegationModal {
     this.modal.find('.view-transaction').attr( 'href', '' )
   }
 
-  newDelegation() {
+  newDelegation(response) {
+    console.log(response);
+    var balance = response[0];
+    var publicAddress = response[1];
     this.modal.find('.modal-dialog').addClass('modal-lg')
     this.modal.find('.step-new-delegation')
-      .find('.account-balance').text( `${this.ledger.accountBalance()} ${App.config.denom}` ).end()
-      .find('.account-address').html( this.ledger.accountAddress(true) ).end()
+      .find('.account-balance').text( `${balance} ${App.config.denom}` ).end()
+      .find('.account-address').html( publicAddress ).end()
       .find('.transaction-fee').text( `${this.delegationTransactionFee()} ${App.config.denom}` ).end()
       .show()
 
@@ -157,7 +184,7 @@ class DelegationModal {
       ga('send', 'event', 'delegation', 'failed')
       this.modal.find('.delegation-step').hide()
       this.modal.find('.step-error')
-        .find('.delegation-error').text(this.ledger.signError || broadcastError || "Unknown error")
+        .find('.delegation-error').text("this.ledger.signError" || broadcastError || "Unknown error")
         .end().show()
     } )
   }
@@ -275,7 +302,7 @@ class DelegationModal {
   }
 
   maxDelegation() {
-    return (this.ledger.accountBalance(false) - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
+    return (5 - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
   }
 
   checkDelegationAmount( amount ) {
@@ -284,6 +311,13 @@ class DelegationModal {
 
   setDelegationAmount( amount ) {
     this.delegationAmount = amount * App.config.remoteScaleFactor
+  }
+
+  async getAccountBalance( address ) {
+    let res = await fetch('/api/v1/account_balance?chain_id=1&address=' + address)
+      .then(response => response.json())
+      .then(data => console.log('data ', data));
+      return [res, address];
   }
 }
 

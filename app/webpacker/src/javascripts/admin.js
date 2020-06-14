@@ -15,8 +15,7 @@
 
 import 'jquery';
 import 'lodash/lodash.min';
-import 'moment/min/moment.min';
-import 'moment-timezone/builds/moment-timezone.min';
+import 'moment';
 import 'tooltipster/dist/js/tooltipster.bundle.min';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './lib/uuid';
