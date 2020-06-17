@@ -4,6 +4,7 @@ class Common::ValidatorSyncService
   end
 
   def update_history_height!
+    puts @chain.valid?
     @chain.update! history_height: @chain.latest_local_height
   end
 
