@@ -1,5 +1,5 @@
 namespace :backfill_transactions do
-  %w{ enigma cosmos terra iris kava }.each do |network|
+  %w{ secret enigma cosmos terra iris kava }.each do |network|
     task :"#{network.to_sym}" => :environment do
       $stdout.sync = true
       puts "\nStarting sync:#{network} task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
