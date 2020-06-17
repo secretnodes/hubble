@@ -39,18 +39,20 @@ class Common::ValidatorSyncService
           # create any new validators we haven't seen before
           all_addresses = block.precommitters + block.validator_set.keys
           to_create = all_addresses.uniq - existing_validators.keys
-          to_create.each do |new_addr|
-            v = @chain.validators.create(
-              address: new_addr,
-              first_seen_at: block.timestamp
-            )
+          if to_create != ['']
+            to_create.each do |new_addr|
+              v = @chain.validators.create(
+                address: new_addr,
+                first_seen_at: block.timestamp
+              )
 
-            if v.persisted? && v.valid?
-              new_validators += 1
-              # puts "ADDED VALIDATOR: #{new_addr} #{v.valid?}"
-              existing_validators[new_addr] = v
-            elsif ENV['DEBUG']
-              puts "Invalid validator found: #{new_addr.inspect}\nALL: #{all_addresses.inspect}\nTO CREATE: #{to_create.inspect}\n\n"
+              if v.persisted? && v.valid?
+                new_validators += 1
+                # puts "ADDED VALIDATOR: #{new_addr} #{v.valid?}"
+                existing_validators[new_addr] = v
+              elsif ENV['DEBUG']
+                puts "Invalid validator found: #{new_addr.inspect}\nALL: #{all_addresses.inspect}\nTO CREATE: #{to_create.inspect}\n\n"
+              end
             end
           end
 
