@@ -1,7 +1,7 @@
 class Util::LogsController < ApplicationController
 
   def index
-    raise ActionController::NotFound if !params[:network].in?(%w{ enigma cosmos terra iris kava })
+    raise ActionController::NotFound if !params[:network].in?(%w{ secret enigma cosmos terra iris kava })
     @chain = params[:network].titleize.constantize::Chain.find_by( slug: params[:chain_id] )
     page_title @chain.network_name, @chain.name, 'Sync Logs'
 

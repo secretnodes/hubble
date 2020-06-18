@@ -17,6 +17,18 @@
 
     <div class='card'>
       <h5 class='card-header header mb-0'>
+        Secret
+        <div class='buttons text-right'>
+          <% show_dead_secret = params[:dead] == 'secret' -%>
+          <a class='btn btn-sm btn-outline-light' href='<%= admin_root_path( dead: show_dead_secret ? nil : 'secret' ) %>'><%= show_dead_secret ? 'hide' : 'show' %> dead</a>
+          <a class='btn btn-sm btn-light' href='<%= new_admin_secret_chain_path %>'>+ new</a>
+        </div>
+      </h5>
+      <div class='card-body p-0'><%= render '/admin/common/chains/quick_info', chains: Secret::Chain.public_send( show_dead_secret ? 'all' : 'alive' ) %></div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header header mb-0'>
         Cosmos
         <div class='buttons text-right'>
           <% show_dead_cosmos = params[:dead] == 'cosmos' -%>
