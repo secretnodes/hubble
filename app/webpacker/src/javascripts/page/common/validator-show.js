@@ -19,7 +19,7 @@ $(document).ready( function() {
   new App.Common.ValidatorUptimeHistory( $(`.uptime-history-last48h-chart`), 'last48h' ).render()
   const API_URL = 'http://65.19.134.86:26657'
   const ADDRESS = "enigma1jk9zmatkhj2qh37j6ym9xt40s697adf5txv3z2"
-  const { createSignMessage } = require('@lunie/cosmos-api');
+
   console.log(Buffer.from('abc'));
 
   const ledgerSigner = async () => {

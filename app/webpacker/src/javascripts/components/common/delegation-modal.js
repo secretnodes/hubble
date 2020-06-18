@@ -1,30 +1,43 @@
-import Ledger from "@lunie/cosmos-ledger"
+import Ledger from "@lunie/cosmos-ledger";
+import _ from 'lodash';
+
 
 class DelegationModal {
   constructor( el ) {
     this.DELEGATION_GAS_WANTED = 150000
     this.REDELEGATION_GAS_WANTED = 200000
     this.GAS_PRICE = 0.025
-    this.MEMO = 'Delegate to your favourite validator with Puzzle - https://puzzle.secretnodes.org'
+    this.MEMO = 'Delegate to your favorite validator with Puzzle - https://puzzle.secretnodes.org'
     this.modal = el
     this.reset()
     this.modal.on( 'hidden.bs.modal', () => this.reset() )
 
-    let triggeredGAEvent =  false
+    const API_URL = 'http://65.19.134.86:26657';
+    const ADDRESS = "enigma1jk9zmatkhj2qh37j6ym9xt40s697adf5txv3z2";
+    const Cosmos = require('@lunie/cosmos-js/src/index.js').default;
+
+    this.cosmos = new Cosmos(API_URL, ADDRESS);
+    console.log(this.cosmos);
+
+    console.log('tangent');
+    let triggeredGAEvent =  false;
     this.modal.on( 'shown.bs.modal', async () => {
       this.reset()
 
       if( !triggeredGAEvent ) { ga('send', 'event', 'delegation', 'started') }
-
+      const hdPath = Buffer.from([44, 118, 0, 0, 0], 'hex')
+      console.log(hdPath);
       const ledgerSigner = async () => {
         const signMessage = {} || ``
         this.ledger = new Ledger(
            false,
-          [44, 118, 0, 0, 0],
+          hdPath,
           'enigma'
           )
 
-        await this.ledger.connect()
+        await this.ledger.connect();
+
+        console.log(this.ledger.hdPath);
 
         const publicKey = await this.ledger.getPubKey();
         const publicAddress = await this.ledger.getCosmosAddress();
@@ -35,7 +48,8 @@ class DelegationModal {
         return publicAddress;
       }
 
-      const publicAddress = await ledgerSigner();
+      this.publicAddress = await ledgerSigner();
+      this.txContext = await this.setTxContext();
 
       const setupError = null;
       if( setupError ) {
@@ -45,13 +59,12 @@ class DelegationModal {
           .end().show()
         return
       }
-      const accountBalance = await this.getAccountBalance();
+      this.accountBalance = this.formatBalance(await this.getAccountBalance());
       // console.log('GOT ADDRESS INFO', this.ledger.accountInfo)
       this.modal.find('.step-setup').hide()
-      console.log(publicAddress);
-      console.log(accountBalance);
-
-      if( _.includes( App.config.existingDelegators, this.ledger.getCosmosAddress() ) ) {
+      
+      console.log(this.txContext.value)
+      if( _.includes( App.config.existingDelegators, this.publicAddress ) ) {
         this.modal.find('.step-choice')
           .find('.reward-balance').text( `${this.rewardsBalance()} ${App.config.denom}` ).end()
           .show()
@@ -65,12 +78,12 @@ class DelegationModal {
         } )
         this.modal.find('.choice-new-delegation').click( async () => {
           this.modal.find('.step-choice').hide()
-          this.getAccountBalance(publicAddress)
+          this.getAccountBalance()
             .then(response=> this.newDelegation(response))
         } )
       }
       else {
-        this.getAccountBalance(publicAddress)
+        this.getAccountBalance()
           .then(response=> this.newDelegation(response))
       }
 
@@ -98,13 +111,13 @@ class DelegationModal {
   }
 
   newDelegation(response) {
-    console.log(response);
-    var balance = response[0];
-    var publicAddress = response[1];
+
+    var balance = this.formatBalance(response) / App.config.remoteScaleFactor;
+    console.log(this.accountBalance);
     this.modal.find('.modal-dialog').addClass('modal-lg')
     this.modal.find('.step-new-delegation')
       .find('.account-balance').text( `${balance} ${App.config.denom}` ).end()
-      .find('.account-address').html( publicAddress ).end()
+      .find('.account-address').html( this.publicAddress ).end()
       .find('.transaction-fee').text( `${this.delegationTransactionFee()} ${App.config.denom}` ).end()
       .show()
 
@@ -159,16 +172,22 @@ class DelegationModal {
       this.modal.find('.modal-dialog').removeClass('modal-lg')
       this.modal.find('.step-confirm').show()
 
-      const txObject = this.delegationTransactionObject()
+      const txObject = this.delegationTransactionObject();
+      let createMessage = this.createSkeleton(this.txContext, [txObject]);
+      console.log(txObject);
+      console.log(createMessage);
 
+      const signature = await this.ledger.sign([createMessage]);
       this.modal.find('.transaction-json').text(
         JSON.stringify( txObject, undefined, 2 )
       )
 
-      const txPayload = await this.ledger.generateTransaction( txObject )
+      console.log(signature);
+      // const txPayload = await this.ledger.sign( msg )
+        const txPayload = '';
       let broadcastError = null
       if( txPayload ) {
-        const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
+        // const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
         if( broadcastResult.ok ) {
           this.modal.find('.delegation-step').hide()
           this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
@@ -198,11 +217,12 @@ class DelegationModal {
     this.modal.find('.transaction-json').text(
       JSON.stringify( txObject, undefined, 2 )
     )
-
-    const txPayload = await this.ledger.generateTransaction( txObject )
+      console.log(txObject);
+    const txPayload = await this.ledger.sign( txObject )
     let broadcastError = null
+    console.log(txPayload);
     if( txPayload ) {
-      const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
+      // const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
       if( broadcastResult.ok ) {
         this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
         this.modal.find('.step-complete').show()
@@ -222,28 +242,13 @@ class DelegationModal {
 
   delegationTransactionObject() {
     return {
-      msg: [
-        {
           type: 'cosmos-sdk/MsgDelegate',
           value: {
-            delegator_address: this.ledger.accountInfo.value.address,
+            delegator_address: this.publicAddress,
             validator_address: App.config.validatorOperatorAddress,
             amount: { denom: App.config.remoteDenom, amount: this.delegationAmount.toString() }
           }
         }
-      ],
-      fee: {
-        amount: [
-          {
-            denom: App.config.remoteDenom,
-            amount: this.delegationTransactionFee( false ).toString()
-          }
-        ],
-        gas: this.DELEGATION_GAS_WANTED.toString()
-      },
-      signatures: null,
-      memo: this.MEMO
-    }
   }
 
   redelegationTransactionObject() {
@@ -302,7 +307,7 @@ class DelegationModal {
   }
 
   maxDelegation() {
-    return (5 - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
+    return (this.accountBalance - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
   }
 
   checkDelegationAmount( amount ) {
@@ -313,11 +318,113 @@ class DelegationModal {
     this.delegationAmount = amount * App.config.remoteScaleFactor
   }
 
-  async getAccountBalance( address ) {
-    let res = await fetch('/api/v1/account_balance?chain_id=1&address=' + address)
-      .then(response => response.json())
-      .then(data => console.log('data ', data));
-      return [res, address];
+  async getAccountBalance( ) {
+    return fetch('/api/v1/account_balance?chain_id=1&address=' + this.publicAddress)
+      .then(response => {if (response.status == 200) {
+        return response.json()
+      } else {
+        throw new Error(res.status);
+      }});
+  }
+
+  formatBalance(response) {
+    if (response['balance'][0]['denom'] == 'uscrt') {
+      return response['balance'][0]['amount'];
+    }
+  }
+
+  async setTxContext( ) {
+    let url = '/api/v1/account_info?chain_id=1&address=' + this.publicAddress;
+    return fetch(url)
+      .then(response => {
+        if (response.status == 200) {
+          return response.json();
+        }
+      })
+  }
+
+  createSkeleton(txContext, msgs = []) {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.value.account_number === 'undefined') {
+      throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.value.sequence === 'undefined') {
+      throw new Error('txContext does not contain the sequence value');
+    }
+    const txSkeleton = {
+      "type": 'auth/StdTx',
+      "value": {
+        "msg": msgs,
+        "fee": '',
+        "memo": txContext.value.memo || this.MEMO,
+        "signatures": [{
+          "signature": 'N/A',
+          "account_number": txContext.value.account_number.toString(),
+          "sequence": txContext.value.sequence.toString(),
+          "pub_key": {
+            "type": 'tendermint/PubKeySecp256k1',
+            "value": txContext.pk || 'PK',
+          },
+        }],
+      },
+    };
+    // return Ledger.applyGas(txSkeleton, DEFAULT_GAS);
+    return txSkeleton;
+  }
+
+  createLedgerTx() {
+    return {
+      "msg": [
+        {
+          "type": `cosmos-sdk/Send`,
+          "value": {
+            "inputs": [
+              {
+                "address": this.publicAddress,
+                "coins": [{ "denom": `STAKE`, "amount": `1` }]
+              }
+            ],
+            "outputs": [
+              {
+                "address": App.config.validatorOperatorAddress,
+                "coins": [{ "denom": `STAKE`, "amount": `1` }]
+              }
+            ]
+          }
+        }
+      ],
+      "fee": { "amount": [{ "denom": ``, "amount": `0` }], "gas": `21906` },
+      "signatures": null,
+      "memo": ``
+    }
+  }
+
+  getBytesToSign(tx, txContext) {
+    if (typeof txContext === 'undefined') {
+      throw new Error('txContext is not defined');
+    }
+    if (typeof txContext.chainId === 'undefined') {
+      throw new Error('txContext does not contain the chainId');
+    }
+    if (typeof txContext.accountNumber === 'undefined') {
+      throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.sequence === 'undefined') {
+      throw new Error('txContext does not contain the sequence value');
+    }
+
+    const txFieldsToSign = {
+      account_number: txContext.accountNumber.toString(),
+      chain_id: txContext.chainId,
+      fee: tx.value.fee,
+      memo: tx.value.memo,
+      msgs: tx.value.msg,
+      sequence: txContext.sequence.toString(),
+    };
+
+    return JSON.stringify(canonicalizeJson(txFieldsToSign));
   }
 }
 
