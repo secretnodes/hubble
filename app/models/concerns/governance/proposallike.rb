@@ -47,7 +47,7 @@ module Governance::Proposallike
   end
 
   def ended?
-    passed? || rejected? || voting_end_time.past?
+    passed? || rejected? || (voting_end_time.past? && !in_deposit_period?)
   end
 
   def rejected?
