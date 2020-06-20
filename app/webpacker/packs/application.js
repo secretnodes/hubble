@@ -60,6 +60,7 @@ import '../src/javascripts/account.js';
 import '../src/javascripts/admin.js';
 import '../src/javascripts/cosmos.js';
 import '../src/javascripts/enigma.js';
+import '../src/javascripts/secret.js';
 import '../src/javascripts/iris.js';
 import '../src/javascripts/kava.js';
 import '../src/javascripts/terra.js';

@@ -1,6 +1,6 @@
 class Api::V1::AccountsController < ApplicationController
   def balance
-    chain = Enigma::Chain.find params[:chain_id]
+    chain = Secret::Chain.find params[:chain_id]
 
     syncer = chain.syncer( 3_000 )
     balance = syncer.get_account_balances params[:address]
@@ -15,7 +15,7 @@ class Api::V1::AccountsController < ApplicationController
   end
 
   def info
-    chain = Enigma::Chain.find params[:chain_id]
+    chain = Secret::Chain.find params[:chain_id]
 
     syncer = chain.syncer( 3_000 )
     info = syncer.get_account_info params[:address]

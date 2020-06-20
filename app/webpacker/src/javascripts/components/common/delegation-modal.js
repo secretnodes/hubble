@@ -12,32 +12,20 @@ class DelegationModal {
     this.reset()
     this.modal.on( 'hidden.bs.modal', () => this.reset() )
 
-    const API_URL = 'http://65.19.134.86:26657';
-    const ADDRESS = "enigma1jk9zmatkhj2qh37j6ym9xt40s697adf5txv3z2";
-    const Cosmos = require('@lunie/cosmos-js/src/index.js').default;
-
-    this.cosmos = new Cosmos(API_URL, ADDRESS);
-    console.log(this.cosmos);
-
-    console.log('tangent');
     let triggeredGAEvent =  false;
     this.modal.on( 'shown.bs.modal', async () => {
       this.reset()
 
       if( !triggeredGAEvent ) { ga('send', 'event', 'delegation', 'started') }
-      const hdPath = Buffer.from([44, 118, 0, 0, 0], 'hex')
-      console.log(hdPath);
       const ledgerSigner = async () => {
         const signMessage = {} || ``
         this.ledger = new Ledger(
            false,
-          hdPath,
-          'enigma'
+           [44, 118, 0, 0, 0],
+          'secret'
           )
 
         await this.ledger.connect();
-
-        console.log(this.ledger.hdPath);
 
         const publicKey = await this.ledger.getPubKey();
         const publicAddress = await this.ledger.getCosmosAddress();
@@ -49,7 +37,9 @@ class DelegationModal {
       }
 
       this.publicAddress = await ledgerSigner();
+      this.publicKey = await this.ledger.getPubKey();
       this.txContext = await this.setTxContext();
+      this.txContext = this.txContext.value
 
       const setupError = null;
       if( setupError ) {
@@ -63,12 +53,11 @@ class DelegationModal {
       // console.log('GOT ADDRESS INFO', this.ledger.accountInfo)
       this.modal.find('.step-setup').hide()
       
-      console.log(this.txContext.value)
       if( _.includes( App.config.existingDelegators, this.publicAddress ) ) {
         this.modal.find('.step-choice')
-          .find('.reward-balance').text( `${this.rewardsBalance()} ${App.config.denom}` ).end()
+          .find('.reward-balance').text( `${5} ${App.config.denom}` ).end()
           .show()
-        if( this.rewardsBalance() == 0 ) {
+        if( 5 == 0 ) {
           this.modal.find('.choice-redelegate').attr('disabled', 'disabled')
         }
 
@@ -113,7 +102,6 @@ class DelegationModal {
   newDelegation(response) {
 
     var balance = this.formatBalance(response) / App.config.remoteScaleFactor;
-    console.log(this.accountBalance);
     this.modal.find('.modal-dialog').addClass('modal-lg')
     this.modal.find('.step-new-delegation')
       .find('.account-balance').text( `${balance} ${App.config.denom}` ).end()
@@ -172,22 +160,24 @@ class DelegationModal {
       this.modal.find('.modal-dialog').removeClass('modal-lg')
       this.modal.find('.step-confirm').show()
 
-      const txObject = this.delegationTransactionObject();
-      let createMessage = this.createSkeleton(this.txContext, [txObject]);
+      const txObject = this.delegationMsgObject();
+      console.log(txObject);
+      let createMessage = JSON.stringify(removeEmptyProperties(this.createSkeleton(this.txContext, [txObject])));
       console.log(txObject);
       console.log(createMessage);
 
-      const signature = await this.ledger.sign([createMessage]);
       this.modal.find('.transaction-json').text(
         JSON.stringify( txObject, undefined, 2 )
       )
+      const sig = await this.ledger.sign(createMessage);
+      console.log(Buffer.from(sig).toString('base64'))
+      let appliedSig = this.createBroadcastTx(this.txContext, [txObject], sig);
 
-      console.log(signature);
-      // const txPayload = await this.ledger.sign( msg )
-        const txPayload = '';
+      console.log(JSON.stringify(appliedSig));
       let broadcastError = null
-      if( txPayload ) {
-        // const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
+      if( appliedSig ) {
+        const broadcastResult = await this.broadcastTransaction( appliedSig )
+        console.log(broadcastResult);
         if( broadcastResult.ok ) {
           this.modal.find('.delegation-step').hide()
           this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
@@ -203,7 +193,7 @@ class DelegationModal {
       ga('send', 'event', 'delegation', 'failed')
       this.modal.find('.delegation-step').hide()
       this.modal.find('.step-error')
-        .find('.delegation-error').text("this.ledger.signError" || broadcastError || "Unknown error")
+        .find('.delegation-error').text(broadcastError || "Unknown error")
         .end().show()
     } )
   }
@@ -220,7 +210,6 @@ class DelegationModal {
       console.log(txObject);
     const txPayload = await this.ledger.sign( txObject )
     let broadcastError = null
-    console.log(txPayload);
     if( txPayload ) {
       // const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
       if( broadcastResult.ok ) {
@@ -240,7 +229,7 @@ class DelegationModal {
       .end().show()
   }
 
-  delegationTransactionObject() {
+  delegationMsgObject() {
     return {
           type: 'cosmos-sdk/MsgDelegate',
           value: {
@@ -343,61 +332,69 @@ class DelegationModal {
       })
   }
 
-  createSkeleton(txContext, msgs = []) {
+  createSkeleton(txContext, msgs = [], sigs = null) {
     if (typeof txContext === 'undefined') {
       throw new Error('undefined txContext');
     }
-    if (typeof txContext.value.account_number === 'undefined') {
+    if (typeof txContext.account_number === 'undefined') {
       throw new Error('txContext does not contain the accountNumber');
     }
-    if (typeof txContext.value.sequence === 'undefined') {
+    if (typeof txContext.sequence === 'undefined') {
       throw new Error('txContext does not contain the sequence value');
     }
+
     const txSkeleton = {
-      "type": 'auth/StdTx',
-      "value": {
-        "msg": msgs,
-        "fee": '',
-        "memo": txContext.value.memo || this.MEMO,
-        "signatures": [{
-          "signature": 'N/A',
-          "account_number": txContext.value.account_number.toString(),
-          "sequence": txContext.value.sequence.toString(),
-          "pub_key": {
-            "type": 'tendermint/PubKeySecp256k1',
-            "value": txContext.pk || 'PK',
-          },
-        }],
+      type: "cosmos-sdk/StdTx",
+      fee: {
+        amount: [
+          {
+            denom: App.config.remoteDenom,
+            amount: this.delegationTransactionFee( false ).toString()
+          }
+        ],
+        gas: this.DELEGATION_GAS_WANTED.toString()
       },
-    };
+      memo: txContext.memo || this.MEMO,
+      msgs: msgs,
+      msg: msgs,
+      sequence: 0,
+      account_number: txContext.account_number,
+      chain_id: 'secret-1',
+      signatures: sigs
+    }
     // return Ledger.applyGas(txSkeleton, DEFAULT_GAS);
     return txSkeleton;
   }
 
-  createLedgerTx() {
+  createBroadcastTx(txContext, msgs, sig) {
     return {
-      "msg": [
-        {
-          "type": `cosmos-sdk/Send`,
-          "value": {
-            "inputs": [
-              {
-                "address": this.publicAddress,
-                "coins": [{ "denom": `STAKE`, "amount": `1` }]
-              }
-            ],
-            "outputs": [
-              {
-                "address": App.config.validatorOperatorAddress,
-                "coins": [{ "denom": `STAKE`, "amount": `1` }]
-              }
-            ]
+      type: "cosmos-sdk/StdTx",
+      value: {
+        msg: msgs,
+        fee: {
+          amount: [
+            {
+              denom: App.config.remoteDenom,
+              amount: this.delegationTransactionFee( false ).toString()
+            }
+          ],
+          gas: this.DELEGATION_GAS_WANTED.toString()
+        },
+        memo: txContext.memo || this.MEMO,
+        chain_id: 'secret-1',
+        signatures: [
+          {
+            signature: Buffer.from(sig).toString('base64'),
+            account_number: txContext.account_number,
+            sequence: 0,
+            pub_key: {
+              type: "tendermint/PubKeySecp256k1",
+              value: Buffer.from(this.publicKey).toString('base64')
+            },
           }
-        }
-      ],
-      "fee": { "amount": [{ "denom": ``, "amount": `0` }], "gas": `21906` },
-      "signatures": null,
-      "memo": ``
+        ]
+      },
+      
     }
   }
 
@@ -416,8 +413,8 @@ class DelegationModal {
     }
 
     const txFieldsToSign = {
-      account_number: txContext.accountNumber.toString(),
-      chain_id: txContext.chainId,
+      account_number: txContext.account_number.toString(),
+      chain_id: txContext.chain_id,
       fee: tx.value.fee,
       memo: tx.value.memo,
       msgs: tx.value.msg,
@@ -426,6 +423,77 @@ class DelegationModal {
 
     return JSON.stringify(canonicalizeJson(txFieldsToSign));
   }
+
+  async broadcastTransaction( txPayload ) {
+    if( !txPayload ) { return false }
+    console.log( App.config.broadcastTxPath);
+    // console.log('FINAL TX', txPayload)
+    const response = await fetch( App.config.broadcastTxPath, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': $('meta[name=csrf-token]').attr('content')
+      },
+      body: JSON.stringify( { tx: txPayload, mode: 'block' } )
+    } )
+    const responseData = await response.json()
+    return responseData
+  }
+
+  applySignature(unsignedTx, txContext, secp256k1Sig) {
+    if (typeof unsignedTx === 'undefined') {
+        throw new Error('undefined unsignedTx');
+    }
+    if (typeof txContext === 'undefined') {
+        throw new Error('undefined txContext');
+    }
+    if (typeof this.publicKey === 'undefined') {
+        throw new Error('txContext does not contain the public key (pk)');
+    }
+    if (typeof txContext.account_number === 'undefined') {
+        throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.sequence === 'undefined') {
+        throw new Error('txContext does not contain the sequence value');
+    }
+
+    const tmpCopy = Object.assign({}, unsignedTx, {});
+
+    tmpCopy.value.signatures = [
+        {
+            signature: secp256k1Sig.toString('base64'),
+            account_number: txContext.account_number.toString(),
+            sequence: txContext.sequence.toString(),
+            pub_key: {
+                type: 'tendermint/PubKeySecp256k1',
+                value: this.publicKey//Buffer.from(txContext.pk, 'hex').toString('base64'),
+            },
+        },
+    ];
+    return tmpCopy;
+}
+}
+
+function removeEmptyProperties(jsonTx) {
+  if (Array.isArray(jsonTx)) {
+    return jsonTx.map(removeEmptyProperties)
+  }
+
+  // string or number
+  if (typeof jsonTx !== `object`) {
+    return jsonTx
+  }
+
+  const sorted = {}
+  Object.keys(jsonTx)
+    .sort()
+    .forEach((key) => {
+      if (jsonTx[key] === undefined || jsonTx[key] === null) return
+
+      sorted[key] = removeEmptyProperties(jsonTx[key])
+    })
+  return sorted
 }
 
 App.Common.DelegationModal = DelegationModal
