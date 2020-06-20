@@ -7,6 +7,7 @@ class DelegationModal {
     this.GAS_PRICE = 0.025
     this.MEMO = 'Delegate to your favourite validator with Puzzle - https://puzzle.secretnodes.org'
     this.modal = el
+
     this.reset()
     this.modal.on( 'hidden.bs.modal', () => this.reset() )
 

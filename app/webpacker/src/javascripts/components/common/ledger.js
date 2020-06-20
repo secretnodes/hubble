@@ -1,285 +1,492 @@
-import elliptic from 'elliptic';
-import 'bops/dist/bops';
-import 'bn.js/lib/bn';
-import '../../lib/bech32';
-import '../../lib/chrome-u2f-api';
-import 'crypto-js/crypto-js';
-import 'crypto-js/enc-hex';
-import 'crypto-js/sha256';
-import 'crypto-js/ripemd160';
+// https://github.com/zondax/cosmos-delegation-js/
+// https://github.com/cosmos/ledger-cosmos-js/blob/master/src/index.js
+import 'babel-polyfill';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import CosmosApp from 'ledger-cosmos-js';
+import { signatureImport } from 'secp256k1';
+import semver from 'semver';
+import bech32 from 'bech32';
+import sha256 from 'crypto-js/sha256';
+import ripemd160 from 'crypto-js/ripemd160';
+import CryptoJS from 'crypto-js';
 
+// TODO: discuss TIMEOUT value
+const INTERACTION_TIMEOUT = 10000;
+const REQUIRED_COSMOS_APP_VERSION = '1.5.0';
+const DEFAULT_DENOM = 'uatom';
+const DEFAULT_GAS = 200000;
+export const DEFAULT_GAS_PRICE = 0.025;
+export const DEFAULT_MEMO = 'Sent via Big Dipper';
 
-const HD_PATH = [44, 118, 0, 0, 0]
+/*
+HD wallet derivation path (BIP44)
+DerivationPath{44, 118, account, 0, index}
+*/
+console.log(App.config)
+const HDPATH = [44, 118, 0, 0, 0];
+const BECH32PREFIX = App.config.public.bech32PrefixAccAddr;
 
-// class Ledger {
-//   constructor() {
-//     this.LEDGER_TIMEOUT_MS = 5000
-//     this.LEDGER_INTERVAL_MS = 1500
-//     this.EC = elliptic.ec('secp256k1')
-//   }
+function bech32ify(address, prefix) {
+  const words = bech32.toWords(address);
+  return bech32.encode(prefix, words);
+}
 
-//   setupLedger() {
-//     console.log('setupLedger');
+export const toPubKey = (address) => bech32.decode(Meteor.settings.public.bech32PrefixAccAddr, address);
 
-//   }
+function createCosmosAddress(publicKey) {
+  const message = CryptoJS.enc.Hex.parse(publicKey.toString('hex'));
+  const hash = ripemd160(sha256(message)).toString();
+  const address = Buffer.from(hash, 'hex');
+  const cosmosAddress = bech32ify(address, Meteor.settings.public.bech32PrefixAccAddr);
+  return cosmosAddress;
+}
 
-//   async setupLedgerLoop() {
-//     console.log('setupLedgerLoop');
-//     const scheduleCheck = () => {
-//       // go again if we aren't done setup
-//       if( !this.accountInfo ) { setTimeout( () => this.setupLedgerLoop(), this.LEDGER_INTERVAL_MS ) }
-//     }
-//     console.log('before check for device');
-//     if( !this.device ) {
-//       console.log(this.device)
-//       const conn = await window.ledger.comm_u2f.create_async( this.LEDGER_TIMEOUT_MS, true )
-//       this.device = new window.ledger.App(conn)
-//       scheduleCheck()
-//     }
-//     else {
-//       console.log('inside else')
-//       console.log(this.device)
-//       const versionResponse = await this.device.get_version()
-//       console.log('versionresponse')
-//       const pkResponse = await this.device.publicKey(HD_PATH)
+export class Ledger {
+  constructor({ testModeAllowed }) {
+    this.testModeAllowed = testModeAllowed;
+  }
 
-//       try {
-//         this.pk = this.device.compressPublicKey( pkResponse.pk )
-//       }
-//       catch( e ) {
-//         // this is ok, it just means we haven't connected yet
-//         // console.error( "Could not compress public key.", e )
-//         scheduleCheck()
-//         return
-//       }
-//       console.log('before get address from public key')
+  // test connection and compatibility
+  async testDevice() {
+    // poll device with low timeout to check if the device is connected
+    const secondsTimeout = 3; // a lower value always timeouts
+    await this.connect(secondsTimeout);
+  }
 
-//       const address = this.getAddressFromPublicKey( this.pk )
-//       // console.log( 'ledger', { pk: pkResponse.pk, cpk: this.pk, address } )
+  async isSendingData() {
+    // check if the device is connected or on screensaver mode
+    const response = await this.cosmosApp.publicKey(HDPATH);
+    this.checkLedgerErrors(response, {
+      timeoutMessag: 'Could not find a connected and unlocked Ledger device',
+    });
+  }
 
-//       const addressInfoURL = `${App.config.addressInfoPathTemplate.replace('ADDRESS', address)}?validator=${App.config.validatorOperatorAddress}`
-//       const addressInfoResponse = await fetch( addressInfoURL, {
-//         method: 'GET',
-//         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-//       } )
-//       const accountInfo = await addressInfoResponse.json()
+  async isReady() {
+    // check if the version is supported
+    const version = await this.getCosmosAppVersion();
 
-//       this.accountInfo = accountInfo
-//       this.setupCb( accountInfo ? null : `Account ${address} not found.` )
-//     }
-//   }
+    if (!semver.gte(version, REQUIRED_COSMOS_APP_VERSION)) {
+      const msg = 'Outdated version: Please update Ledger Cosmos App to the latest version.';
+      throw new Error(msg);
+    }
 
-//   getAddressFromPublicKey( hex ) {
-//     console.log('getAddressFromPublicKey');
-//     const pubKey = this.EC.keyFromPublic(hex, 'hex')
-//     const hash = sha256ripemd160(ab2hexstring(pubKey.getPublic().encodeCompressed()))
-//     console.log(hash)
-//     return encodeAddress(hash)
-//   }
+    // throws if not open
+    await this.isCosmosAppOpen();
+  }
 
-//   accountAddress( truncate=false ) {
-//     console.log('accountAddress');
-//     const addr = this.accountInfo.value.address
-//     if( !truncate || addr.lengh <= 32 ) { return addr }
-//     return `${addr.substr(0, 15)}&hellip;${addr.substr(addr.length - 16)}`
-//   }
+  // connects to the device and checks for compatibility
+  async connect(timeout = INTERACTION_TIMEOUT) {
+    // assume well connection if connected once
+    if (this.cosmosApp) return;
 
-//   accountBalance( scale=true ) {
-//     console.log('accountBalance');
-//     if( !this.accountInfo ) { throw new Error("No address info. Do not call `balance`.") }
-//     const coin = _.find( this.accountInfo.value.coins, coin => coin.denom == App.config.remoteDenom )
-//     return parseFloat( coin.amount ) / (scale ? App.config.remoteScaleFactor : 1)
-//   }
+    const transport = await TransportWebUSB.create(timeout);
+    const cosmosLedgerApp = new CosmosApp(transport);
 
-//   async generateTransaction( txObject ) {
-//     this.signError = null
-//     const txPayload = await this.signTransaction( txObject )
-//     return txPayload
-//   }
+    this.cosmosApp = cosmosLedgerApp;
 
-//   async broadcastTransaction( txPayload ) {
-//     if( !txPayload ) { return false }
+    await this.isSendingData();
+    await this.isReady();
+  }
 
-//     // console.log('FINAL TX', txPayload)
-//     const response = await fetch( App.config.broadcastTxPath, {
-//       method: 'POST',
-//       headers: {
-//         'Accept': 'application/json',
-//         'Content-Type': 'application/json',
-//         'X-CSRF-Token': $('meta[name=csrf-token]').attr('content')
-//       },
-//       body: JSON.stringify( { payload: txPayload } )
-//     } )
-//     const responseData = await response.json()
-//     return responseData
-//   }
+  async getCosmosAppVersion() {
+    await this.connect();
 
-//   async signTransaction( tx ) {
-//     const metadata = {
-//       sequence: this.accountInfo.value.sequence,
-//       account_number: this.accountInfo.value.account_number,
-//       chain_id: App.config.chainId
-//     }
-//     const preparedMessage = prepareMessage( tx, metadata )
-//     // console.log( "PREPARED", preparedMessage )
+    const response = await this.cosmosApp.getVersion();
+    this.checkLedgerErrors(response);
+    const {
+      major, minor, patch, test_mode,
+    } = response;
+    checkAppMode(this.testModeAllowed, test_mode);
+    const version = versionString({ major, minor, patch });
 
-//     const sigResponse = await this.device.sign( HD_PATH, preparedMessage )
-//     // console.log( 'SIGNED', sigResponse )
+    return version;
+  }
 
-//     let readyToSendTransaction = null
+  async isCosmosAppOpen() {
+    await this.connect();
 
-//     // console.log("LEDGER RETURN CODE", sigResponse.return_code)
-//     if( sigResponse.return_code == 36864 ) {
-//       const signature = createSignature(
-//         sigResponse.signature,
-//         this.accountInfo.value.sequence,
-//         this.accountInfo.value.account_number,
-//         this.pk,
-//         this.EC.curve
-//       )
-//       const signedTx = applySignature( tx, signature )
-//       readyToSendTransaction = signedTx
-//     }
-//     else if( sigResponse.return_code == 27014 ) {
-//       this.signError = "The transaction was rejected."
-//     }
-//     else if( sigResponse.return_code == 28160 ) {
-//       this.signError = "Ledger out of sync. Maybe it was power cycled?"
-//     }
-//     else {
-//       this.signError = `Unknown error. Code: ${sigResponse.return_code}`
-//     }
+    const response = await this.cosmosApp.appInfo();
+    this.checkLedgerErrors(response);
+    const { appName } = response;
 
-//     return readyToSendTransaction
-//   }
-// }
+    if (appName.toLowerCase() !== 'cosmos') {
+      throw new Error(`Close ${appName} and open the Cosmos app`);
+    }
+  }
 
-// function encodeAddress( value, prefix=null, type='hex') {
-//   console.log('encodeAddress');
-//   if( prefix === null ) {
-//     prefix = App.config.prefixes.account_address.replace(/1$/, '')
-//   }
-//   const words = bech32.toWords(bops.from(value, type))
-//   return bech32.encode(prefix, words)
-// }
+  async getPubKey() {
+    await this.connect();
 
-// function ab2hexstring(arr) {
-//   console.log('ab2hexstring');
-//   if (typeof arr !== 'object') {
-//     throw new Error('ab2hexstring expects an array');
-//   }
-//   let result = '';
-//   for (let i = 0; i < arr.length; i++) {
-//     let str = arr[i].toString(16);
-//     str = str.length === 0 ? '00' : str.length === 1 ? `0${str}` : str;
-//     result += str;
-//   }
-//   return result;
-// }
+    const response = await this.cosmosApp.publicKey(HDPATH);
+    this.checkLedgerErrors(response);
+    return response.compressed_pk;
+  }
 
-// function sha256ripemd160( hex ) {
-//   console.log('sha256ripemd160');
-//   if (typeof hex !== 'string') { throw new Error('sha256ripemd160 expects a string') }
-//   if (hex.length % 2 !== 0) { throw new Error(`invalid hex string length: ${hex}`) }
-//   const hexEncoded = CryptoJS.enc.Hex.parse(hex)
-//   const ProgramSha256 = CryptoJS.SHA256(hexEncoded)
-//   return CryptoJS.RIPEMD160(ProgramSha256).toString()
-// }
+  async getCosmosAddress() {
+    await this.connect();
 
-// function sortTransactionFields( tx ) {
-//   if( _.isArray(tx) ) { return _.map( tx, sortTransactionFields ) }
-//   if( typeof(tx) != 'object' ) { return tx }
-//   return _.reduce( _.keys(tx).sort(), ( acc, key ) => {
-//     if( tx[key] === undefined || tx[key] === null ) { return acc }
-//     acc[key] = sortTransactionFields(tx[key])
-//     return acc
-//   }, {} )
-// }
+    const pubKey = await this.getPubKey(this.cosmosApp);
+    return { pubKey, address: createCosmosAddress(pubKey) };
+  }
 
-// function prepareMessage( tx, meta ) {
-//   // for some reason we need to prepare the message for
-//   // signing with a `msgs` key, even though the actual transaction
-//   // needs a `msg` key... :shru
-//   const hackedTx = _.cloneDeep( tx )
-//   hackedTx.msgs = hackedTx.msg
-//   delete hackedTx.msg
-//   // end nonsense
+  async confirmLedgerAddress() {
+    await this.connect();
+    const cosmosAppVersion = await this.getCosmosAppVersion();
 
-//   const preparedMsg = sortTransactionFields( { ...hackedTx, ...meta } )
-//   return JSON.stringify( preparedMsg )
-// }
+    if (semver.lt(cosmosAppVersion, REQUIRED_COSMOS_APP_VERSION)) {
+      // we can't check the address on an old cosmos app
+      return;
+    }
 
-// function applySignature( tx, signature ) {
-//   const withSig = _.merge( {}, tx, { signatures: [ signature ] } )
-//   return withSig
-// }
+    const response = await this.cosmosApp.getAddressAndPubKey(
+      HDPATH,
+      BECH32PREFIX,
+    );
+    this.checkLedgerErrors(response, {
+      rejectionMessage: 'Displayed address was rejected',
+    });
+  }
 
-// function createSignature( signature, sequence, accountNumber, publicKey, ecParams ) {
-//   return {
-//     account_number: accountNumber,
-//     sequence,
-//     signature: signatureImport(signature, ecParams),
-//     pub_key: {
-//       type: 'tendermint/PubKeySecp256k1',
-//       value: publicKey.toString('base64')
-//     }
-//   }
-// }
+  async sign(signMessage) {
+    await this.connect();
 
-// function signatureImport( signature, ecParams ) {
-//   console.log('signatureImport');
-//   let sigObj
-//   try {
-//     sigObj = decodeBip66(signature)
-//     if (sigObj.r.length === 33 && sigObj.r[0] === 0x00) sigObj.r = sigObj.r.slice(1)
-//     if (sigObj.r.length > 32) throw new Error('R length is too long')
-//     if (sigObj.s.length === 33 && sigObj.s[0] === 0x00) sigObj.s = sigObj.s.slice(1)
-//     if (sigObj.s.length > 32) throw new Error('S length is too long')
-//   } catch (err) {
-//     console.error(err)
-//     return ""
-//   }
+    const response = await this.cosmosApp.sign(HDPATH, signMessage);
+    this.checkLedgerErrors(response);
+    // we have to parse the signature from Ledger as it's in DER format
+    const parsedSignature = signatureImport(response.signature);
+    return parsedSignature;
+  }
 
-//   // sigObj.r.copy(r, bops.create(32 - sigObj.r.length))
-//   // sigObj.s.copy(s, bops.create(32 - sigObj.s.length))
+  /* istanbul ignore next: maps a bunch of errors */
+  checkLedgerErrors(
+    { error_message, device_locked },
+    {
+      timeoutMessag = 'Connection timed out. Please try again.',
+      rejectionMessage = 'User rejected the transaction',
+    } = {},
+  ) {
+    if (device_locked) {
+      throw new Error('Ledger\'s screensaver mode is on');
+    }
+    switch (error_message) {
+    case 'U2F: Timeout':
+      throw new Error(timeoutMessag);
+    case 'Cosmos app does not seem to be open':
+      // hack:
+      // It seems that when switching app in Ledger, WebUSB will disconnect, disabling further action.
+      // So we clean up here, and re-initialize this.cosmosApp next time when calling `connect`
+      this.cosmosApp.transport.close();
+      this.cosmosApp = undefined;
+      throw new Error('Cosmos app is not open');
+    case 'Command not allowed':
+      throw new Error('Transaction rejected');
+    case 'Transaction rejected':
+      throw new Error(rejectionMessage);
+    case 'Unknown error code':
+      throw new Error('Ledger\'s screensaver mode is on');
+    case 'Instruction not supported':
+      throw new Error(
+        'Your Cosmos Ledger App is not up to date. '
+                + `Please update to version ${REQUIRED_COSMOS_APP_VERSION}.`,
+      );
+    case 'No errors':
+      // do nothing
+      break;
+    default:
+      throw new Error(error_message);
+    }
+  }
 
-//   let r = new BN(sigObj.r)
-//   if( r.cmp(ecParams.n) >= 0 ) { r = new BN(0) }
+  static getBytesToSign(tx, txContext) {
+    if (typeof txContext === 'undefined') {
+      throw new Error('txContext is not defined');
+    }
+    if (typeof txContext.chainId === 'undefined') {
+      throw new Error('txContext does not contain the chainId');
+    }
+    if (typeof txContext.accountNumber === 'undefined') {
+      throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.sequence === 'undefined') {
+      throw new Error('txContext does not contain the sequence value');
+    }
 
-//   let s = new BN(sigObj.s)
-//   if( s.cmp(ecParams.n) >= 0 ) { s = new BN(0) }
+    const txFieldsToSign = {
+      account_number: txContext.accountNumber.toString(),
+      chain_id: txContext.chainId,
+      fee: tx.value.fee,
+      memo: tx.value.memo,
+      msgs: tx.value.msg,
+      sequence: txContext.sequence.toString(),
+    };
 
-//   return bops.to( bops.join([r.toArrayLike(Uint8Array, 'be', 32),s.toArrayLike(Uint8Array, 'be', 32)]), 'base64' )
-// }
+    return JSON.stringify(canonicalizeJson(txFieldsToSign));
+  }
 
-// function decodeBip66( buffer ) {
-//   console.log('decodeBip66');
-//   if (buffer.length < 8) throw new Error('DER sequence length is too short')
-//   if (buffer.length > 72) throw new Error('DER sequence length is too long')
-//   if (buffer[0] !== 0x30) throw new Error('Expected DER sequence')
-//   if (buffer[1] !== buffer.length - 2) throw new Error('DER sequence length is invalid')
-//   if (buffer[2] !== 0x02) throw new Error('Expected DER integer')
+  static applyGas(unsignedTx, gas, gasPrice = DEFAULT_GAS_PRICE, denom = DEFAULT_DENOM) {
+    if (typeof unsignedTx === 'undefined') {
+      throw new Error('undefined unsignedTx');
+    }
+    if (typeof gas === 'undefined') {
+      throw new Error('undefined gas');
+    }
 
-//   var lenR = buffer[3]
-//   if (lenR === 0) throw new Error('R length is zero')
-//   if (5 + lenR >= buffer.length) throw new Error('R length is too long')
-//   if (buffer[4 + lenR] !== 0x02) throw new Error('Expected DER integer (2)')
+    // eslint-disable-next-line no-param-reassign
+    unsignedTx.value.fee = {
+      amount: [{
+        amount: Math.round(gas * gasPrice).toString(),
+        denom,
+      }],
+      gas: gas.toString(),
+    };
 
-//   var lenS = buffer[5 + lenR]
-//   if (lenS === 0) throw new Error('S length is zero')
-//   if ((6 + lenR + lenS) !== buffer.length) throw new Error('S length is invalid')
+    return unsignedTx;
+  }
 
-//   if (buffer[4] & 0x80) throw new Error('R value is negative')
-//   if (lenR > 1 && (buffer[4] === 0x00) && !(buffer[5] & 0x80)) throw new Error('R value excessively padded')
+  static applySignature(unsignedTx, txContext, secp256k1Sig) {
+    if (typeof unsignedTx === 'undefined') {
+      throw new Error('undefined unsignedTx');
+    }
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.pk === 'undefined') {
+      throw new Error('txContext does not contain the public key (pk)');
+    }
+    if (typeof txContext.accountNumber === 'undefined') {
+      throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.sequence === 'undefined') {
+      throw new Error('txContext does not contain the sequence value');
+    }
 
-//   if (buffer[lenR + 6] & 0x80) throw new Error('S value is negative')
-//   if (lenS > 1 && (buffer[lenR + 6] === 0x00) && !(buffer[lenR + 7] & 0x80)) throw new Error('S value excessively padded')
+    const tmpCopy = { ...unsignedTx };
 
-//   // non-BIP66 - extract R, S values
-//   return {
-//     r: buffer.slice(4, 4 + lenR),
-//     s: buffer.slice(6 + lenR)
-//   }
-// }
+    tmpCopy.value.signatures = [
+      {
+        signature: secp256k1Sig.toString('base64'),
+        account_number: txContext.accountNumber.toString(),
+        sequence: txContext.sequence.toString(),
+        pub_key: {
+          type: 'tendermint/PubKeySecp256k1',
+          value: txContext.pk, // Buffer.from(txContext.pk, 'hex').toString('base64'),
+        },
+      },
+    ];
+    return tmpCopy;
+  }
 
-// window.Ledger = Ledger
+  // Creates a new tx skeleton
+  static createSkeleton(txContext, msgs = []) {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.accountNumber === 'undefined') {
+      throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.sequence === 'undefined') {
+      throw new Error('txContext does not contain the sequence value');
+    }
+    const txSkeleton = {
+      type: 'auth/StdTx',
+      value: {
+        msg: msgs,
+        fee: '',
+        memo: txContext.memo || DEFAULT_MEMO,
+        signatures: [{
+          signature: 'N/A',
+          account_number: txContext.accountNumber.toString(),
+          sequence: txContext.sequence.toString(),
+          pub_key: {
+            type: 'tendermint/PubKeySecp256k1',
+            value: txContext.pk || 'PK',
+          },
+        }],
+      },
+    };
+    // return Ledger.applyGas(txSkeleton, DEFAULT_GAS);
+    return txSkeleton;
+  }
+
+  // Creates a new delegation tx based on the input parameters
+  // the function expects a complete txContext
+  static createDelegate(
+    txContext,
+    validatorBech32,
+    uatomAmount,
+  ) {
+    const txMsg = {
+      type: 'cosmos-sdk/MsgDelegate',
+      value: {
+        amount: {
+          amount: uatomAmount.toString(),
+          denom: txContext.denom,
+        },
+        delegator_address: txContext.bech32,
+        validator_address: validatorBech32,
+      },
+    };
+
+    return Ledger.createSkeleton(txContext, [txMsg]);
+  }
+
+  // Creates a new undelegation tx based on the input parameters
+  // the function expects a complete txContext
+  static createUndelegate(
+    txContext,
+    validatorBech32,
+    uatomAmount,
+  ) {
+    const txMsg = {
+      type: 'cosmos-sdk/MsgUndelegate',
+      value: {
+        amount: {
+          amount: uatomAmount.toString(),
+          denom: txContext.denom,
+        },
+        delegator_address: txContext.bech32,
+        validator_address: validatorBech32,
+      },
+    };
+
+    return Ledger.createSkeleton(txContext, [txMsg]);
+  }
+
+  // Creates a new redelegation tx based on the input parameters
+  // the function expects a complete txContext
+  static createRedelegate(
+    txContext,
+    validatorSourceBech32,
+    validatorDestBech32,
+    uatomAmount,
+  ) {
+    const txMsg = {
+      type: 'cosmos-sdk/MsgBeginRedelegate',
+      value: {
+        amount: {
+          amount: uatomAmount.toString(),
+          denom: txContext.denom,
+        },
+        delegator_address: txContext.bech32,
+        validator_dst_address: validatorDestBech32,
+        validator_src_address: validatorSourceBech32,
+      },
+    };
+
+    return Ledger.createSkeleton(txContext, [txMsg]);
+  }
+
+  // Creates a new transfer tx based on the input parameters
+  // the function expects a complete txContext
+  static createTransfer(
+    txContext,
+    toAddress,
+    amount,
+  ) {
+    const txMsg = {
+      type: 'cosmos-sdk/MsgSend',
+      value: {
+        amount: [{
+          amount: amount.toString(),
+          denom: txContext.denom,
+        }],
+        from_address: txContext.bech32,
+        to_address: toAddress,
+      },
+    };
+
+    return Ledger.createSkeleton(txContext, [txMsg]);
+  }
+
+  static createSubmitProposal(
+    txContext,
+    title,
+    description,
+    deposit,
+  ) {
+    const txMsg = {
+      type: 'cosmos-sdk/MsgSubmitProposal',
+      value: {
+        content: {
+          type: 'cosmos-sdk/TextProposal',
+          value: {
+            description,
+            title,
+          },
+        },
+        initial_deposit: [{
+          amount: deposit.toString(),
+          denom: txContext.denom,
+        }],
+        proposer: txContext.bech32,
+      },
+    };
+
+    return Ledger.createSkeleton(txContext, [txMsg]);
+  }
+
+  static createVote(
+    txContext,
+    proposalId,
+    option,
+  ) {
+    const txMsg = {
+      type: 'cosmos-sdk/MsgVote',
+      value: {
+        option,
+        proposal_id: proposalId.toString(),
+        voter: txContext.bech32,
+      },
+    };
+
+    return Ledger.createSkeleton(txContext, [txMsg]);
+  }
+
+  static createDeposit(
+    txContext,
+    proposalId,
+    amount,
+  ) {
+    const txMsg = {
+      type: 'cosmos-sdk/MsgDeposit',
+      value: {
+        amount: [{
+          amount: amount.toString(),
+          denom: txContext.denom,
+        }],
+        depositor: txContext.bech32,
+        proposal_id: proposalId.toString(),
+      },
+    };
+
+    return Ledger.createSkeleton(txContext, [txMsg]);
+  }
+}
+
+function versionString({ major, minor, patch }) {
+  return `${major}.${minor}.${patch}`;
+}
+
+export const checkAppMode = (testModeAllowed, testMode) => {
+  if (testMode && !testModeAllowed) {
+    throw new Error(
+      'DANGER: The Cosmos Ledger app is in test mode and shouldn\'t be used on mainnet!',
+    );
+  }
+};
+
+function canonicalizeJson(jsonTx) {
+  if (Array.isArray(jsonTx)) {
+    return jsonTx.map(canonicalizeJson);
+  }
+  if (typeof jsonTx !== 'object') {
+    return jsonTx;
+  }
+  const tmp = {};
+  Object.keys(jsonTx).sort().forEach((key) => {
+    // eslint-disable-next-line no-unused-expressions
+    jsonTx[key] != null && (tmp[key] = jsonTx[key]);
+  });
+
+  return tmp;
+}
