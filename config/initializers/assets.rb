@@ -5,6 +5,7 @@ Rails.application.config.assets.precompile += %w(
   errors.scss
   account.js account.scss
   enigma.js enigma.scss
+  secret.js secret.scss
   cosmos.js cosmos.scss
   terra.js terra.scss
   iris.js iris.scss

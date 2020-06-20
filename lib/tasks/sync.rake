@@ -1,11 +1,11 @@
 namespace :sync do
   task :all do
-    %w{ enigma cosmos terra iris kava }.each do |network|
+    %w{ secret enigma cosmos terra iris kava }.each do |network|
       Rake::Task["sync:#{network}"].invoke
     end
   end
 
-  %w{ enigma cosmos terra iris kava }.each do |network|
+  %w{ secret enigma cosmos terra iris kava }.each do |network|
     task :"#{network.to_sym}" => :environment do
       $stdout.sync = true
       puts "\nStarting sync:#{network} task at #{Time.now.utc.strftime(TASK_DATETIME_FORMAT)}"
@@ -56,7 +56,9 @@ namespace :sync do
               vss = chain.namespace::ValidatorSyncService.new(chain)
               vss.sync_validator_timestamps!
               vss.sync_validator_metadata!
+              puts 'before history height'
               vss.update_history_height!
+              puts 'after history height'
             rescue
               log.report_error $!
               log.end && next if $!.is_a?(chain.namespace::SyncBase::CriticalError)

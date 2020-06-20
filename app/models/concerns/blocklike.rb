@@ -76,7 +76,7 @@ module Blocklike
       end
 
       begin
-        precommitters = if chain.namespace == Enigma
+        precommitters = if chain.namespace == Enigma || chain.namespace == Secret
           raw_commit['result']['signed_header']['commit']['signatures']
         else
           raw_commit['result']['signed_header']['commit']['precommits']
