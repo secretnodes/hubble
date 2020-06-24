@@ -1,4 +1,4 @@
-class API::V1::AccountsController < ApplicationController
+class Api::V1::AccountsController < ApplicationController
   def balance
     chain = Secret::Chain.find params[:chain_id]
 
