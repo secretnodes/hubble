@@ -114,6 +114,13 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :api do
+    namespace :v1 do
+      get '/account_balance' => 'accounts#balance', as: :account_balance
+      get '/account_info' => 'accounts#info', as: :account_info
+    end
+  end
+
   mount LetterOpenerWeb::Engine, at: '/_mail' if Rails.env.development?
   match '*path', to: 'home#catch_404', via: :all
 end
