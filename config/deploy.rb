@@ -25,6 +25,8 @@ set :default_env, { path: '/puzzle/ruby-2.5.1/bin:/puzzle/node-14.4.3/bin:$PATH'
 # Default value for local_user is ENV['USER']
 set :local_user, -> { ENV['DEPLOY_USER'] } if ENV['DEPLOY_USER']
 
+after 'deploy:updated', 'webpacker:precompile'
+
 set :keep_releases, 2
 set :keep_assets, 2
 
