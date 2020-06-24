@@ -1,5 +1,5 @@
 class Admin::AdministratorsController < Admin::BaseController
-  skip_before_action :require_2fa, only: %i{ setup }
+  # skip_before_action :require_2fa, only: %i{ setup }
 
   def index
     @administrators = Administrator.all
