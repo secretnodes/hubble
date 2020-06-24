@@ -5,6 +5,7 @@ require 'capistrano/rails'
 require 'capistrano/npm'
 require 'whenever/capistrano' unless ENV['NO_WHENEVER_SETUP']
 require 'capistrano/linked_files'
+require 'capistrano/rails/assets'
 
 require 'capistrano/scm/git'
 install_plugin Capistrano::SCM::Git
