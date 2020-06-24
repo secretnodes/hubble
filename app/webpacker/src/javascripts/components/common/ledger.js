@@ -1,6 +1,5 @@
 // https://github.com/zondax/cosmos-delegation-js/
 // https://github.com/cosmos/ledger-cosmos-js/blob/master/src/index.js
-import 'babel-polyfill';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import CosmosApp from 'ledger-cosmos-js';
 import { signatureImport } from 'secp256k1';
