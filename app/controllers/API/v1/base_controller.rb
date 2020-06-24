@@ -1,4 +1,4 @@
-class Api::V1::BaseController < ApplicationController
+class API::V1::BaseController < ApplicationController
   skip_before_action :http_basic_auth
   skip_before_action :get_user
 
