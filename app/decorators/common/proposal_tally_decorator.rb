@@ -46,11 +46,11 @@ class Common::ProposalTallyDecorator
   end
 
   def quorum_percentage
-    non_abstain_voting_power / total_bonded.to_f
+    cumulative_voting_power / total_bonded.to_f
   end
 
   def quorum_reached?
-    non_abstain_voting_power >= quorum_target
+    cumulative_voting_power >= quorum_target
   end
 
   def yes_threshold_percentage
