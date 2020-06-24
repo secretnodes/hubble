@@ -25,7 +25,6 @@ class GovProposalSubmitModal {
         return
       }
 
-      // console.log('GOT ADDRESS INFO', this.ledger.accountInfo)
       this.modal.find('.step-setup').hide()
 
       this.modal.find('.modal-dialog').addClass('modal-lg')

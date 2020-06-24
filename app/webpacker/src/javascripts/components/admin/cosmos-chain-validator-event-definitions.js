@@ -199,7 +199,6 @@ $(document).ready( function() {
     const row = button.parents('.definition-item')
     const kind = button.data('threshold-kind')
     row.find('[name*=kind]').val( kind )
-    console.log(App.config)
     row.find('.inputs').html( EDIT_TEMPLATES[kind]( { index: row.index(), data: {}, network: App.config.network.toLowerCase() } ) )
     button.siblings().removeClass('active').end().addClass('active')
     saveButton.removeClass('d-none')

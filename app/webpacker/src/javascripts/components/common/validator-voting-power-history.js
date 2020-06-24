@@ -8,7 +8,7 @@ class ValidatorVotingPowerHistory {
       this.target.parents('.card').hide()
       return
     }
-    console.log('Im here');
+
     const rawData = App.seed.VOTING_POWER_HISTORY
 
     // transform data.y's according to scale

@@ -13,31 +13,32 @@ import CryptoJS from 'crypto-js';
 // TODO: discuss TIMEOUT value
 const INTERACTION_TIMEOUT = 10000;
 const REQUIRED_COSMOS_APP_VERSION = '1.5.0';
-const DEFAULT_DENOM = 'uatom';
+const DEFAULT_DENOM = 'uscrt';
 const DEFAULT_GAS = 200000;
 export const DEFAULT_GAS_PRICE = 0.025;
-export const DEFAULT_MEMO = 'Sent via Big Dipper';
+export const DEFAULT_MEMO = 'Delegate to your favorite validator with Puzzle - https://puzzle.report';
 
 /*
 HD wallet derivation path (BIP44)
 DerivationPath{44, 118, account, 0, index}
 */
-console.log(App.config)
+
 const HDPATH = [44, 118, 0, 0, 0];
-const BECH32PREFIX = App.config.public.bech32PrefixAccAddr;
+const BECH32PREFIX = 'secret';
+const ACCADDPREFIX = 'secret';
 
 function bech32ify(address, prefix) {
   const words = bech32.toWords(address);
   return bech32.encode(prefix, words);
 }
 
-export const toPubKey = (address) => bech32.decode(Meteor.settings.public.bech32PrefixAccAddr, address);
+export const toPubKey = (address) => bech32.decode(BECH32PREFIX, address);
 
 function createCosmosAddress(publicKey) {
   const message = CryptoJS.enc.Hex.parse(publicKey.toString('hex'));
   const hash = ripemd160(sha256(message)).toString();
   const address = Buffer.from(hash, 'hex');
-  const cosmosAddress = bech32ify(address, Meteor.settings.public.bech32PrefixAccAddr);
+  const cosmosAddress = bech32ify(address, ACCADDPREFIX);
   return cosmosAddress;
 }
 
@@ -201,10 +202,10 @@ export class Ledger {
     if (typeof txContext === 'undefined') {
       throw new Error('txContext is not defined');
     }
-    if (typeof txContext.chainId === 'undefined') {
+    if (typeof txContext.chain_id === 'undefined') {
       throw new Error('txContext does not contain the chainId');
     }
-    if (typeof txContext.accountNumber === 'undefined') {
+    if (typeof txContext.account_number === 'undefined') {
       throw new Error('txContext does not contain the accountNumber');
     }
     if (typeof txContext.sequence === 'undefined') {
@@ -212,8 +213,8 @@ export class Ledger {
     }
 
     const txFieldsToSign = {
-      account_number: txContext.accountNumber.toString(),
-      chain_id: txContext.chainId,
+      account_number: txContext.account_number.toString(),
+      chain_id: txContext.chain_id,
       fee: tx.value.fee,
       memo: tx.value.memo,
       msgs: tx.value.msg,
@@ -250,10 +251,10 @@ export class Ledger {
     if (typeof txContext === 'undefined') {
       throw new Error('undefined txContext');
     }
-    if (typeof txContext.pk === 'undefined') {
+    if (typeof txContext.public_key === 'undefined') {
       throw new Error('txContext does not contain the public key (pk)');
     }
-    if (typeof txContext.accountNumber === 'undefined') {
+    if (typeof txContext.account_number === 'undefined') {
       throw new Error('txContext does not contain the accountNumber');
     }
     if (typeof txContext.sequence === 'undefined') {
@@ -262,14 +263,14 @@ export class Ledger {
 
     const tmpCopy = { ...unsignedTx };
 
-    tmpCopy.value.signatures = [
+    tmpCopy.signatures = [
       {
-        signature: secp256k1Sig.toString('base64'),
-        account_number: txContext.accountNumber.toString(),
+        signature: Buffer.from(secp256k1Sig).toString('base64'),
+        account_number: txContext.account_number.toString(),
         sequence: txContext.sequence.toString(),
         pub_key: {
           type: 'tendermint/PubKeySecp256k1',
-          value: txContext.pk, // Buffer.from(txContext.pk, 'hex').toString('base64'),
+          value: txContext.public_key, // Buffer.from(txContext.pk, 'hex').toString('base64'),
         },
       },
     ];
@@ -281,7 +282,7 @@ export class Ledger {
     if (typeof txContext === 'undefined') {
       throw new Error('undefined txContext');
     }
-    if (typeof txContext.accountNumber === 'undefined') {
+    if (typeof txContext.account_number === 'undefined') {
       throw new Error('txContext does not contain the accountNumber');
     }
     if (typeof txContext.sequence === 'undefined') {
@@ -295,11 +296,11 @@ export class Ledger {
         memo: txContext.memo || DEFAULT_MEMO,
         signatures: [{
           signature: 'N/A',
-          account_number: txContext.accountNumber.toString(),
+          account_number: txContext.account_number.toString(),
           sequence: txContext.sequence.toString(),
           pub_key: {
             type: 'tendermint/PubKeySecp256k1',
-            value: txContext.pk || 'PK',
+            value: txContext.public_key || 'PK',
           },
         }],
       },
@@ -320,9 +321,9 @@ export class Ledger {
       value: {
         amount: {
           amount: uatomAmount.toString(),
-          denom: txContext.denom,
+          denom: txContext.coins[0].denom,
         },
-        delegator_address: txContext.bech32,
+        delegator_address: txContext.address,
         validator_address: validatorBech32,
       },
     };

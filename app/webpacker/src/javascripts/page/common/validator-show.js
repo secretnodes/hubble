@@ -1,4 +1,3 @@
-import Ledger from '@lunie/cosmos-ledger';
 
 
 $(document).ready( function() {
@@ -17,36 +16,6 @@ $(document).ready( function() {
   }
 
   new App.Common.ValidatorUptimeHistory( $(`.uptime-history-last48h-chart`), 'last48h' ).render()
-  const API_URL = 'http://65.19.134.86:26657'
-  const ADDRESS = "enigma1jk9zmatkhj2qh37j6ym9xt40s697adf5txv3z2"
-  const { createSignMessage } = require('@lunie/cosmos-api');
-  console.log(Buffer.from('abc'));
-
-  const ledgerSigner = async () => {
-    const signMessage = {} || ``
-    console.log('inside ledger signer')
-    const ledger = new Ledger(
-       false,
-      [44, 118, 0, 0, 0],
-      'enigma'
-      )
-
-    console.log('after new Ledger')
-    await ledger.connect()
-    console.log('after ledger connect')
-    const publicKey = await ledger.getPubKey()
-    const publicAddress = await ledger.getCosmosAddress()
-    const appInfo = await ledger.getOpenApp()
-    console.log(publicAddress);
-    console.log(publicKey);
-    console.log(appInfo);
-    return publicKey;
-  }
-
-  $('#ledger-test').click(function() {
-    console.log('outside connectLedger')
-    const publicKey = ledgerSigner()
-  });
 
   // const switcherButtons = $('.validator-uptime-switcher button')
 

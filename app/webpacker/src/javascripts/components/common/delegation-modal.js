@@ -1,11 +1,11 @@
-import Ledger from "@lunie/cosmos-ledger"
+import { DEFAULT_MEMO, Ledger } from './ledger.js';
 
 class DelegationModal {
   constructor( el ) {
-    this.DELEGATION_GAS_WANTED = 150000
+    this.DELEGATION_GAS_WANTED = 194854
     this.REDELEGATION_GAS_WANTED = 200000
     this.GAS_PRICE = 0.025
-    this.MEMO = 'Delegate to your favourite validator with Puzzle - https://puzzle.secretnodes.org'
+    this.MEMO = 'Delegate to your favorite validator with Puzzle - https://puzzle.report'
     this.modal = el
 
     this.reset()
@@ -17,26 +17,11 @@ class DelegationModal {
 
       if( !triggeredGAEvent ) { ga('send', 'event', 'delegation', 'started') }
 
-      const ledgerSigner = async () => {
-        const signMessage = {} || ``
-        this.ledger = new Ledger(
-           false,
-          [44, 118, 0, 0, 0],
-          'enigma'
-          )
+      this.ledger = new Ledger({ testModeAllowed: false });
 
-        await this.ledger.connect()
-
-        const publicKey = await this.ledger.getPubKey();
-        const publicAddress = await this.ledger.getCosmosAddress();
-        const showAppVersion = await this.ledger.getCosmosAppVersion();
-        var getOpenApp = await this.ledger.getOpenApp();
-        var cosmosAddress = await this.ledger.getCosmosAddress();
-
-        return publicAddress;
-      }
-
-      const publicAddress = await ledgerSigner();
+      const publicAddress = await this.ledger.getCosmosAddress();
+      this.pubKey = publicAddress.pubKey
+      this.publicAddress = publicAddress.address;
 
       const setupError = null;
       if( setupError ) {
@@ -46,11 +31,8 @@ class DelegationModal {
           .end().show()
         return
       }
-      const accountBalance = await this.getAccountBalance();
-      // console.log('GOT ADDRESS INFO', this.ledger.accountInfo)
+
       this.modal.find('.step-setup').hide()
-      console.log(publicAddress);
-      console.log(accountBalance);
 
       if( _.includes( App.config.existingDelegators, this.ledger.getCosmosAddress() ) ) {
         this.modal.find('.step-choice')
@@ -66,12 +48,12 @@ class DelegationModal {
         } )
         this.modal.find('.choice-new-delegation').click( async () => {
           this.modal.find('.step-choice').hide()
-          this.getAccountBalance(publicAddress)
+          this.getAccountBalance(publicAddress.address)
             .then(response=> this.newDelegation(response))
         } )
       }
       else {
-        this.getAccountBalance(publicAddress)
+        this.getAccountBalance(publicAddress.address)
           .then(response=> this.newDelegation(response))
       }
 
@@ -99,13 +81,13 @@ class DelegationModal {
   }
 
   newDelegation(response) {
-    console.log(response);
-    var balance = response[0];
-    var publicAddress = response[1];
+
+    this.balance = this.formatBalance(response)
+    const scaledBalance = this.balance / App.config.remoteScaleFactor;
     this.modal.find('.modal-dialog').addClass('modal-lg')
     this.modal.find('.step-new-delegation')
-      .find('.account-balance').text( `${balance} ${App.config.denom}` ).end()
-      .find('.account-address').html( publicAddress ).end()
+      .find('.account-balance').text( `${scaledBalance} ${App.config.denom}` ).end()
+      .find('.account-address').html( this.publicAddress ).end()
       .find('.transaction-fee').text( `${this.delegationTransactionFee()} ${App.config.denom}` ).end()
       .show()
 
@@ -159,17 +141,25 @@ class DelegationModal {
       this.modal.find('.delegation-step').hide()
       this.modal.find('.modal-dialog').removeClass('modal-lg')
       this.modal.find('.step-confirm').show()
+      this.txContext = await this.setTxContext();
+      this.txContext.chain_id = 'secret-1';
+      this.txContext.public_key = Buffer.from(this.pubKey).toString('base64');
 
-      const txObject = this.delegationTransactionObject()
+      let txObject = Ledger.createDelegate(this.txContext, App.config.validatorOperatorAddress, this.delegationAmount.toString());
+      Ledger.applyGas(txObject, this.DELEGATION_GAS_WANTED.toString());
+      const newTxObject = this.modifyTxObject(txObject);
+      const bytes = Ledger.getBytesToSign(txObject, this.txContext);
+      const sigArray = await this.ledger.sign(bytes);
 
       this.modal.find('.transaction-json').text(
         JSON.stringify( txObject, undefined, 2 )
       )
 
-      const txPayload = await this.ledger.generateTransaction( txObject )
+      const txSignature = Ledger.applySignature(newTxObject, this.txContext, sigArray);
+
       let broadcastError = null
-      if( txPayload ) {
-        const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
+      if( txSignature ) {
+        const broadcastResult = await this.broadcastTransaction( txSignature )
         if( broadcastResult.ok ) {
           this.modal.find('.delegation-step').hide()
           this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
@@ -227,7 +217,7 @@ class DelegationModal {
         {
           type: 'cosmos-sdk/MsgDelegate',
           value: {
-            delegator_address: this.ledger.accountInfo.value.address,
+            delegator_address: this.publicAddress,
             validator_address: App.config.validatorOperatorAddress,
             amount: { denom: App.config.remoteDenom, amount: this.delegationAmount.toString() }
           }
@@ -303,7 +293,7 @@ class DelegationModal {
   }
 
   maxDelegation() {
-    return (5 - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
+    return (this.balance - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
   }
 
   checkDelegationAmount( amount ) {
@@ -314,11 +304,49 @@ class DelegationModal {
     this.delegationAmount = amount * App.config.remoteScaleFactor
   }
 
-  async getAccountBalance( address ) {
-    let res = await fetch('/api/v1/account_balance?chain_id=1&address=' + address)
-      .then(response => response.json())
-      .then(data => console.log('data ', data));
-      return [res, address];
+  async getAccountBalance( ) {
+    return fetch('/api/v1/account_balance?chain_id=1&address=' + this.publicAddress)
+      .then(response => {if (response.status == 200) {
+        return response.json()
+      } else {
+        throw new Error(res.status);
+      }});
+  }
+
+  formatBalance(response) {
+    if (response['balance'][0]['denom'] == 'uscrt') {
+      return response['balance'][0]['amount'];
+    }
+  }
+
+  async setTxContext( ) {
+    let url = '/api/v1/account_info?chain_id=1&address=' + this.publicAddress;
+    return fetch(url)
+      .then(response => {
+        if (response.status == 200) {
+          return response.json();
+        }
+      })
+  }
+
+  async broadcastTransaction( txPayload ) {
+    if( !txPayload ) { return false }
+
+    const response = await fetch( App.config.broadcastTxPath, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': $('meta[name=csrf-token]').attr('content')
+      },
+      body: JSON.stringify( { payload: txPayload } )
+    } )
+    const responseData = await response.json()
+    return responseData
+  }
+
+  modifyTxObject( txObject ) {
+    return txObject['value'];
   }
 }
 

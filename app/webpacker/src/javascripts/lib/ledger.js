@@ -2927,7 +2927,7 @@ u2f.sign = function(appId, challenge, registeredKeys, callback, opt_timeoutSecon
     u2f.getApiVersion(
         function (response) {
           js_api_version = response['js_api_version'] === undefined ? 0 : response['js_api_version'];
-          //console.log("Extension JS API Version: ", js_api_version);
+
           u2f.sendSignRequest(appId, challenge, registeredKeys, callback, opt_timeoutSeconds);
         });
   } else {
@@ -2973,7 +2973,7 @@ u2f.register = function(appId, registerRequests, registeredKeys, callback, opt_t
     u2f.getApiVersion(
         function (response) {
           js_api_version = response['js_api_version'] === undefined ? 0: response['js_api_version'];
-          //console.log("Extension JS API Version: ", js_api_version);
+
           u2f.sendRegisterRequest(appId, registerRequests, registeredKeys,
               callback, opt_timeoutSeconds);
         });

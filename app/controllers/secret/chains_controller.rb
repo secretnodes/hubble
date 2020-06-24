@@ -1,6 +1,6 @@
 class Secret::ChainsController < Common::ChainsController
   def broadcast
-    tx = { tx: params[:payload] }
+    tx = { tx: params[:payload], mode: 'block' }
 
     if @chain.sdk_gte?( '0.34.0' )
       tx[:mode] = 'sync'

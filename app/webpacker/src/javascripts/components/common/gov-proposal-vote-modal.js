@@ -25,7 +25,6 @@ class GovProposalVoteModal {
         return
       }
 
-      // console.log('GOT ADDRESS INFO', this.ledger.accountInfo)
       this.modal.find('.step-setup').hide()
 
       if( this.ledger.accountBalance() < (this.transactionFee() * 2) ) {
