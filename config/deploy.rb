@@ -15,12 +15,12 @@ before 'deploy:check:linked_files', 'linked_files:upload_files'
 append :linked_files, 'config/database.yml', 'config/credentials.yml.enc', 'config/master.key'
 
 # Default value for linked_dirs is []
-append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
+append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system', 'public/packs', 'node_modules'
 
 set :npm_flags, '--production --silent --no-progress'
 
 # Default value for default_env is {}
-set :default_env, { path: '/puzzle/ruby-2.5.1/bin:/puzzle/node-8.12/bin:$PATH' }
+set :default_env, { path: '/puzzle/ruby-2.5.1/bin:/puzzle/node-14.4.3/bin:$PATH' }
 
 # Default value for local_user is ENV['USER']
 set :local_user, -> { ENV['DEPLOY_USER'] } if ENV['DEPLOY_USER']
