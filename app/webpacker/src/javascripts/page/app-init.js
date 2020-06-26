@@ -1,6 +1,3 @@
-//= require moment/min/moment.min
-//= require moment-timezone/builds/moment-timezone.min
-
 $(document).ready( function() {
   $('[data-toggle="tooltip"]').each( function() {
     const el = $(this)
