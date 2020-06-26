@@ -22,6 +22,9 @@ class DelegationModal {
       const publicAddress = await this.ledger.getCosmosAddress();
       this.pubKey = publicAddress.pubKey
       this.publicAddress = publicAddress.address;
+      this.txContext = this.formatTxContext(await this.setTxContext());
+      this.accountBalance = this.txContext.coins[0].amount;
+      this.scaledBalance = this.scale(this.accountBalance);
 
       const setupError = null;
       if( setupError ) {
@@ -34,26 +37,27 @@ class DelegationModal {
 
       this.modal.find('.step-setup').hide()
 
-      if( _.includes( App.config.existingDelegators, this.ledger.getCosmosAddress() ) ) {
+      if( _.includes( App.config.existingDelegators, this.publicAddress ) ) {
+        const rewardsBalance = this.scale(this.txContext.rewards_for_validator[0].amount);
         this.modal.find('.step-choice')
-          .find('.reward-balance').text( `${this.rewardsBalance()} ${App.config.denom}` ).end()
+          .find('.reward-balance').text( `${rewardsBalance} ${App.config.denom}` ).end()
           .show()
-        if( this.rewardsBalance() == 0 ) {
+        if( this.accountBalance == 0 ) {
           this.modal.find('.choice-redelegate').attr('disabled', 'disabled')
         }
 
         this.modal.find('.choice-redelegate').click( () => {
           this.modal.find('.step-choice').hide()
-          this.redelegation()
+          this.withdrawal()
         } )
         this.modal.find('.choice-new-delegation').click( async () => {
           this.modal.find('.step-choice').hide()
-          this.getAccountBalance(publicAddress.address)
+          this.getAccountBalance(this.publicAddress)
             .then(response=> this.newDelegation(response))
         } )
       }
       else {
-        this.getAccountBalance(publicAddress.address)
+        this.getAccountBalance(this.publicAddress)
           .then(response=> this.newDelegation(response))
       }
 
@@ -81,12 +85,9 @@ class DelegationModal {
   }
 
   newDelegation(response) {
-
-    this.balance = this.formatBalance(response)
-    const scaledBalance = this.balance / App.config.remoteScaleFactor;
     this.modal.find('.modal-dialog').addClass('modal-lg')
     this.modal.find('.step-new-delegation')
-      .find('.account-balance').text( `${scaledBalance} ${App.config.denom}` ).end()
+      .find('.account-balance').text( `${this.scaledBalance} ${App.config.denom}` ).end()
       .find('.account-address').html( this.publicAddress ).end()
       .find('.transaction-fee').text( `${this.delegationTransactionFee()} ${App.config.denom}` ).end()
       .show()
@@ -141,9 +142,6 @@ class DelegationModal {
       this.modal.find('.delegation-step').hide()
       this.modal.find('.modal-dialog').removeClass('modal-lg')
       this.modal.find('.step-confirm').show()
-      this.txContext = await this.setTxContext();
-      this.txContext.chain_id = 'secret-1';
-      this.txContext.public_key = Buffer.from(this.pubKey).toString('base64');
 
       let txObject = Ledger.createDelegate(this.txContext, App.config.validatorOperatorAddress, this.delegationAmount.toString());
       Ledger.applyGas(txObject, this.DELEGATION_GAS_WANTED.toString());
@@ -180,20 +178,25 @@ class DelegationModal {
     } )
   }
 
-  async redelegation() {
+  async withdrawal() {
     this.modal.find('.modal-dialog').removeClass('modal-lg')
     this.modal.find('.step-confirm').show()
 
-    const txObject = this.redelegationTransactionObject()
+    const txObject = Ledger.createSkeleton(this.txContext, this.withdrawalTransactionObject());
+    Ledger.applyGas(txObject, this.DELEGATION_GAS_WANTED.toString());
+    const newTxObject = this.modifyTxObject(txObject);
+    const bytes = Ledger.getBytesToSign(txObject, this.txContext);
+    const sigArray = await this.ledger.sign(bytes);
 
     this.modal.find('.transaction-json').text(
       JSON.stringify( txObject, undefined, 2 )
     )
 
-    const txPayload = await this.ledger.generateTransaction( txObject )
+    const txSignature = Ledger.applySignature(newTxObject, this.txContext, sigArray);
+
     let broadcastError = null
-    if( txPayload ) {
-      const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
+    if( txSignature ) {
+      const broadcastResult = await this.broadcastTransaction( txSignature )
       if( broadcastResult.ok ) {
         this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
         this.modal.find('.step-complete').show()
@@ -237,37 +240,16 @@ class DelegationModal {
     }
   }
 
-  redelegationTransactionObject() {
-    return {
-      msg: [
-        {
-          type: 'cosmos-sdk/MsgWithdrawDelegationReward',
-          value: {
-            delegator_address: this.ledger.accountInfo.value.address,
-            validator_address: App.config.validatorOperatorAddress
-          }
-        },
-        {
-          type: 'cosmos-sdk/MsgDelegate',
-          value: {
-            delegator_address: this.ledger.accountInfo.value.address,
-            validator_address: App.config.validatorOperatorAddress,
-            amount: { denom: App.config.remoteDenom, amount: this.rewardsBalance(false).toString() }
-          }
+  withdrawalTransactionObject() {
+    return [
+      {
+        type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+        value: {
+          delegator_address: this.publicAddress,
+          validator_address: App.config.validatorOperatorAddress
         }
-      ],
-      fee: {
-        amount: [
-          {
-            denom: App.config.remoteDenom,
-            amount: this.redelegationTransactionFee( false ).toString()
-          }
-        ],
-        gas: this.REDELEGATION_GAS_WANTED.toString()
-      },
-      signatures: null,
-      memo: this.MEMO
-    }
+      }
+    ]
   }
 
   rewardsBalance( scale=true ) {
@@ -293,7 +275,7 @@ class DelegationModal {
   }
 
   maxDelegation() {
-    return (this.balance - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
+    return (this.accountBalance - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
   }
 
   checkDelegationAmount( amount ) {
@@ -320,8 +302,13 @@ class DelegationModal {
   }
 
   async setTxContext( ) {
-    let url = '/api/v1/account_info?chain_id=1&address=' + this.publicAddress;
-    return fetch(url)
+    let url = '/secret/chains/secret-1/accounts/' + this.publicAddress + '?validator=' + App.config.validatorOperatorAddress;
+    return fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
       .then(response => {
         if (response.status == 200) {
           return response.json();
@@ -347,6 +334,18 @@ class DelegationModal {
 
   modifyTxObject( txObject ) {
     return txObject['value'];
+  }
+
+  formatTxContext( txContext ) {
+    let newObject = txContext['value'];
+    newObject.rewards_for_validator = txContext['rewards_for_validator'];
+    newObject.chain_id = 'secret-1';
+    newObject.public_key = Buffer.from(this.pubKey).toString('base64');
+    return newObject;
+  }
+
+  scale ( number ) {
+    return Math.round((number / App.config.remoteScaleFactor) * 1000000) / 1000000;
   }
 }
 
