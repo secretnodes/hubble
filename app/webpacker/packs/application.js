@@ -40,7 +40,6 @@ import 'moment';
 import '../src/javascripts/lib/chrome-u2f-api.js';
 import '../src/javascripts/lib/custom-tooltip.js';
 import '../src/javascripts/lib/elliptic.js';
-import '../src/javascripts/lib/ledger-lunie.js';
 import '../src/javascripts/lib/ledger.js';
 import '../src/javascripts/lib/money.js';
 import '../src/javascripts/lib/scale.js';
@@ -68,5 +67,4 @@ import 'bootstrap';
 
 
 require("@rails/ujs").start()
-require("turbolinks").start()
 require("@rails/activestorage").start()
