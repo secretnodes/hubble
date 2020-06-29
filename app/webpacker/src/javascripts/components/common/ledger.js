@@ -435,7 +435,7 @@ export class Ledger {
       value: {
         option,
         proposal_id: proposalId.toString(),
-        voter: txContext.bech32,
+        voter: txContext.address,
       },
     };
 
