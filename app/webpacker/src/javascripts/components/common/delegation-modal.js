@@ -180,12 +180,9 @@ class DelegationModal {
     )
 
     const txSignature = Ledger.applySignature(sign.newTxObject, this.ledger.txContext, sign.sigArray);
-
     let broadcastError = null
     if( txSignature ) {
-      console.log(txSignature);
       const broadcastResult = await this.ledger.broadcastTransaction( txSignature )
-      console.log(broadcastResult);
       if( broadcastResult.ok ) {
         this.modal.find('.step-confirm').hide()
         this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
@@ -235,7 +232,7 @@ class DelegationModal {
       {
         type: 'cosmos-sdk/MsgWithdrawDelegationReward',
         value: {
-          delegator_address: this.publicAddress,
+          delegator_address: this.ledger.publicAddress,
           validator_address: App.config.validatorOperatorAddress
         }
       }

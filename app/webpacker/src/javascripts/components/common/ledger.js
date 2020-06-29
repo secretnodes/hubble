@@ -22,7 +22,7 @@ HD wallet derivation path (BIP44)
 DerivationPath{44, 118, account, 0, index}
 */
 
-const HDPATH = [44, 118, 0, 0, 0];
+const HDPATH = [44, 118, 24, 0, 0];
 const BECH32PREFIX = 'secret';
 const ACCADDPREFIX = 'secret';
 
