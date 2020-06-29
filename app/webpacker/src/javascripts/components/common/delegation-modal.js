@@ -198,6 +198,7 @@ class DelegationModal {
     if( txSignature ) {
       const broadcastResult = await this.broadcastTransaction( txSignature )
       if( broadcastResult.ok ) {
+        this.modal.find('.step-confirm').hide()
         this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
         this.modal.find('.step-complete').show()
         ga('send', 'event', 'delegation', 'completed')
