@@ -88,6 +88,15 @@ export class Ledger {
     await this.isReady();
   }
 
+  async setupConnection() {
+    const publicAddress = await this.getCosmosAddress();
+    this.pubKey = publicAddress.pubKey
+    this.publicAddress = publicAddress.address;
+    this.txContext = this.formatTxContext(await this.setTxContext());
+    this.accountBalance = this.txContext.coins[0].amount;
+    this.scaledBalance = this.scale(this.accountBalance);
+  }
+
   async getCosmosAppVersion() {
     await this.connect();
 
@@ -155,6 +164,14 @@ export class Ledger {
     // we have to parse the signature from Ledger as it's in DER format
     const parsedSignature = signatureImport(response.signature);
     return parsedSignature;
+  }
+
+  async buildAndSign( txContext, txObject, gasWanted ) {
+    Ledger.applyGas(txObject, gasWanted);
+    const newTxObject = this.modifyTxObject(txObject);
+    const bytes = Ledger.getBytesToSign(txObject, txContext);
+    const sigArray = await this.sign(bytes);
+    return {newTxObject: newTxObject, sigArray: sigArray}
   }
 
   /* istanbul ignore next: maps a bunch of errors */
@@ -435,7 +452,7 @@ export class Ledger {
       value: {
         option,
         proposal_id: proposalId.toString(),
-        voter: txContext.bech32,
+        voter: txContext.address,
       },
     };
 
@@ -460,6 +477,53 @@ export class Ledger {
     };
 
     return Ledger.createSkeleton(txContext, [txMsg]);
+  }
+
+  formatTxContext( txContext ) {
+    let newObject = txContext['value'];
+    newObject.rewards_for_validator = txContext['rewards_for_validator'];
+    newObject.chain_id = 'secret-1';
+    newObject.public_key = Buffer.from(this.pubKey).toString('base64');
+    return newObject;
+  }
+
+  scale ( number ) {
+    return Math.round((number / App.config.remoteScaleFactor) * 1000000) / 1000000;
+  }
+
+  modifyTxObject( txObject ) {
+    return txObject['value'];
+  }
+
+  async broadcastTransaction( txPayload ) {
+    if( !txPayload ) { return false }
+
+    const response = await fetch( App.config.broadcastTxPath, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': $('meta[name=csrf-token]').attr('content')
+      },
+      body: JSON.stringify( { payload: txPayload } )
+    } )
+    const responseData = await response.json()
+    return responseData
+  }
+
+  async setTxContext( ) {
+    let url = '/secret/chains/secret-1/accounts/' + this.publicAddress + '?validator=' + App.config.validatorOperatorAddress;
+    return fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+      .then(response => {
+        if (response.status == 200) {
+          return response.json();
+        }
+      })
   }
 }
 
