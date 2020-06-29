@@ -18,13 +18,8 @@ class GovProposalVoteModal {
 
       this.ledger = new Ledger({ testModeAllowed: false })
 
+      await this.ledger.setupConnection();
       const setupError = null;
-      const publicAddress = await this.ledger.getCosmosAddress();
-      this.pubKey = publicAddress.pubKey
-      this.publicAddress = publicAddress.address;
-      this.txContext = this.formatTxContext(await this.setTxContext());
-      this.accountBalance = this.txContext.coins[0].amount;
-      this.scaledBalance = this.scale(this.accountBalance);
 
       if( setupError ) {
         this.modal.find('.proposal-step').hide()
@@ -36,7 +31,7 @@ class GovProposalVoteModal {
 
       this.modal.find('.step-setup').hide()
 
-      if( this.accountBalance < (this.transactionFee() * 2) ) {
+      if( this.ledger.accountBalance < (this.transactionFee() * 2) ) {
         ga('send', 'event', 'gov-proposal-vote', 'failed')
         this.modal.find('.proposal-step').hide()
         this.modal.find('.step-error')
@@ -47,8 +42,8 @@ class GovProposalVoteModal {
 
       this.modal.find('.modal-dialog').addClass('modal-lg')
       this.modal.find('.step-proposal-vote')
-        .find('.account-balance').text( `${this.accountBalance} ${App.config.denom}` ).end()
-        .find('.account-address').html( this.publicAddress ).end()
+        .find('.account-balance').text( `${this.ledger.accountBalance} ${App.config.denom}` ).end()
+        .find('.account-address').html( this.ledger.publicAddress ).end()
         .find('.transaction-fee').text( `${this.transactionFee()} ${App.config.denom}` ).end()
         .show()
 
@@ -69,21 +64,17 @@ class GovProposalVoteModal {
         this.modal.find('.modal-dialog').removeClass('modal-lg')
         this.modal.find('.step-confirm').show()
 
-        const txObject = Ledger.createVote(this.txContext, App.config.proposalId.toString(), this.voteOption);
-        Ledger.applyGas(txObject, this.GAS_WANTED.toString());
-        const newTxObject = this.modifyTxObject(txObject);
-        const bytes = Ledger.getBytesToSign(txObject, this.txContext);
-        const sigArray = await this.ledger.sign(bytes);
+        const txObject = Ledger.createVote(this.ledger.txContext, App.config.proposalId.toString(), this.voteOption);
+        let sign = await this.ledger.buildAndSign(this.ledger.txContext, txObject, this.GAS_WANTED.toString());
 
         this.modal.find('.transaction-json').text(
           JSON.stringify( txObject, undefined, 2 )
         )
 
-        const txSignature = Ledger.applySignature(newTxObject, this.txContext, sigArray);
-        console.log(txSignature);
+        const txSignature = Ledger.applySignature(sign.newTxObject, this.ledger.txContext, sign.sigArray);
         let broadcastError = null
         if( txSignature ) {
-          const broadcastResult = await this.broadcastTransaction( txSignature )
+          const broadcastResult = await this.ledger.broadcastTransaction( txSignature )
 
           if( broadcastResult.ok ) {
             this.modal.find('.proposal-step').hide()
@@ -123,81 +114,8 @@ class GovProposalVoteModal {
     this.modal.find('.view-transaction').attr( 'href', '' )
   }
 
-  voteTransactionObject() {
-    return {
-      msg: [
-        {
-          type: 'cosmos-sdk/MsgVote',
-          value: {
-            proposal_id: App.config.proposalId.toString(),
-            voter: this.ledger.publicAddress,
-            option: this.voteOption
-          }
-        }
-      ],
-      fee: {
-        amount: [
-          {
-            denom: App.config.remoteDenom,
-            amount: this.transactionFee( false ).toString()
-          }
-        ],
-        gas: this.GAS_WANTED.toString()
-      },
-      signatures: null,
-      memo: this.MEMO
-    }
-  }
-
   transactionFee( scale=true ) {
     return (this.GAS_WANTED * this.GAS_PRICE) / (scale ? App.config.remoteScaleFactor : 1)
-  }
-
-  scale ( number ) {
-    return Math.round((number / App.config.remoteScaleFactor) * 1000000) / 1000000;
-  }
-
-  async setTxContext( ) {
-    let url = '/secret/chains/secret-1/accounts/' + this.publicAddress + '?validator=' + App.config.validatorOperatorAddress;
-    return fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    })
-      .then(response => {
-        if (response.status == 200) {
-          return response.json();
-        }
-      })
-  }
-
-  formatTxContext( txContext ) {
-    let newObject = txContext['value'];
-    newObject.rewards_for_validator = txContext['rewards_for_validator'];
-    newObject.chain_id = 'secret-1';
-    newObject.public_key = Buffer.from(this.pubKey).toString('base64');
-    return newObject;
-  }
-
-  modifyTxObject( txObject ) {
-    return txObject['value'];
-  }
-
-  async broadcastTransaction( txPayload ) {
-    if( !txPayload ) { return false }
-
-    const response = await fetch( App.config.broadcastTxPath, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': $('meta[name=csrf-token]').attr('content')
-      },
-      body: JSON.stringify( { payload: txPayload } )
-    } )
-    const responseData = await response.json()
-    return responseData
   }
 }
 
