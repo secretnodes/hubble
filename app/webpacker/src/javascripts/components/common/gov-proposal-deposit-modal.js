@@ -1,3 +1,4 @@
+import { DEFAULT_MEMO, Ledger } from './ledger.js';
 class GovProposalDepositModal {
   constructor( el ) {
     this.GAS_WANTED = 150000
@@ -16,9 +17,10 @@ class GovProposalDepositModal {
 
       if( !triggeredGAEvent ) { ga('send', 'event', 'gov-proposal-deposit', 'started') }
 
-      this.ledger = new Ledger()
+      this.ledger = new Ledger({ testModeAllowed: false });
+      await this.ledger.setupConnection();
 
-      const setupError = await this.ledger.setupLedger()
+      const setupError = null;
       if( setupError ) {
         this.modal.find('.proposal-step').hide()
         this.modal.find('.step-error')
@@ -31,8 +33,8 @@ class GovProposalDepositModal {
 
       this.modal.find('.modal-dialog').addClass('modal-lg')
       this.modal.find('.step-proposal-deposit')
-        .find('.account-balance').text( `${this.ledger.accountBalance()} ${App.config.denom}` ).end()
-        .find('.account-address').html( this.ledger.accountAddress(true) ).end()
+        .find('.account-balance').text( `${this.ledger.accountBalance} ${App.config.denom}` ).end()
+        .find('.account-address').html( this.ledger.publicAddress ).end()
         .find('.transaction-fee').text( `${this.transactionFee()} ${App.config.denom}` ).end()
         .show()
 
@@ -58,12 +60,12 @@ class GovProposalDepositModal {
           this.setDepositAmount( null )
           const msg = amount == 0 ?
             `You can't deposit <tt>0 ${App.config.denom}</tt>...` :
-            `The amount to deposit must take transaction fees into account.<br/><b>Max: <tt class='text-md'>${this.ledger.accountBalance()} ${App.config.denom}</tt></b>`
+            `The amount to deposit must take transaction fees into account.<br/><b>Max: <tt class='text-md'>${this.ledger.accountBalance} ${App.config.denom}</tt></b>`
           this.modal.find('.amount-error').html(msg).show()
           this.modal.find('.submit-proposal-deposit').attr( 'disabled', 'disabled' )
         }
         else {
-          if( amount >= this.ledger.accountBalance() - this.transactionFee() ) {
+          if( amount >= this.ledger.accountBalance - this.transactionFee() ) {
             const msg = `It is recommended to leave some ${App.config.denom} in your account to pay fees on future transactions!`
             this.modal.find('.amount-warning').html(msg).show()
           }
@@ -86,7 +88,7 @@ class GovProposalDepositModal {
         this.modal.find('.modal-dialog').removeClass('modal-lg')
         this.modal.find('.step-confirm').show()
 
-        const txObject = this.depositTransactionObject()
+        const txObject = this.ledger.createDeposit( this.ledger.txContext, App.config.proposalId.toString(), this.depositAmount.toString() )
 
         this.modal.find('.transaction-json').text(
           JSON.stringify( txObject, undefined, 2 )
