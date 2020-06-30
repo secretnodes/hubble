@@ -17,8 +17,9 @@ Rails.application.routes.draw do
   end
 
   # PUZZLE
-  root to: 'home#index'
+  root to: 'secret/chains#show', id: 'secret-1'
   get '/privacy_policy' => 'home#privacy_policy'
+  get '/chains' => 'home#index'
 
   concern :chainlike do
     resources :chains, format: false, constraints: { id: /[^\/]+/ }, only: %i{ show } do
