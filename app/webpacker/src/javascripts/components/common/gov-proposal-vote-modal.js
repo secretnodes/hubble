@@ -21,6 +21,10 @@ class GovProposalVoteModal {
       await this.ledger.setupConnection();
       const setupError = null;
 
+      if ( !App.config.walletPresent ) {
+        await this.ledger.addWallet(App.config.userId, App.config.chainId);
+      }
+
       if( setupError ) {
         this.modal.find('.proposal-step').hide()
         this.modal.find('.step-error')

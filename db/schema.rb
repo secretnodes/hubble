@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_17_203350) do
+ActiveRecord::Schema.define(version: 2020_06_30_043600) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1049,6 +1049,16 @@ ActiveRecord::Schema.define(version: 2020_06_17_203350) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "verification_token"
+  end
+
+  create_table "wallets", force: :cascade do |t|
+    t.string "public_address"
+    t.integer "chain_id"
+    t.string "chain_type"
+    t.integer "account_index"
+    t.string "public_key"
+    t.integer "wallet_type"
+    t.integer "user_id"
   end
 
   add_foreign_key "cosmos_blocks", "cosmos_chains", column: "chain_id"

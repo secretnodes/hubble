@@ -119,6 +119,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       get '/account_balance' => 'accounts#balance', as: :account_balance
       get '/account_info' => 'accounts#info', as: :account_info
+      
+      resources :wallets, only: [:create]
     end
   end
 

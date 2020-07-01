@@ -6,6 +6,8 @@ class User < ApplicationRecord
 
   has_many :watches, class_name: 'Common::Watch'
 
+  has_many :wallets
+
   validates :email, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   default_scope -> { where.not( deleted: true ) }
