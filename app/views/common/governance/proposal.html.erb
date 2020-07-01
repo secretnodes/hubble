@@ -452,6 +452,12 @@
 <% end -%>
 
 <script>
+  <% if current_user.present? %>
+    App.config.userId = '<%= current_user.present? ? current_user.id : nil %>';
+    App.config.walletPresent = <%= current_user.wallets.present? %>;
+    App.config.accountIndex = <%= current_user.wallets.first.present? ? current_user.wallets.first.account_index : 0 %>;
+    App.config.chainId = '1';
+  <% end %>
   App.config.proposalId = <%= @proposal.ext_id.to_json %>;
   App.config.depositMinimum = <%= @chain.governance_params.min_deposit_amount.to_json %>;
   App.config.currentDepositTotal = <%= @proposal.total_deposits_for_denom(@chain.remote_denom).to_json %>;

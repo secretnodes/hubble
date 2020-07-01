@@ -20,6 +20,13 @@
     <div class='collapse navbar-collapse' id='navbarNavDropdown'>
       <ul class='navbar-nav ml-auto'>
         <% if @chain -%>
+
+          <% if current_user.wallets.first.present? %>
+            <li class='address-nav'>
+              <span class='public-address'><%= image_tag 'secret_logo.png', class: 'secret-logo'%> | <%= current_user.wallets.first.public_address %></span>
+            </li>
+            <li class='sep'>|</li>
+          <% end %>
           <form class='form-inline my-2 my-lg-0' action='<%= namespaced_path( 'search', pre_path: true ) %>'>
             <input class='form-control form-control-sm mr-sm-2' name='query' type='search' value='<%= params[:query] %>' placeholder='Search <%= @chain.name %>...' aria-label='Search'>
           </form>

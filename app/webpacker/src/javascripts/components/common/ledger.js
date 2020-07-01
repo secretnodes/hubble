@@ -511,6 +511,34 @@ export class Ledger {
     return responseData
   }
 
+  async addWallet( userId, chainId ) {
+    if( !userId ) { return false }
+
+    let payload = {
+      wallet: {
+        user_id: userId,
+        wallet_type: 'ledger',
+        public_address: this.publicAddress,
+        public_key: this.txContext.public_key,
+        chain_id: 1,
+        chain_type: 'Secret',
+        account_index: HDPATH[2]
+      }
+    }
+
+    const response = await fetch( '/api/v1/wallets', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': $('meta[name=csrf-token]').attr('content')
+      },
+      body: JSON.stringify( payload )
+    } )
+    const responseData = await response.json()
+    return responseData
+  }
+
   async setTxContext( ) {
     let url = '/secret/chains/secret-1/accounts/' + this.publicAddress + '?validator=' + App.config.validatorOperatorAddress;
     return fetch(url, {

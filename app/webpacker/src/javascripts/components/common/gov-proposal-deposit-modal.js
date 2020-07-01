@@ -20,6 +20,10 @@ class GovProposalDepositModal {
       this.ledger = new Ledger({ testModeAllowed: false });
       await this.ledger.setupConnection();
 
+      if ( !App.config.walletPresent ) {
+        await this.ledger.addWallet(App.config.userId, App.config.chainId);
+      }
+
       const setupError = null;
       if( setupError ) {
         this.modal.find('.proposal-step').hide()
