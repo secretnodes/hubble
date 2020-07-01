@@ -21,7 +21,7 @@
       <ul class='navbar-nav ml-auto'>
         <% if @chain -%>
 
-          <% if current_user.wallets.first.present? %>
+          <% if current_user && current_user.wallets.first.present? %>
             <li class='address-nav'>
               <span class='public-address'><%= image_tag 'secret_logo.png', class: 'secret-logo'%> | <%= current_user.wallets.first.public_address %></span>
             </li>
