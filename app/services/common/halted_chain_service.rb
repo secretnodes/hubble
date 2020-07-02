@@ -10,7 +10,7 @@ class Common::HaltedChainService
       @chain.has_halted! unless @chain.halted?
       ProgressReport.instance.report 'CHAIN IS HALTED'
     else
-      @chain.update_attributes last_round_state: round_state_string
+      @chain.update_attributes last_round_state: round_state_string, total_supply: get_total_supply
       @chain.progressing! if @chain.halted?
       ProgressReport.instance.report 'CHAIN APPEARS OK'
     end
@@ -116,6 +116,10 @@ class Common::HaltedChainService
       val[:in_good_standing] = bad.empty?
       val
     end
+  end
+
+  def get_total_supply
+    get_genesis_data['result']['genesis']['app_state']['supply']['supply'][0]['amount']
   end
 
   def percentage
