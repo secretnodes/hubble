@@ -84,6 +84,15 @@
       </div>
     </div>
 
+    <% if @chain.total_supply.present? %>
+      <div class='card'>
+        <h5 class='card-header'>Total Supply</h5>
+        <div class='card-body'>
+          <div><%= format_amount( @chain.total_supply, @chain, denom: 'uscrt' ) %></div>
+        </div>
+      </div>
+    <% end %>
+
     <% if @chain.governance_params_synced? -%>
       <div class='card'>
         <h5 class='card-header'>Governance</h5>
