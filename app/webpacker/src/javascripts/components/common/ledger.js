@@ -93,8 +93,15 @@ export class Ledger {
     this.pubKey = publicAddress.pubKey
     this.publicAddress = publicAddress.address;
     this.txContext = this.formatTxContext(await this.setTxContext());
-    this.accountBalance = this.txContext.coins[0].amount;
-    this.scaledBalance = this.scale(this.accountBalance);
+
+    if (this.txContext.coins.length == 0) {
+      this.txContext.address = this.publicAddress;
+      this.accountBalance = 0;
+      this.scaledBalance = 0;
+    } else {
+      this.accountBalance = this.txContext.coins[0].amount;
+      this.scaledBalance = this.scale(this.accountBalance);
+    }
   }
 
   async getCosmosAppVersion() {
