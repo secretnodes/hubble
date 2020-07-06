@@ -7,7 +7,6 @@ To address this, secretnodes.org has worked to launch Puzzle, an open-source pro
 Made with :heart: by [secretnodes.org](https://secretnodes.org). Originally forked from the [hubble](https://github.com/figment-networks/hubble) Q4 2019 update.
 
 # Implementations of Puzzle
-https://puzzle-staging.secretnodes.org is our canary build of Puzzle.
 
 https://puzzle.report is our production build of Puzzle. (not currently up)
 
