@@ -51,7 +51,7 @@ class Common::SyncBase
   end
 
   def get_validator_set( height )
-    rpc_get( 'validators', height: height )
+    rpc_get( 'validators', height: height, per_page: 50 )
   end
 
   def get_staking_pool
