@@ -47,7 +47,7 @@ Rails.application.routes.draw do
       resources :blocks, only: %i{ show } do
         resources :transactions, only: %i{ show }
       end
-      resources :transactions, only: %i{ show }
+      resources :transactions, only: %i{ show index }
 
       resources :logs, only: %i{ index }, controller: '/util/logs'
 
