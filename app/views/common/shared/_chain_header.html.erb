@@ -26,6 +26,9 @@
       <% if defined?(faucet_link) && @chain.faucet && @chain.faucet.enabled? -%>
         <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'faucet' ) %>'>Faucet</a>
       <% end -%>
+      <% if defined?(transactions_link) -%>
+        <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'transactions' ) %>'>Transactions</a>
+      <% end -%>
       <% if defined?(events_link) -%>
         <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'events' ) %>'>Events</a>
       <% end -%>
