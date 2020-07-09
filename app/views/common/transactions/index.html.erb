@@ -16,8 +16,7 @@
         <thead>
           <tr>
             <th>Activity</th>
-            <th>Fees</th>
-            <th>Gas</th>
+            <th>Timestamp</th>
             <th>Result</th>
             <th>Hash</th>
             <th>&nbsp;</th>
@@ -41,18 +40,8 @@
                 <%= msg.humanize_message %>
               <% end -%>
               </td>
-              <td data-order='<%= tr.fees_raw %>'>
-                <ul class='list-unstyled mb-0'>
-                  <% if tr.fees.empty? -%>
-                    <span class='text-muted text-lg'>&mdash;</span>
-                  <% end -%>
-                  <% tr.fees.each do |fee| -%>
-                    <li><%= fee %></li>
-                  <% end -%>
-                </ul>
-              </td>
-              <td data-order='<%= tr.gas_raw %>'>
-                <%= tr.gas %>
+              <td data-order=<%= tr.timestamp %>>
+                <%= tr.timestamp %>
               </td>
               <td data-order='<%= tr.error? ? 'error' : 'success' %>'>
                 <% if tr.error? -%>
