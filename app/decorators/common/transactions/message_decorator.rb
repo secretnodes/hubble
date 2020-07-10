@@ -30,6 +30,36 @@ class Common::Transactions::MessageDecorator
     end
   end
 
+  def humanize_message
+    data = @object['value']
+    case humanized_type
+    when "Withdraw All Rewards", "Withdraw Rewards"
+      "#{handle_account( data['delegator_address'] )} withdrew rewards from #{handle_validator( data['validator_address'], html: true)}".html_safe
+    when "Withdraw Commission"
+      "#{handle_validator(data['validator_address'], html: true)} withdrew commission".html_safe
+    when "Redelegation".html_safe
+      "#{handle_account( data['delegator_address'] )} redelegated #{handle_amount(data['amount'])} to #{handle_validator( data['validator_dst_address'], html: true)} from #{handle_validator( data['validator_src_address'], html: true)}".html_safe
+    when "Undelegate"
+      "#{handle_account( data['delegator_address'] )} undelegated #{handle_amount(data['amount'])} from #{handle_validator( data['validator_address'], html: true)}".html_safe
+    when "Delegation"
+      "#{handle_account( data['delegator_address'] )} delegated #{handle_amount(data['amount'])} to #{handle_validator( data['validator_address'], html: true)}".html_safe
+    when "Deposit"
+      "#{handle_account( data['delegator_address'] )} deposited #{handle_amount(data['amount'])} to #{data['proposal_id']}".html_safe
+    when "Send"
+      "#{handle_validator( data['from_address'], html: true)} sent #{handle_amount(data['amount'])} to #{handle_validator( data['to_address'], html: true)}".html_safe
+    when 'Unjail'
+      "#{handle_validator( data['address'], html: true)} unjailed".html_safe
+    when "Swap"
+      "#{handle_validator( data['Receiver'], html: true)} swapped #{format_amount(data['AmountENG'].to_i, denom: 'uscrt')}".html_safe
+    when "Vote"
+      "#{handle_validator( data['voter'], html: true)} voted #{data['option']} on #{data['proposal_id']}".html_safe
+    when "Edit Validator"
+      "#{handle_validator( data['address'], html: true )} modified their validator".html_safe
+    when 'Modify Withdraw Address'
+      "#{handle_validator( data['delegator_address'], html: true)} changed their withdraw address".html_safe
+    end
+  end
+
   private
 
   def humanized_type
@@ -37,13 +67,17 @@ class Common::Transactions::MessageDecorator
     case sanitized
     when 'MsgWithdrawValidatorRewardsAll' then 'Withdraw All Rewards'
     when 'MsgWithdrawDelegationReward' then 'Withdraw Rewards'
+    when 'MsgWithdrawValidatorCommission' then 'Withdraw Commission'
     when 'MsgBeginRedelegate' then 'Redelegation'
     when 'MsgUndelegate' then 'Undelegate'
-    when 'MsgWithdrawValidatorCommission' then 'Withdraw Commission'
     when 'MsgDelegate' then 'Delegation'
     when 'MsgDeposit' then 'Deposit'
     when 'MsgSend' then 'Send'
     when 'MsgUnjail' then 'Unjail'
+    when 'tokenswap/TokenSwap' then 'Swap'
+    when 'MsgVote' then 'Vote'
+    when 'MsgEditValidator' then 'Edit Validator'
+    when 'MsgModifyWithdrawAddress' then 'Modify Withdraw Address'
     else sanitized
     end
   end
@@ -76,14 +110,14 @@ class Common::Transactions::MessageDecorator
   alias :handle_delegation :handle_amount
   alias :handle_value :handle_amount
 
-  def handle_validator( value )
+  def handle_validator( value, html: true)
     bytes = Bitcoin::Bech32.decode( value )[1]
     account_address = Bitcoin::Bech32.encode( @chain.class::PREFIXES[:account_address].sub(/1$/, ''), bytes )
-    handle_account( account_address )
+    handle_account( account_address, html: html)
   end
   alias :handle_validator_address :handle_validator
 
-  def handle_account( value )
+  def handle_account( value, html: true)
     validator = @chain.accounts.find_by( address: value ).try(:validator)
     if validator
       link_to validator.short_name, namespaced_path( 'validator', validator )
