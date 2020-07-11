@@ -25,7 +25,7 @@ class Common::Transactions::MessageDecorator
   def each_info( &block )
     @object['value'].each do |k, v|
       fn = :"handle_#{k}"
-      # binding.pry
+
       value = respond_to?(fn, true) ? send(fn, v) : v
       yield k, nice_info_key(k), value
     end
