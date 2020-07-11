@@ -4,6 +4,7 @@ class CreateSecretTransactions < ActiveRecord::Migration[5.2]
       t.integer :chain_id
       t.integer :block_id
       t.integer :chain_id
+      t.bigint :height
       t.integer :transaction_type
       t.jsonb :raw_transaction
       t.float :gas_wanted
@@ -12,6 +13,7 @@ class CreateSecretTransactions < ActiveRecord::Migration[5.2]
       t.datetime :timestamp
       t.jsonb :message
       t.string :signature
+      t.string :hash_id
 
       t.timestamps
     end

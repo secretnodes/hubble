@@ -816,6 +816,7 @@ ActiveRecord::Schema.define(version: 2020_07_11_005324) do
   create_table "secret_transactions", force: :cascade do |t|
     t.integer "chain_id"
     t.integer "block_id"
+    t.bigint "height"
     t.integer "transaction_type"
     t.jsonb "raw_transaction"
     t.float "gas_wanted"
@@ -824,6 +825,7 @@ ActiveRecord::Schema.define(version: 2020_07_11_005324) do
     t.datetime "timestamp"
     t.jsonb "message"
     t.string "signature"
+    t.string "hash_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
