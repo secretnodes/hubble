@@ -25,6 +25,7 @@ class Common::Transactions::MessageDecorator
   def each_info( &block )
     @object['value'].each do |k, v|
       fn = :"handle_#{k}"
+
       value = respond_to?(fn, true) ? send(fn, v) : v
       yield k, nice_info_key(k), value
     end
@@ -50,7 +51,7 @@ class Common::Transactions::MessageDecorator
     when 'Unjail'
       "#{handle_validator( data['address'], html: true)} unjailed".html_safe
     when "Swap"
-      "#{handle_validator( data['Receiver'], html: true)} swapped #{format_amount(data['AmountENG'].to_i, denom: 'uscrt')}".html_safe
+      "#{handle_validator( data['Receiver'], html: true)} swapped #{format_amount(data['AmountENG'].to_f, denom: 'eng')} | #{handle_eth_tx(data['BurnTxHash'], 'View on Etherscan')}".html_safe
     when "Vote"
       "#{handle_validator( data['voter'], html: true)} voted #{data['option']} on #{data['proposal_id']}".html_safe
     when "Edit Validator"
@@ -132,12 +133,33 @@ class Common::Transactions::MessageDecorator
   alias :handle_address :handle_account
   alias :handle_to_address :handle_account
   alias :handle_from_address :handle_account
+  alias :handle_Receiver :handle_account
+  alias :handle_SignerAddr :handle_account
 
   def handle_proposal_id( value )
     p = @chain.governance_proposals.find_by( ext_id: value )
     return "Unknown" unless p
     link_to p.title.truncate( 30, separator: '...' ), namespaced_path( 'governance_proposal', p )
   end
+
+  def handle_AmountENG( value )
+    format_amount( value.to_f, @chain, denom: 'eng' )
+  end
+
+  def handle_eth_address( value )
+    tag.span( class: 'technical' ) do
+      link_to value, "https://etherscan.io/address/#{value}"
+    end
+  end
+  alias :handle_EthereumSender :handle_eth_address
+
+  def handle_eth_tx( value, message = nil)
+    message ||= value
+    tag.span( class: 'technical' ) do
+      link_to message, "https://etherscan.io/tx/#{value}"
+    end
+  end
+  alias :handle_BurnTxHash :handle_eth_tx
 
   def handle_send( value )
     return value.map do |input|
