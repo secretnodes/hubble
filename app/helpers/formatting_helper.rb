@@ -12,6 +12,9 @@ module FormattingHelper
     elsif denom.in?(chain.token_map.keys)
       amount /= 10 ** chain.token_map[denom]['factor'].to_f
       denom = chain.token_map[denom]['display']
+    elsif denom == 'eng'
+      amount /= 10 ** 8.0
+      denom = "ENG"
     end
 
     # 'amount' here can be huge, so let's decide on a denomination to display
