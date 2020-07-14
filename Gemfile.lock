@@ -306,8 +306,8 @@ GEM
     whenever (0.10.0)
       chronic (>= 0.6.3)
     will_paginate (3.3.0)
-    will_paginate-bootstrap (1.0.2)
-      will_paginate (>= 3.0.3)
+    will_paginate-bootstrap4 (0.2.2)
+      will_paginate (~> 3.0, >= 3.0.0)
 
 PLATFORMS
   ruby
@@ -361,7 +361,7 @@ DEPENDENCIES
   webpacker (~> 5.1.1)
   whenever
   will_paginate (~> 3.3.0)
-  will_paginate-bootstrap
+  will_paginate-bootstrap4
 
 BUNDLED WITH
    2.1.4
