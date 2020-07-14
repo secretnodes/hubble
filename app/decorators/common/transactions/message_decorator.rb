@@ -58,6 +58,8 @@ class Common::Transactions::MessageDecorator
       "#{handle_validator( data['address'], html: true )} modified their validator".html_safe
     when 'Modify Withdraw Address'
       "#{handle_validator( data['delegator_address'], html: true)} changed their withdraw address".html_safe
+    when 'Create Validator'
+      "#{handle_validator( data['delegator_address'], html: true)} created a validator with moniker #{handle_validator(data['validator_address'])}".html_safe
     end
   end
 
@@ -79,6 +81,7 @@ class Common::Transactions::MessageDecorator
     when 'MsgVote' then 'Vote'
     when 'MsgEditValidator' then 'Edit Validator'
     when 'MsgModifyWithdrawAddress' then 'Modify Withdraw Address'
+    when 'MsgCreateValidator' then 'Create Validator'
     else sanitized
     end
   end
