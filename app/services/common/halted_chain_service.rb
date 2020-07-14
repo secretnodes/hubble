@@ -119,7 +119,7 @@ class Common::HaltedChainService
   end
 
   def get_total_supply
-    get_genesis_data['result']['genesis']['app_state']['supply']['supply'][0]['amount']
+    @chain.syncer.get_total_supply.to_i
   end
 
   def percentage
