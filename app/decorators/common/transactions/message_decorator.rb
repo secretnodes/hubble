@@ -45,7 +45,7 @@ class Common::Transactions::MessageDecorator
     when "Delegation"
       "#{handle_account( data['delegator_address'] )} delegated #{handle_amount(data['amount'])} to #{handle_validator( data['validator_address'], html: true)}".html_safe
     when "Deposit"
-      "#{handle_account( data['delegator_address'] )} deposited #{handle_amount(data['amount'])} to #{data['proposal_id']}".html_safe
+      "#{handle_account( data['depositor'] )} deposited #{handle_amount(data['amount'])} to #{data['proposal_id']}".html_safe
     when "Send"
       "#{handle_validator( data['from_address'], html: true)} sent #{handle_amount(data['amount'])} to #{handle_validator( data['to_address'], html: true)}".html_safe
     when 'Unjail'
