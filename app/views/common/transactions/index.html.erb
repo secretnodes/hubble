@@ -60,6 +60,9 @@
           <% end -%>
         </tbody>
       </table>
+      <div class='mt-4'>
+        <%= will_paginate @blocks, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+      </div>
     </div>
   </div>
 </div>
