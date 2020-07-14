@@ -57,7 +57,7 @@ class Common::GovSyncService
         )
 
         if working_proposal
-          if working_proposal.finalized?
+          if working_proposal.finalized? && working_proposal.proposal_status != 'VotingPeriod'
             puts "Skipping finalized proposal: #{working_proposal.ext_id} - #{working_proposal.title}"
           else
             puts "Updating existing proposal: #{working_proposal.ext_id} - #{working_proposal.title}"
