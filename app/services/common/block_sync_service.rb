@@ -95,6 +95,18 @@ class Common::BlockSyncService
             raise @chain.namespace::SyncBase::CriticalError.new("Failed to create block at height #{height}.")
           end
 
+          if obj[:transactions].try(:any?)
+            txs = obj[:transactions].map { |hash| syncer.get_transaction(hash) }
+            txs.each do |tx|
+              begin
+                @chain.namespace::Transaction.assemble(@chain, created, tx)
+              rescue RuntimeError => e
+                puts e
+                next
+              end
+            end
+          end
+
           latest_local = height
           @chain.update_attributes latest_local_height: latest_local
 
