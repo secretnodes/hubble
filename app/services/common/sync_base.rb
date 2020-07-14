@@ -51,7 +51,7 @@ class Common::SyncBase
   end
 
   def get_validator_set( height )
-    rpc_get( 'validators', height: height )
+    rpc_get( 'validators', height: height, per_page: 50 )
   end
 
   def get_staking_pool
@@ -128,10 +128,14 @@ class Common::SyncBase
     lcd_get('distribution/community_pool') rescue nil
   end
 
+  def get_total_supply
+    lcd_get( "supply/total/#{@chain.primary_token}" )
+  end
+
   def get_governance
     result = rpc_get( 'genesis' )
     info = result['result']['genesis']['app_state']['gov']
-    (info||{}).slice('deposit_params', 'voting_params', 'tally_params')
+    (info || {}).slice('deposit_params', 'voting_params', 'tally_params')
   end
 
   def get_proposals

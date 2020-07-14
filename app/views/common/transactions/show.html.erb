@@ -92,7 +92,7 @@
                   <% else %>
                     <% messages.each do |msg| -%>
                       <tr>
-                        <td class='text-nowrap border-none'><%= msg.type( tooltip: false ) %></td>
+                        <td class='text-nowrap border-none'><%= msg.type %></td>
                         <td class='m-0 p-0 border-none'>
                           <table class='table m-0 no-first-row-top-border'>
                             <% msg.each_info do |key, nice_key, formatted_value| -%>

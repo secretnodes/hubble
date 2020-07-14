@@ -17,8 +17,8 @@ class Common::GovSyncService
     ProgressReport.instance.start "Syncing Community Pool for #{@chain.network_name}/#{@chain.name}..."
 
     pool = @syncer.get_community_pool
-    if pool
-      pool.map! do |balance|
+    if pool && pool.is_a?(Array)
+      pool.map do |balance|
         balance['amount'] = balance['amount'].to_f
         balance
       end

@@ -153,6 +153,10 @@ class Common::TransactionDecorator
     @object['tx']['value']['signatures']
   end
 
+  def timestamp
+    @object['timestamp'].to_datetime.strftime('%d %b %Y at %H:%M UTC')
+  end
+
   private
 
   def get_amount_msg_type

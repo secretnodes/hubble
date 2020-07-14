@@ -1,0 +1,68 @@
+<% content_for :body_class, 'block-show' -%>
+
+<%= render partial: '/common/shared/chain_header', locals: { summary_link: true } %>
+
+<div class='row'>
+  <div class="col-12">
+    <div class='transactions-table-header'>
+      <h4>
+        Transactions
+        <small>&nbsp;&mdash; <%= @transactions_total %> total&nbsp;</small>
+      </h4>
+    </div>
+
+    <div class='transactions-table'>
+      <table data-empty='<%= @transactions.nil? || @transactions.empty? %>'>
+        <thead>
+          <tr>
+            <th>Activity</th>
+            <th>Timestamp</th>
+            <th>Result</th>
+            <th>Hash</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @transactions.nil? -%>
+            <tr>
+              <td class='p-3 text-center' colspan='5'>Unable to retrieve transaction data.</td>
+            </tr>
+          <% elsif @transactions.empty? -%>
+            <tr>
+              <td class='p-3 text-center' colspan='5'>No transactions in this block.</td>
+            </tr>
+          <% end -%>
+
+          <% @transactions.each do |tr| -%>
+            <tr>
+              <td>
+              <% tr.messages.each do |msg| -%>
+                <%= msg.humanize_message %>
+              <% end -%>
+              </td>
+              <td data-order=<%= tr.timestamp %>>
+                <%= tr.timestamp %>
+              </td>
+              <td data-order='<%= tr.error? ? 'error' : 'success' %>'>
+                <% if tr.error? -%>
+                  <span class='badge badge-danger' data-toggle='tooltip' title='<%= tr.error_message %>'>ERROR</span>
+                <% else -%>
+                  <span class='badge badge-success'>SUCCESS</span>
+                <% end -%>
+              </td>
+              <td data-order='<%= tr.hash %>'>
+                <span class='technical'><%= tr.hash.truncate(15, separator: '...') %></span>
+              </td>
+              <td class='text-right'>
+                <a class='btn btn-outline-primary btn-sm' href='<%= namespaced_path( 'block_transaction', tr.height, tr ) %>'>Details...</a>
+              </td>
+            </tr>
+          <% end -%>
+        </tbody>
+      </table>
+      <div class='mt-4'>
+        <%= will_paginate @blocks, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+      </div>
+    </div>
+  </div>
+</div>
