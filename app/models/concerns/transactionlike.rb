@@ -17,7 +17,7 @@ module Transactionlike
     validates :height, :transaction_type, presence: true
   end
 
-  def to_param; id_hash.to_s; end
+  def to_param; hash_id.to_s; end
 
   module ClassMethods
     def convert_transaction_type( raw_type )
@@ -97,7 +97,7 @@ module Transactionlike
         block_id: block.id,
         height: height,
         transaction_type: transaction_type,
-        raw_transaction: tx,
+        raw_transaction: hash,
         gas_wanted: hash['gas_wanted'],
         gas_used: hash['gas_used'],
         fee: fee,
