@@ -8,6 +8,7 @@ module Chainlike
 
     has_many :blocks, class_name: "#{namespace}::Block", dependent: :delete_all
     has_many :validators, class_name: "#{namespace}::Validator", dependent: :delete_all
+    has_many :transactions, class_name: "#{namespace}::Transaction", dependent: :delete_all
 
     has_many :events, as: :chainlike, class_name: 'Common::ValidatorEvent', dependent: :delete_all
     has_many :latches, as: :chainlike, class_name: 'Common::ValidatorEventLatch', dependent: :delete_all
