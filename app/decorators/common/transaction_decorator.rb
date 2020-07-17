@@ -136,7 +136,7 @@ class Common::TransactionDecorator
   end
 
   def time_ago
-    time_ago_in_words(@transaction.timestamp)
+    "#{time_ago_in_words(@transaction.timestamp)} ago"
   end
 
   private
