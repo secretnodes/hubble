@@ -8,6 +8,8 @@ module Transactionlike
     belongs_to :block, class_name: "#{namespace}::Block"
     belongs_to :proposal, class_name: "#{namespace}::Governance::Proposal", optional: true, primary_key: :ext_id
 
+    has_and_belongs_to_many :accounts, class_name: "#{namespace}::Account", join_table: "#{namespace.to_s.downcase}_accounts_#{namespace.to_s.downcase}_transactions"
+
     default_scope { order('height DESC') }
 
     enum transaction_type: [:send_token, :delegate_token, :undelegate, :redelegate, :submit_proposal,
@@ -110,8 +112,11 @@ module Transactionlike
         error_message: error_message,
         logs: logs
       )
-
-      raise RuntimeError.new("Could not save transaction for hash_id #{hash_id}") if transaction.invalid?
+      if transaction.invalid?
+        raise RuntimeError.new("Could not save transaction for hash_id #{hash_id}") if transaction.invalid?
+      else
+        return transaction
+      end
     end
   end
 end

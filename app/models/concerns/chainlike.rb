@@ -23,6 +23,9 @@ module Chainlike
 
     has_one :faucet, class_name: "#{namespace}::Faucet", dependent: :destroy
 
+    # Rails wouldn't let us name this transaction because there's already a '.transaction' method reserved
+    has_many :txs, class_name: "#{namespace}::Transaction"
+
     validates :name, presence: true, allow_blank: false
     validates :slug, presence: true, uniqueness: true, format: { with: /[a-z0-9-]+/ }, allow_blank: false
     validate :validator_event_defs_format

@@ -6,6 +6,9 @@ module Blocklike
 
     belongs_to :chain, class_name: "#{namespace}::Chain"
 
+    # Rails wouldn't let us name this transaction because there's already a '.transaction' method reserved
+    has_many :txs, class_name: "#{namespace}::Transaction"
+
     default_scope { order('height DESC') }
 
     validates :height, presence: true, uniqueness: { scope: :chain }

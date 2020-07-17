@@ -5,6 +5,7 @@ class Common::AccountDecorator
     @chain = chain
     @namespace = chain.class.name.deconstantize.constantize
     @address = address
+    @account = @chain.namespace::Account.find_by_address @address
   end
 
   def error?
@@ -44,7 +45,8 @@ class Common::AccountDecorator
 
   def delegation_transactions
     begin
-      @_delegation_transactions ||= @chain.syncer.get_account_delegation_transactions( @address )
+      @_delegation_transactions ||= @account.txs
+
     rescue @chain.namespace::SyncBase::CriticalError
       return nil
     end
