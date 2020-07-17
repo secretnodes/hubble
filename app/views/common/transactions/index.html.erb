@@ -36,6 +36,7 @@
           <% @decorated_txs.each do |tr| -%>
             <tr>
               <td>
+              <%= link_to tr.chain_id, namespaced_path( nil, @chain ), class: 'd-none d-md-flex badge badge-pill badge-dark text-uppercase w-25 pl-4', style: 'cursor: pointer'%>
               <% tr.messages.each do |msg| -%>
                 <%= msg.humanize_message %>
               <% end -%>
