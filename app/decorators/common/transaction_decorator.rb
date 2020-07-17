@@ -1,5 +1,6 @@
 class Common::TransactionDecorator
   include FormattingHelper
+  include ActionView::Helpers::DateHelper
 
   def initialize( chain, transaction )
     # TODO: cache!
@@ -132,6 +133,10 @@ class Common::TransactionDecorator
 
   def timestamp
     @transaction.timestamp.to_datetime.strftime('%d %b %Y at %H:%M UTC')
+  end
+
+  def time_ago
+    time_ago_in_words(@transaction.timestamp)
   end
 
   private

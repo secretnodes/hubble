@@ -41,7 +41,7 @@
               <% end -%>
               </td>
               <td data-order=<%= tr.timestamp %>>
-                <%= tr.timestamp %>
+                <%= tr.time_ago %>
               </td>
               <td data-order='<%= tr.error? ? 'error' : 'success' %>'>
                 <% if tr.error? -%>
