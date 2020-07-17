@@ -12,7 +12,7 @@
     </div>
 
     <div class='transactions-table'>
-      <table data-empty='<%= @transactions.nil? || @transactions.empty? %>'>
+      <table data-empty='<%= @decorated_txs.nil? || @decorated_txs.empty? %>'>
         <thead>
           <tr>
             <th>Activity</th>
@@ -23,17 +23,17 @@
           </tr>
         </thead>
         <tbody>
-          <% if @transactions.nil? -%>
+          <% if @decorated_txs.nil? -%>
             <tr>
               <td class='p-3 text-center' colspan='5'>Unable to retrieve transaction data.</td>
             </tr>
-          <% elsif @transactions.empty? -%>
+          <% elsif @decorated_txs.empty? -%>
             <tr>
               <td class='p-3 text-center' colspan='5'>No transactions in this block.</td>
             </tr>
           <% end -%>
 
-          <% @transactions.each do |tr| -%>
+          <% @decorated_txs.each do |tr| -%>
             <tr>
               <td>
               <% tr.messages.each do |msg| -%>
@@ -61,7 +61,7 @@
         </tbody>
       </table>
       <div class='mt-4'>
-        <%= will_paginate @blocks, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <%= will_paginate @transactions, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
       </div>
     </div>
   </div>
