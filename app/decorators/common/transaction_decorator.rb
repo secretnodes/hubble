@@ -139,6 +139,10 @@ class Common::TransactionDecorator
     "#{time_ago_in_words(@transaction.timestamp)} ago"
   end
 
+  def chain_id
+    @chain.slug
+  end
+
   private
 
   def get_amount_msg_type
