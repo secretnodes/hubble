@@ -1,20 +1,4 @@
 <header class='network-chain-header'>
-  <h1>
-    <a class='secret-link' href='<%= namespaced_path %>'>
-      <%= @chain.network_name %>
-      <% if @chain -%>
-        <small class='chain-info text-muted'>
-          <span class='d-none d-md-inline'>&mdash;</span>
-          <%= @chain.name %>
-          <% if @chain.testnet? %>
-            <span class='d-none d-md-inline badge badge-pill badge-light'>TESTNET</span>
-            <span class='d-inline d-md-none text-muted'><span class='fas fa-vial'></span></span>
-          <% end %>
-        </small>
-      <% end -%>
-    </a>
-  </h1>
-
   <div class='buttons ml-auto'>
     <% if @chain -%>
       <% if current_admin -%>
@@ -26,6 +10,9 @@
       <% if defined?(faucet_link) && @chain.faucet && @chain.faucet.enabled? -%>
         <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'faucet' ) %>'>Faucet</a>
       <% end -%>
+      <% if defined?(swaps_link) %>
+        <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'swaps' ) %>'>Swaps</a>
+      <% end %>
       <% if defined?(transactions_link) -%>
         <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'transactions' ) %>'>Transactions</a>
       <% end -%>
