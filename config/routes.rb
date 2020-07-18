@@ -48,6 +48,7 @@ Rails.application.routes.draw do
         resources :transactions, only: %i{ show }
       end
       resources :transactions, only: %i{ show index }
+      get 'swaps' => 'transactions#swaps', as: :swaps
 
       resources :logs, only: %i{ index }, controller: '/util/logs'
 

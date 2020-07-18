@@ -27,4 +27,15 @@ class Common::TransactionsController < Common::BaseController
     end
   end
 
+  def swaps
+    @raw_transactions = @chain.namespace::Transaction.swap
+    @transactions = @raw_transactions.paginate(page: params[:page], per_page: 50)
+    @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr) }
+    @transactions_total = @transactions.count
+
+    @total_swap = 0
+    @raw_transactions.each do |tx|
+      @total_swap += tx.message[0]['value']['AmountENG'].to_f
+    end
+  end
 end

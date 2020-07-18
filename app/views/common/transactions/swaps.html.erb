@@ -1,13 +1,12 @@
 <% content_for :body_class, 'block-show' -%>
-
-<%= render partial: '/common/shared/chain_header', locals: { summary_link: true, swaps_link: true } %>
+<%= render partial: '/common/shared/chain_header', locals: { summary_link: true, transactions_link: true } %>
 
 <div class='row'>
   <div class="col-12">
     <div class='transactions-table-header'>
       <h4>
-        Transactions
-        <small>&nbsp;&mdash; <%= @transactions_total %> total&nbsp;</small>
+        Swaps
+        <small><%= @transactions_total %> total&nbsp; | <%= format_amount(@total_swap, @chain, denom: 'eng', hide_units: true, in_millions: true) %> SCRT Swapped</small>
       </h4>
     </div>
 
