@@ -18,7 +18,6 @@
             <th>Activity</th>
             <th>Timestamp</th>
             <th>Result</th>
-            <th>Hash</th>
             <th>&nbsp;</th>
           </tr>
         </thead>
@@ -36,10 +35,10 @@
           <% @decorated_txs.each do |tr| -%>
             <tr>
               <td>
-              <%= link_to tr.chain_id, namespaced_path( nil, @chain ), class: 'd-none d-md-flex badge badge-pill badge-dark text-uppercase w-25 pl-4', style: 'cursor: pointer'%>
+              <%= link_to tr.chain_id, namespaced_path( nil, @chain ), class: 'badge badge-pill badge-dark text-uppercase w-25 mb-3', style: 'cursor: pointer'%>
               <% tr.messages.each do |msg| -%>
                 <div class="pb-2">
-                  <%= msg.humanize_message %>
+                  <%= msg.humanize_message_short %>
                 </div>
               <% end -%>
               </td>
@@ -52,9 +51,6 @@
                 <% else -%>
                   <span class='badge badge-success'>SUCCESS</span>
                 <% end -%>
-              </td>
-              <td data-order='<%= tr.hash %>'>
-                <span class='technical'><%= tr.hash.truncate(15, separator: '...') %></span>
               </td>
               <td class='text-right'>
                 <a class='btn btn-outline-primary btn-sm' href='<%= namespaced_path( 'block_transaction', tr.height, tr ) %>'>Details...</a>
