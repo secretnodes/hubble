@@ -118,5 +118,12 @@ module Transactionlike
         return transaction
       end
     end
+
+    def swap_address_count
+      addresses = []
+      messages = swap.pluck(:message).flatten
+      messages.map { |m| addresses << m['value']['Receiver'] }
+      addresses.uniq.count
+    end
   end
 end

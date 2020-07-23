@@ -32,6 +32,7 @@ class Common::TransactionsController < Common::BaseController
     @transactions = @raw_transactions.paginate(page: params[:page], per_page: 50)
     @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr) }
     @transactions_total = @transactions.count
+    @swap_address_count = @chain.namespace::Transaction.swap_address_count
 
     @total_swap = 0
     @raw_transactions.each do |tx|
