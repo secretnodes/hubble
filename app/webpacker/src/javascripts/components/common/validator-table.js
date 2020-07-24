@@ -52,6 +52,10 @@ class ValidatorTable {
           width: '150px',
           className: 'col-uptime'
         },
+        _.includes(this.skipColumns, 'info') ? null : {
+          width: '150px',
+          className: 'col-commission'
+        },
         { visible: false }
       ] )
     } )
