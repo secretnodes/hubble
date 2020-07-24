@@ -1,0 +1,22 @@
+<div class='card'>
+  <h5 class='card-header'>
+    <div class='card-header-parts'>
+      <div>Swap History</div>
+      <!-- <div class='validator-uptime-switcher btn-group btn-group-sm'>
+        <button type='button' data-target='alltime' class='btn btn-outline-light'>All Time</button>
+        <button type='button' data-target='last48h' class='btn btn-outline-light'>Past 48h</button>
+      </div> -->
+    </div>
+  </h5>
+  <div class='card-body'>
+    <!-- <div class='uptime-history-alltime-chart-container'>
+      <canvas class='uptime-history-alltime-chart'></canvas>
+    </div> -->
+    <div class='swap-history-chart-container'>
+      <canvas class='swap-history-chart'></canvas>
+    </div>
+    <script>
+      App.seed.SWAP_HISTORY = <%= raw(@total_swaps_data) %>
+    </script>
+  </div>
+</div>

@@ -110,6 +110,8 @@ GEM
     ffi (1.9.25)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    groupdate (5.0.0)
+      activesupport (>= 5)
     htmlentities (4.3.4)
     http (3.3.0)
       addressable (~> 2.3)
@@ -333,6 +335,7 @@ DEPENDENCIES
   dalli
   dotiw
   ed25519 (~> 1.2)
+  groupdate
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3, >= 4.3.3)
   letter_opener_web (~> 1.0)

@@ -34,6 +34,7 @@ import '../src/javascripts/components/common/transactions-table.js';
 import '../src/javascripts/components/common/validator-table.js';
 import '../src/javascripts/components/common/validator-uptime-history.js';
 import '../src/javascripts/components/common/validator-voting-power-history.js';
+import '../src/javascripts/components/common/swap-history.js';
 import '../src/javascripts/lib/bech32.js';
 import 'bops/dist/bops';
 import 'moment';

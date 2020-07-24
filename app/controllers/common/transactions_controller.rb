@@ -33,6 +33,7 @@ class Common::TransactionsController < Common::BaseController
     @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr) }
     @transactions_total = @transactions.count
     @swap_address_count = @chain.namespace::Transaction.swap_address_count
+    @total_swaps_data = @chain.namespace::Transaction.unscoped.where(transaction_type: :swap).group_by_day(:timestamp).count.to_json
 
     @total_swap = 0
     @raw_transactions.each do |tx|
