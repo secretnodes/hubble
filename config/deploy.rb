@@ -12,7 +12,7 @@ set :deploy_to, '/puzzle/app'
 
 # Default value for :linked_files is []
 before 'deploy:check:linked_files', 'linked_files:upload_files'
-append :linked_files, 'config/database.yml', 'config/credentials.yml.enc', 'config/master.key'
+append :linked_files, 'config/database.yml', 'config/credentials.yml.enc', 'config/master.key', 'config/skylight.yml'
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system', 'public/packs', 'node_modules'

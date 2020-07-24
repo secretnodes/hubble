@@ -56,6 +56,9 @@ gem 'webpacker', '~>5.1.1'
 
 gem 'groupdate'
 
+#monitoring software
+gem "skylight"
+
 group :development, :test do
   gem 'puma'
   gem 'capistrano', '~> 3.13', require: false
