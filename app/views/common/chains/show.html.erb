@@ -41,6 +41,7 @@
               <th>Address/Name</th>
               <th>Voting Power</th>
               <th>Uptime</th>
+              <th>Commission</th>
               <th class='d-none'></th>
             </tr>
           </thead>
@@ -58,6 +59,11 @@
                 </td>
                 <td data-order='<%= v.current_voting_power %>'><%= format_amount(v.current_voting_power, denom: @chain.token_map[@chain.primary_token]['display']) %></td>
                 <td data-order='<%= v.current_uptime %>' class='technical'><%= round_if_whole((v.current_uptime * 100).round(0)) %>%</td>
+                <% if v.info == {} %>
+                  <td data-order='1'>0%</td>
+                <% else %>
+                  <td data-order='<%= v.info['commission']['commission_rates']['rate'].to_f %>'><%= v.info == {} ? "" : number_to_percentage(v.info['commission']['commission_rates']['rate'].to_f * 100, precision: 0)%>
+                <% end %>
                 <td class='d-none'>
                   ⭐️ <%= v.active? ? '✔' : '𐄂' %> <!-- for the gear toggles -->
                   <%= v.owner %> <%= v.address %> <!-- so you can paste your address into search -->
