@@ -33,6 +33,7 @@ tmp/localhost.key
 # Ignore key files
 /config/credentials.yml.enc
 /config/secrets.yml
+/config/skylight.yml
 
 # Ignore yarn.lock
 /yarn.lock
