@@ -101,7 +101,6 @@ class Common::BlockSyncService
               begin
                 transaction = @chain.namespace::Transaction.assemble(@chain, created, tx)
                 if transaction.present?
-                  puts 'syncing accounts!'
                   @chain.namespace::AccountFinder.new( @chain, transaction, :transactions ).run
                 end
               rescue RuntimeError => e

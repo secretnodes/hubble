@@ -1,4 +1,5 @@
 import { DEFAULT_MEMO, Ledger } from './ledger.js';
+import { MathWallet } from './mathwallet.js';
 
 class GovProposalVoteModal {
   constructor( el ) {
@@ -16,93 +17,136 @@ class GovProposalVoteModal {
 
       if( !triggeredGAEvent ) { ga('send', 'event', 'gov-proposal-vote', 'started') }
 
-      this.ledger = new Ledger({ testModeAllowed: false })
-
-      await this.ledger.setupConnection();
-      const setupError = null;
-
-      if ( !App.config.walletPresent ) {
-        await this.ledger.addWallet(App.config.userId, App.config.chainId);
-      }
-
-      if( setupError ) {
-        this.modal.find('.proposal-step').hide()
-        this.modal.find('.step-error')
-          .find('.proposal-error').text(setupError == "" ? "Unknown error." : setupError)
-          .end().show()
-        return
-      }
-
-      this.modal.find('.step-setup').hide()
-
-      if( this.ledger.accountBalance < (this.transactionFee() * 2) ) {
-        ga('send', 'event', 'gov-proposal-vote', 'failed')
-        this.modal.find('.proposal-step').hide()
-        this.modal.find('.step-error')
-          .find('.proposal-error').text(this.ledger.signError || broadcastError || "Unknown error")
-          .end().show()
-        return
-      }
-
-      this.modal.find('.modal-dialog').addClass('modal-lg')
-      this.modal.find('.step-proposal-vote')
-        .find('.account-balance').text( `${this.ledger.accountBalance} ${App.config.denom}` ).end()
-        .find('.account-address').html( this.ledger.publicAddress ).end()
-        .find('.transaction-fee').text( `${this.transactionFee()} ${App.config.denom}` ).end()
-        .show()
-
-      this.modal.find('.vote-option input').on( 'change', ( e ) => {
-        const input = $(e.currentTarget)
-        this.voteOption = input.val()
-        input.parents('.vote-option').addClass('selected').siblings('.vote-option').removeClass('selected')
-        this.modal.find('.proposal-form').data( 'disabled', false )
-        this.modal.find('.submit-proposal-vote').removeAttr( 'disabled' )
+      this.modal.find('.choice-ledger').click( async () => {
+        this.modal.find('.step-choose-wallet').hide()
+        this.setupLedger();
       } )
 
-      this.modal.find('.proposal-form').submit( async ( e ) => {
-        e.preventDefault()
+      this.modal.find('.choice-mathwallet').click( async () => {
+        this.modal.find('.step-choose-wallet').hide()
+        this.setupMathwallet();
+      } )
+    } )
+  }
 
-        if( $(e.currentTarget).data('disabled') ) { return }
+  async setupLedger() {
+    this.modal.find('.step-setup').show()
+    this.modal.find('.ledger-instructions').show()
+    this.wallet = new Ledger({ testModeAllowed: false });
+    await this.wallet.setupConnection();
 
-        this.modal.find('.proposal-step').hide()
-        this.modal.find('.modal-dialog').removeClass('modal-lg')
-        this.modal.find('.step-confirm').show()
+    if ( !App.config.walletPresent ) {
+      await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    }
+    this.wallet_type = "ledger";
 
-        const txObject = Ledger.createVote(this.ledger.txContext, App.config.proposalId.toString(), this.voteOption);
-        let sign = await this.ledger.buildAndSign(this.ledger.txContext, txObject, this.GAS_WANTED.toString());
+    this.showStepChoice();
+  }
+
+  async setupMathwallet() {
+    this.modal.find('.step-setup').show()
+    this.wallet = new MathWallet();
+    await this.wallet.setupConnection();
+
+    if ( !App.config.walletPresent ) {
+      await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    }
+    this.wallet_type = "mathwallet";
+    this.showStepChoice();
+  }
+
+  showStepChoice() {
+    const setupError = null;
+
+    if( setupError ) {
+      this.modal.find('.proposal-step').hide()
+      this.modal.find('.step-error')
+        .find('.proposal-error').text(setupError == "" ? "Unknown error." : setupError)
+        .end().show()
+      return
+    }
+
+    this.modal.find('.step-setup').hide()
+
+    if( this.wallet.accountBalance < (this.transactionFee() * 2) ) {
+      ga('send', 'event', 'gov-proposal-vote', 'failed')
+      this.modal.find('.proposal-step').hide()
+      this.modal.find('.step-error')
+        .find('.proposal-error').text(this.wallet.signError || broadcastError || "Unknown error")
+        .end().show()
+      return
+    }
+
+    this.modal.find('.modal-dialog').addClass('modal-lg')
+    this.modal.find('.step-proposal-vote')
+      .find('.account-balance').text( `${this.wallet.accountBalance} ${App.config.denom}` ).end()
+      .find('.account-address').html( this.wallet.publicAddress ).end()
+      .find('.transaction-fee').text( `${this.transactionFee()} ${App.config.denom}` ).end()
+      .show()
+
+    this.modal.find('.vote-option input').on( 'change', ( e ) => {
+      const input = $(e.currentTarget)
+      this.voteOption = input.val()
+      input.parents('.vote-option').addClass('selected').siblings('.vote-option').removeClass('selected')
+      this.modal.find('.proposal-form').data( 'disabled', false )
+      this.modal.find('.submit-proposal-vote').removeAttr( 'disabled' )
+    } )
+
+    this.modal.find('.proposal-form').submit( async ( e ) => {
+      e.preventDefault()
+
+      if( $(e.currentTarget).data('disabled') ) { return }
+
+      this.modal.find('.proposal-step').hide()
+      this.modal.find('.modal-dialog').removeClass('modal-lg')
+      this.modal.find('.step-confirm').show()
+
+      if (this.wallet_type == "ledger") {
+        const txObject = Ledger.createSkeleton(this.wallet.txContext, this.voteTransactionObject());
+        let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.GAS_WANTED.toString());
 
         this.modal.find('.transaction-json').text(
           JSON.stringify( txObject, undefined, 2 )
         )
 
-        const txSignature = Ledger.applySignature(sign.newTxObject, this.ledger.txContext, sign.sigArray);
-        let broadcastError = null
-        if( txSignature ) {
-          const broadcastResult = await this.ledger.broadcastTransaction( txSignature )
+        this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+      } else {
+        let txObject = MathWallet.createTx(
+          this.wallet.txContext,
+          this.voteTransactionObject(),
+          this.GAS_WANTED.toString()
+        );
 
-          if( broadcastResult.ok ) {
-            this.modal.find('.proposal-step').hide()
-            this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
-            this.modal.find('.step-complete').show()
-            ga('send', 'event', 'gov-proposal-vote', 'completed')
-            return
-          }
-          else {
-            broadcastError = broadcastResult.error_message
-          }
+        this.txSignature = await this.wallet.buildAndSign(txObject);
+      }
+
+      console.log(this.txSignature);
+
+      if( this.txSignature ) {
+        const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
+
+        if( broadcastResult.ok ) {
+          this.modal.find('.proposal-step').hide()
+          this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
+          this.modal.find('.step-complete').show()
+          ga('send', 'event', 'gov-proposal-vote', 'completed')
+          return
         }
+        else {
+          broadcastError = broadcastResult.error_message
+        }
+      }
 
-        ga('send', 'event', 'gov-proposal-vote', 'failed')
-        this.modal.find('.proposal-step').hide()
-        this.modal.find('.step-error')
-          .find('.proposal-error').text(this.ledger.signError || broadcastError || "Unknown error")
-          .end().show()
-      } )
+      ga('send', 'event', 'gov-proposal-vote', 'failed')
+      this.modal.find('.proposal-step').hide()
+      this.modal.find('.step-error')
+        .find('.proposal-error').text(this.wallet.signError || broadcastError || "Unknown error")
+        .end().show()
+    } )
 
-      this.modal.find('.show-transaction-json').click( ( e ) => {
-        $(e.currentTarget).hide()
-        this.modal.find('.transaction-json-container').show()
-      } )
+    this.modal.find('.show-transaction-json').click( ( e ) => {
+      $(e.currentTarget).hide()
+      this.modal.find('.transaction-json-container').show()
     } )
   }
 
@@ -110,16 +154,30 @@ class GovProposalVoteModal {
     this.voteOption = null
     this.modal.find('.modal-dialog').removeClass('modal-lg')
     this.modal.find('.proposal-step').hide()
-    this.modal.find('.step-setup').show()
+    this.modal.find('.step-choose-wallet').show()
     this.modal.find('.proposal-form').off('submit').data( 'disabled', true )
     this.modal.find('.submit-proposal-vote').attr( 'disabled', 'disabled' )
     this.modal.find('.show-transaction-json').off('click').show()
     this.modal.find('.transaction-json-container').hide()
+    this.modal.find('.ledger-instructions').hide()
     this.modal.find('.view-transaction').attr( 'href', '' )
   }
 
   transactionFee( scale=true ) {
     return (this.GAS_WANTED * this.GAS_PRICE) / (scale ? App.config.remoteScaleFactor : 1)
+  }
+
+  voteTransactionObject() {
+    return [
+        {
+          type: 'cosmos-sdk/MsgVote',
+          value: {
+            option: this.voteOption,
+            proposal_id: App.config.proposalId.toString(),
+            voter: this.wallet.publicAddress,
+          },
+        }
+      ]
   }
 }
 

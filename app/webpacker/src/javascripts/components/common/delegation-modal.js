@@ -1,8 +1,9 @@
 import { DEFAULT_MEMO, Ledger } from './ledger.js';
+import { MathWallet } from './mathwallet.js'
 
 class DelegationModal {
   constructor( el ) {
-    this.DELEGATION_GAS_WANTED = 194854
+    this.DELEGATION_GAS_WANTED = 200000
     this.REDELEGATION_GAS_WANTED = 200000
     this.GAS_PRICE = 0.025
     this.MEMO = 'Delegate to your favorite validator with Puzzle - https://puzzle.report'
@@ -15,60 +16,88 @@ class DelegationModal {
     this.modal.on( 'shown.bs.modal', async () => {
       this.reset()
 
-      if( !triggeredGAEvent ) { ga('send', 'event', 'delegation', 'started') }
-
-      this.ledger = new Ledger({ testModeAllowed: false });
-
-      await this.ledger.setupConnection();
-
-      if ( !App.config.walletPresent ) {
-        await this.ledger.addWallet(App.config.userId, App.config.chainId);
-      }
-
-      const setupError = null;
-      if( setupError ) {
-        this.modal.find('.delegation-step').hide()
-        this.modal.find('.step-error')
-          .find('.delegation-error').text(setupError == "" ? "Unknown error." : setupError)
-          .end().show()
-        return
-      }
-
-      this.modal.find('.step-setup').hide()
-
-      if( _.includes( App.config.existingDelegators, this.ledger.publicAddress ) ) {
-        const rewardsBalance = this.ledger.scale(this.ledger.txContext.rewards_for_validator[0].amount);
-        this.modal.find('.step-choice')
-          .find('.reward-balance').text( `${rewardsBalance} ${App.config.denom}` ).end()
-          .show()
-        if( this.ledger.accountBalance == 0 ) {
-          this.modal.find('.choice-redelegate').attr('disabled', 'disabled')
-        }
-
-        this.modal.find('.choice-redelegate').click( () => {
-          this.modal.find('.step-choice').hide()
-          this.withdrawal()
-        } )
-        this.modal.find('.choice-new-delegation').click( async () => {
-          this.modal.find('.step-choice').hide()
-          this.newDelegation();
-        } )
-      }
-      else {
-        this.newDelegation();
-      }
-
-      this.modal.find('.show-transaction-json').click( ( e ) => {
-        $(e.currentTarget).hide()
-        this.modal.find('.transaction-json-container').show()
+      this.modal.find('.choice-ledger').click( async () => {
+        this.modal.find('.step-choose-wallet').hide()
+        this.setupLedger();
       } )
+
+      this.modal.find('.choice-mathwallet').click( async () => {
+        this.modal.find('.step-choose-wallet').hide()
+        this.setupMathwallet();
+      } )
+    } )
+  }
+
+  async setupLedger() {
+    this.modal.find('.step-setup').show()
+    this.modal.find('.ledger-instructions').show()
+    this.wallet = new Ledger({ testModeAllowed: false });
+    await this.wallet.setupConnection();
+
+    if ( !App.config.walletPresent ) {
+      await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    }
+    this.wallet_type = "ledger";
+
+    this.showStepChoice();
+  }
+
+  async setupMathwallet() {
+    this.modal.find('.step-setup').show()
+    this.wallet = new MathWallet();
+    await this.wallet.setupConnection();
+
+    if ( !App.config.walletPresent ) {
+      await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    }
+    this.wallet_type = "mathwallet";
+    this.showStepChoice();
+  }
+
+  showStepChoice() {
+    const setupError = null;
+    if( setupError ) {
+      this.modal.find('.delegation-step').hide()
+      this.modal.find('.step-error')
+        .find('.delegation-error').text(setupError == "" ? "Unknown error." : setupError)
+        .end().show()
+      return
+    }
+
+    this.modal.find('.step-setup').hide()
+
+    if( _.includes( App.config.existingDelegators, this.wallet.publicAddress ) ) {
+      const rewardsBalance = this.wallet.scale(this.wallet.txContext.rewards_for_validator[0].amount);
+      this.modal.find('.step-choice')
+        .find('.reward-balance').text( `${rewardsBalance} ${App.config.denom}` ).end()
+        .show()
+      if( this.wallet.accountBalance == 0 ) {
+        this.modal.find('.choice-redelegate').attr('disabled', 'disabled')
+      }
+
+      this.modal.find('.choice-redelegate').click( () => {
+        this.modal.find('.step-choice').hide()
+        this.withdrawal()
+      } )
+      this.modal.find('.choice-new-delegation').click( async () => {
+        this.modal.find('.step-choice').hide()
+        this.newDelegation();
+      } )
+    }
+    else {
+      this.newDelegation();
+    }
+
+    this.modal.find('.show-transaction-json').click( ( e ) => {
+      $(e.currentTarget).hide()
+      this.modal.find('.transaction-json-container').show()
     } )
   }
 
   reset() {
     this.modal.find('.modal-dialog').removeClass('modal-lg')
     this.modal.find('.delegation-step').hide()
-    this.modal.find('.step-setup').show()
+    this.modal.find('.step-choose-wallet').show()
     this.modal.find('.delegation-amount').val('').off('input')
     this.modal.find('.set-max').off('click')
     this.modal.find('.delegation-form').off('submit').data( 'disabled', true )
@@ -78,14 +107,15 @@ class DelegationModal {
     this.modal.find('.transaction-json-container').hide()
     this.modal.find('.amount-error').hide()
     this.modal.find('.amount-warning').hide()
+    this.modal.find('.ledger-instructions').hide()
     this.modal.find('.view-transaction').attr( 'href', '' )
   }
 
   newDelegation(response) {
     this.modal.find('.modal-dialog').addClass('modal-lg')
     this.modal.find('.step-new-delegation')
-      .find('.account-balance').text( `${this.ledger.scaledBalance} ${App.config.denom}` ).end()
-      .find('.account-address').html( this.ledger.publicAddress ).end()
+      .find('.account-balance').text( `${this.wallet.scaledBalance} ${App.config.denom}` ).end()
+      .find('.account-address').html( this.wallet.publicAddress ).end()
       .find('.transaction-fee').text( `${this.delegationTransactionFee()} ${App.config.denom}` ).end()
       .show()
 
@@ -140,18 +170,29 @@ class DelegationModal {
       this.modal.find('.modal-dialog').removeClass('modal-lg')
       this.modal.find('.step-confirm').show()
 
-      let txObject = Ledger.createDelegate(this.ledger.txContext, App.config.validatorOperatorAddress, this.delegationAmount.toString());
-      let sign = await this.ledger.buildAndSign(this.ledger.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
+      if (this.wallet_type == "ledger") {
+        let txObject = Ledger.createDelegate(this.wallet.txContext, App.config.validatorOperatorAddress, this.delegationAmount.toString());
+        let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
 
-      this.modal.find('.transaction-json').text(
-        JSON.stringify( txObject, undefined, 2 )
-      )
+        this.modal.find('.transaction-json').text(
+          JSON.stringify( txObject, undefined, 2 )
+        )
 
-      const txSignature = Ledger.applySignature(sign.newTxObject, this.ledger.txContext, sign.sigArray);
+        this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+      } else {
+        let txObject = MathWallet.createTx(
+          this.wallet.txContext,
+          this.delegationTransactionObject(),
+          this.DELEGATION_GAS_WANTED.toString()
+        );
+
+
+        this.txSignature = await this.wallet.buildAndSign(txObject);
+      }
 
       let broadcastError = null
-      if( txSignature ) {
-        const broadcastResult = await this.ledger.broadcastTransaction( txSignature )
+      if( this.txSignature ) {
+        const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
         if( broadcastResult.ok ) {
           this.modal.find('.delegation-step').hide()
           this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
@@ -176,17 +217,29 @@ class DelegationModal {
     this.modal.find('.modal-dialog').removeClass('modal-lg')
     this.modal.find('.step-confirm').show()
 
-    const txObject = Ledger.createSkeleton(this.ledger.txContext, this.withdrawalTransactionObject());
-    let sign = await this.ledger.buildAndSign(this.ledger.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
 
-    this.modal.find('.transaction-json').text(
-      JSON.stringify( txObject, undefined, 2 )
-    )
+    if (this.wallet_type == "ledger") {
+      let txObject = Ledger.createSkeleton(this.wallet.txContext, this.withdrawalTransactionObject());
+      let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
 
-    const txSignature = Ledger.applySignature(sign.newTxObject, this.ledger.txContext, sign.sigArray);
+      this.modal.find('.transaction-json').text(
+        JSON.stringify( txObject, undefined, 2 )
+      )
+
+      this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+    } else {
+      let txObject = MathWallet.createTx(
+        this.wallet.txContext,
+        this.withdrawalTransactionObject(),
+        this.DELEGATION_GAS_WANTED.toString()
+      );
+
+      this.txSignature = await this.wallet.buildAndSign(txObject);
+    }
+
     let broadcastError = null
-    if( txSignature ) {
-      const broadcastResult = await this.ledger.broadcastTransaction( txSignature )
+    if( this.txSignature ) {
+      const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
       if( broadcastResult.ok ) {
         this.modal.find('.step-confirm').hide()
         this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
@@ -201,34 +254,21 @@ class DelegationModal {
     this.modal.find('.step-confirm').hide()
     ga('send', 'event', 'delegation', 'failed')
     this.modal.find('.step-error')
-      .find('.delegation-error').text(this.ledger.signError || broadcastError || "Unknown error")
+      .find('.delegation-error').text(this.wallet.signError || broadcastError || "Unknown error")
       .end().show()
   }
 
   delegationTransactionObject() {
-    return {
-      msg: [
-        {
-          type: 'cosmos-sdk/MsgDelegate',
-          value: {
-            delegator_address: this.publicAddress,
-            validator_address: App.config.validatorOperatorAddress,
-            amount: { denom: App.config.remoteDenom, amount: this.delegationAmount.toString() }
-          }
+    return [
+      {
+        type: 'cosmos-sdk/MsgDelegate',
+        value: {
+          delegator_address: this.wallet.publicAddress,
+          validator_address: App.config.validatorOperatorAddress,
+          amount: { denom: App.config.remoteDenom, amount: this.delegationAmount.toString() }
         }
-      ],
-      fee: {
-        amount: [
-          {
-            denom: App.config.remoteDenom,
-            amount: this.delegationTransactionFee( false ).toString()
-          }
-        ],
-        gas: this.DELEGATION_GAS_WANTED.toString()
-      },
-      signatures: null,
-      memo: this.MEMO
-    }
+      }
+    ]
   }
 
   withdrawalTransactionObject() {
@@ -236,7 +276,7 @@ class DelegationModal {
       {
         type: 'cosmos-sdk/MsgWithdrawDelegationReward',
         value: {
-          delegator_address: this.ledger.publicAddress,
+          delegator_address: this.wallet.publicAddress,
           validator_address: App.config.validatorOperatorAddress
         }
       }
@@ -256,7 +296,7 @@ class DelegationModal {
   }
 
   maxDelegation() {
-    return (this.ledger.accountBalance - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
+    return (this.wallet.accountBalance - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
   }
 
   checkDelegationAmount( amount ) {
