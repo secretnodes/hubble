@@ -1,4 +1,6 @@
 import { DEFAULT_MEMO, Ledger } from './ledger.js';
+import { MathWallet } from './mathwallet.js';
+
 class GovProposalDepositModal {
   constructor( el ) {
     this.GAS_WANTED = 150000
@@ -17,28 +19,60 @@ class GovProposalDepositModal {
 
       if( !triggeredGAEvent ) { ga('send', 'event', 'gov-proposal-deposit', 'started') }
 
-      this.ledger = new Ledger({ testModeAllowed: false });
-      await this.ledger.setupConnection();
+      this.modal.find('.choice-ledger').click( async () => {
+        this.modal.find('.step-choose-wallet').hide()
+        this.setupLedger();
+      } )
 
-      if ( !App.config.walletPresent ) {
-        await this.ledger.addWallet(App.config.userId, App.config.chainId);
-      }
+      this.modal.find('.choice-mathwallet').click( async () => {
+        this.modal.find('.step-choose-wallet').hide()
+        this.setupMathwallet();
+      } )
+    } )
+  }
 
-      const setupError = null;
-      if( setupError ) {
-        this.modal.find('.proposal-step').hide()
-        this.modal.find('.step-error')
-          .find('.proposal-error').text(setupError == "" ? "Unknown error." : setupError)
-          .end().show()
-        return
-      }
+  async setupLedger() {
+    this.modal.find('.step-setup').show()
+    this.modal.find('.ledger-instructions').show()
+    this.wallet = new Ledger({ testModeAllowed: false });
+    await this.wallet.setupConnection();
 
-      this.modal.find('.step-setup').hide()
+    if ( !App.config.walletPresent ) {
+      await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    }
+    this.wallet_type = "ledger";
 
-      this.modal.find('.modal-dialog').addClass('modal-lg')
+    this.showStepChoice();
+  }
+
+  async setupMathwallet() {
+    this.modal.find('.step-setup').show()
+    this.wallet = new MathWallet();
+    await this.wallet.setupConnection();
+
+    if ( !App.config.walletPresent ) {
+      await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    }
+    this.wallet_type = "mathwallet";
+    this.showStepChoice();
+  }
+
+  showStepChoice() {
+    const setupError = null;
+    if( setupError ) {
+      this.modal.find('.proposal-step').hide()
+      this.modal.find('.step-error')
+        .find('.proposal-error').text(setupError == "" ? "Unknown error." : setupError)
+        .end().show()
+      return
+    }
+    
+    this.modal.find('.step-setup').hide()
+
+    this.modal.find('.modal-dialog').addClass('modal-lg')
       this.modal.find('.step-proposal-deposit')
-        .find('.account-balance').text( `${this.ledger.accountBalance} ${App.config.denom}` ).end()
-        .find('.account-address').html( this.ledger.publicAddress ).end()
+        .find('.account-balance').text( `${this.wallet.scale(this.wallet.accountBalance)} ${App.config.denom}` ).end()
+        .find('.account-address').html( this.wallet.publicAddress ).end()
         .find('.transaction-fee').text( `${this.transactionFee()} ${App.config.denom}` ).end()
         .show()
 
@@ -64,12 +98,12 @@ class GovProposalDepositModal {
           this.setDepositAmount( null )
           const msg = amount == 0 ?
             `You can't deposit <tt>0 ${App.config.denom}</tt>...` :
-            `The amount to deposit must take transaction fees into account.<br/><b>Max: <tt class='text-md'>${this.ledger.accountBalance} ${App.config.denom}</tt></b>`
+            `The amount to deposit must take transaction fees into account.<br/><b>Max: <tt class='text-md'>${this.wallet.accountBalance} ${App.config.denom}</tt></b>`
           this.modal.find('.amount-error').html(msg).show()
           this.modal.find('.submit-proposal-deposit').attr( 'disabled', 'disabled' )
         }
         else {
-          if( amount >= this.ledger.accountBalance - this.transactionFee() ) {
+          if( amount >= this.wallet.accountBalance - this.transactionFee() ) {
             const msg = `It is recommended to leave some ${App.config.denom} in your account to pay fees on future transactions!`
             this.modal.find('.amount-warning').html(msg).show()
           }
@@ -92,16 +126,29 @@ class GovProposalDepositModal {
         this.modal.find('.modal-dialog').removeClass('modal-lg')
         this.modal.find('.step-confirm').show()
 
-        const txObject = this.ledger.createDeposit( this.ledger.txContext, App.config.proposalId.toString(), this.depositAmount.toString() )
+        if ( this.wallet_type == "ledger" ) {
+          let txObject = Ledger.createSkeleton(this.wallet.txContext, this.depositTransactionObject());
 
-        this.modal.find('.transaction-json').text(
-          JSON.stringify( txObject, undefined, 2 )
-        )
+          let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.GAS_WANTED.toString());
 
-        const txPayload = await this.ledger.generateTransaction( txObject )
+          this.modal.find('.transaction-json').text(
+            JSON.stringify( txObject, undefined, 2 )
+          )
+
+          this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+        } else {
+          let txObject = MathWallet.createTx(
+            this.wallet.txContext,
+            this.depositTransactionObject(),
+            this.GAS_WANTED.toString()
+          );
+
+          this.txSignature = await this.wallet.buildAndSign(txObject);
+        }
+
         let broadcastError = null
-        if( txPayload ) {
-          const broadcastResult = await this.ledger.broadcastTransaction( txPayload )
+        if( this.txSignature ) {
+          const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
           if( broadcastResult.ok ) {
             this.modal.find('.proposal-step').hide()
             this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
@@ -117,7 +164,7 @@ class GovProposalDepositModal {
         ga('send', 'event', 'gov-proposal-deposit', 'failed')
         this.modal.find('.proposal-step').hide()
         this.modal.find('.step-error')
-          .find('.proposal-error').text(this.ledger.signError || broadcastError || "Unknown error")
+          .find('.proposal-error').text(this.wallet.signError || broadcastError || "Unknown error")
           .end().show()
       } )
 
@@ -125,13 +172,12 @@ class GovProposalDepositModal {
         $(e.currentTarget).hide()
         this.modal.find('.transaction-json-container').show()
       } )
-    } )
   }
 
   reset() {
     this.modal.find('.modal-dialog').removeClass('modal-lg')
     this.modal.find('.proposal-step').hide()
-    this.modal.find('.step-setup').show()
+    this.modal.find('.step-choose-wallet').show()
     this.modal.find('.proposal-deposit-amount').val('').off('input')
     this.modal.find('.set-all').off('click')
     this.modal.find('.proposal-form').off('submit').data( 'disabled', true )
@@ -140,35 +186,23 @@ class GovProposalDepositModal {
     this.modal.find('.transaction-json-container').hide()
     this.modal.find('.amount-error').hide()
     this.modal.find('.amount-warning').hide()
+    this.modal.find('.ledger-instructions').hide()
     this.modal.find('.view-transaction').attr( 'href', '' )
   }
 
   depositTransactionObject() {
-    return {
-      msg: [
+    return [
         {
           type: 'cosmos-sdk/MsgDeposit',
           value: {
-            proposal_id: App.config.proposalId.toString(),
-            depositor: this.ledger.accountAddress(),
             amount: [
-              { denom: App.config.remoteDenom, amount: this.depositAmount.toString() }
-            ]
+              { amount: this.depositAmount.toString(), denom: App.config.remoteDenom }
+            ],
+            depositor: this.wallet.publicAddress,
+            proposal_id: App.config.proposalId.toString()
           }
         }
-      ],
-      fee: {
-        amount: [
-          {
-            denom: App.config.remoteDenom,
-            amount: this.transactionFee( false ).toString()
-          }
-        ],
-        gas: this.GAS_WANTED.toString()
-      },
-      signatures: null,
-      memo: this.MEMO
-    }
+      ]
   }
 
   transactionFee( scale=true ) {
@@ -184,7 +218,7 @@ class GovProposalDepositModal {
   }
 
   checkDepositAmount( amount ) {
-    return amount > 0 && amount <= this.ledger.accountBalance()
+    return amount > 0 && amount <= this.wallet.accountBalance
   }
 
   setDepositAmount( amount ) {
