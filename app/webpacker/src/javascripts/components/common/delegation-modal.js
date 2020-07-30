@@ -171,7 +171,7 @@ class DelegationModal {
       this.modal.find('.step-confirm').show()
 
       if (this.wallet_type == "ledger") {
-        let txObject = Ledger.createDelegate(this.wallet.txContext, App.config.validatorOperatorAddress, this.delegationAmount.toString());
+        let txObject = Ledger.createSkeleton(this.wallet.txContext, this.delegationTransactionObject());
         let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
 
         this.modal.find('.transaction-json').text(
@@ -263,9 +263,9 @@ class DelegationModal {
       {
         type: 'cosmos-sdk/MsgDelegate',
         value: {
+          amount: { amount: this.delegationAmount.toString(), denom: App.config.remoteDenom },
           delegator_address: this.wallet.publicAddress,
-          validator_address: App.config.validatorOperatorAddress,
-          amount: { denom: App.config.remoteDenom, amount: this.delegationAmount.toString() }
+          validator_address: App.config.validatorOperatorAddress
         }
       }
     ]
