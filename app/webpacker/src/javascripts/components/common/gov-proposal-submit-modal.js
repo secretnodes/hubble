@@ -39,7 +39,7 @@ class GovProposalSubmitModal {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
     }
     this.wallet_type = "ledger";
-
+    this.modal.find('.submit-proposal').text('Sign with Ledger');
     this.showStepChoice();
   }
 
@@ -52,6 +52,7 @@ class GovProposalSubmitModal {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
     }
     this.wallet_type = "mathwallet";
+    this.modal.find('.submit-proposal').text('Sign with Mathwallet');
     this.showStepChoice();
   }
 
