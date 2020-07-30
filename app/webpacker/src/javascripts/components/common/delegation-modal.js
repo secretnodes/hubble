@@ -38,7 +38,8 @@ class DelegationModal {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
     }
     this.wallet_type = "ledger";
-
+    let button_text = "Sign with Ledger";
+    this.modal.find('.submit-delegation').text('Sign with Ledger');
     this.showStepChoice();
   }
 
@@ -51,6 +52,7 @@ class DelegationModal {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
     }
     this.wallet_type = "mathwallet";
+    let btn = this.modal.find('.submit-delegation').text("Sign with Mathwallet");
     this.showStepChoice();
   }
 
