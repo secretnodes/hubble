@@ -81,7 +81,7 @@ class DelegationModal {
         this.modal.find('.step-choice').hide()
         this.reDelegation();
       } )
-      this.modal.find('.choice-withdrawl').click( () => {
+      this.modal.find('.choice-withdraw').click( () => {
         this.modal.find('.step-choice').hide()
         this.withdrawal()
       } )
