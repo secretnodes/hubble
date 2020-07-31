@@ -3,6 +3,7 @@ class Common::ValidatorsController < Common::BaseController
 
   def show
     @validator = @chain.validators.find_by( address: params[:id] )
+    @validators = @chain.validators.where.not(info: {})
     raise ActiveRecord::RecordNotFound unless @validator
 
     page_title @chain.network_name, @chain.name, @validator.name_and_owner, 'Voting Power and Event History'
