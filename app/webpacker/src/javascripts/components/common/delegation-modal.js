@@ -4,7 +4,7 @@ import { MathWallet } from './mathwallet.js'
 class DelegationModal {
   constructor( el ) {
     this.DELEGATION_GAS_WANTED = 200000
-    this.REDELEGATION_GAS_WANTED = 200000
+    this.REDELEGATION_GAS_WANTED = 220000
     this.GAS_PRICE = 0.025
     this.MEMO = 'Delegate to your favorite validator with Puzzle - https://puzzle.report'
     this.modal = el
@@ -77,7 +77,11 @@ class DelegationModal {
         this.modal.find('.choice-redelegate').attr('disabled', 'disabled')
       }
 
-      this.modal.find('.choice-redelegate').click( () => {
+      this.modal.find('.choice-redelegate').click( async () => {
+        this.modal.find('.step-choice').hide()
+        this.reDelegation();
+      } )
+      this.modal.find('.choice-withdrawl').click( () => {
         this.modal.find('.step-choice').hide()
         this.withdrawal()
       } )
@@ -260,6 +264,113 @@ class DelegationModal {
       .end().show()
   }
 
+  reDelegation() {
+    let delegation_index = this.wallet.txContext.delegations.findIndex(v => v.validator_address == App.config.validatorOperatorAddress );
+    this.max_redelegation_amount = this.wallet.txContext.delegations[delegation_index]['balance']['amount'];
+    this.modal.find('.modal-dialog').addClass('modal-lg')
+    this.modal.find('.step-redelegation')
+      .find('.account-balance').text( `${this.maxRedelegation()} ${App.config.denom}` ).end()
+      .find('.account-address').html( this.wallet.publicAddress ).end()
+      .find('.transaction-fee').text( `${this.redelegationTransactionFee()} ${App.config.denom}` ).end()
+      .show()
+
+    this.modal.find('.set-max').click( ( e ) => {
+      e.preventDefault()
+      this.modal.find('.delegation-amount').val( this.maxRedelegation() ).trigger('set-to-max')
+    } )
+
+    this.modal.find('.delegation-amount').on( 'input set-to-max', ( e ) => {
+      const amount = parseFloat( $(e.currentTarget).val() )
+      if( isNaN( amount ) ) {
+        this.modal.find('.amount-warning').hide()
+        this.modal.find('.amount-error').hide()
+        this.modal.find('.delegation-form').data( 'disabled', true )
+        this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
+        this.modal.find('.transaction-total').html( '&mdash;' )
+        return
+      }
+
+      this.modal.find('.transaction-total').text( `${this.redelegationTotal(amount)} ${App.config.denom}` )
+
+      if( !this.checkRedelegationAmount( amount ) ) {
+        this.modal.find('.amount-warning').hide()
+        this.setDelegationAmount( null )
+        const msg = amount == 0 ?
+          `You can't delegate <tt>0 ${App.config.denom}</tt>...` :
+          `The amount to delegate must take transaction fees into account.<br/><b>Max: <tt class='text-md'>${this.maxRedelegation()} ${App.config.denom}</tt></b>`
+        this.modal.find('.amount-error').html(msg).show()
+        this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
+      }
+      else {
+        if( amount == this.maxRedelegation() ) {
+          const msg = `It is recommended to leave some ${App.config.denom} in your account to pay fees on future transactions!`
+          this.modal.find('.amount-warning').html(msg).show()
+        }
+        else {
+          this.modal.find('.amount-warning').hide()
+        }
+        this.setDelegationAmount( amount )
+        this.modal.find('.amount-error').hide()
+        this.modal.find('.delegation-form').data( 'disabled', false )
+        this.modal.find('.submit-delegation').removeAttr( 'disabled' )
+      }
+    } )
+
+    this.modal.find('.delegation-form').submit( async ( e ) => {
+      e.preventDefault()
+
+      if( $(e.currentTarget).data('disabled') ) { return }
+
+      this.modal.find('.delegation-step').hide()
+      this.modal.find('.modal-dialog').removeClass('modal-lg')
+      this.modal.find('.step-confirm').show()
+
+      this.validator_dst_address = this.modal.find('.to-validator option:selected').val();
+      console.log(this.validator_dst_address);
+
+      if (this.wallet_type == "ledger") {
+        let txObject = Ledger.createSkeleton(this.wallet.txContext, this.redelegationTransactionObject());
+        let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.REDELEGATION_GAS_WANTED.toString());
+
+        this.modal.find('.transaction-json').text(
+          JSON.stringify( txObject, undefined, 2 )
+        )
+
+        this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+      } else {
+        let txObject = MathWallet.createTx(
+          this.wallet.txContext,
+          this.redelegationTransactionObject(),
+          this.REDELEGATION_GAS_WANTED.toString()
+        );
+
+
+        this.txSignature = await this.wallet.buildAndSign(txObject);
+      }
+
+      let broadcastError = null
+      if( this.txSignature ) {
+        const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
+        if( broadcastResult.ok ) {
+          this.modal.find('.delegation-step').hide()
+          this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
+          this.modal.find('.step-complete').show()
+          ga('send', 'event', 'delegation', 'completed')
+          return
+        }
+        else {
+          broadcastError = broadcastResult.error_message
+        }
+      }
+
+      ga('send', 'event', 'delegation', 'failed')
+      this.modal.find('.delegation-step').hide()
+      this.modal.find('.step-error')
+        .find('.delegation-error').text("this.ledger.signError" || broadcastError || "Unknown error")
+        .end().show()
+    } )
+  }
+
   delegationTransactionObject() {
     return [
       {
@@ -285,6 +396,20 @@ class DelegationModal {
     ]
   }
 
+  redelegationTransactionObject() {
+    return [
+      {
+        type: 'cosmos-sdk/MsgBeginRedelegate',
+        value: {
+          amount: { amount: this.delegationAmount.toString(), denom: App.config.remoteDenom },
+          delegator_address: this.wallet.publicAddress,
+          validator_dst_address: this.validator_dst_address,
+          validator_src_address: App.config.validatorOperatorAddress
+        }
+      }
+    ]
+  }
+
   delegationTransactionFee( scale=true ) {
     return (this.DELEGATION_GAS_WANTED * this.GAS_PRICE) / (scale ? App.config.remoteScaleFactor : 1)
   }
@@ -297,12 +422,24 @@ class DelegationModal {
     return ((amount * App.config.remoteScaleFactor) + this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
   }
 
+  redelegationTotal( amount ) {
+    return ((amount * App.config.remoteScaleFactor) + this.redelegationTransactionFee(false)) / App.config.remoteScaleFactor
+  }
+
   maxDelegation() {
     return (this.wallet.accountBalance - this.delegationTransactionFee(false)) / App.config.remoteScaleFactor
   }
 
+  maxRedelegation() {
+    return (this.max_redelegation_amount) / App.config.remoteScaleFactor
+  }
+
   checkDelegationAmount( amount ) {
     return amount > 0 && amount <= this.maxDelegation()
+  }
+
+  checkRedelegationAmount( amount ) {
+    return amount > 0 && amount <= this.maxRedelegation()
   }
 
   setDelegationAmount( amount ) {

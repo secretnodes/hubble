@@ -62,6 +62,7 @@ export class MathWallet {
   formatTxContext( txContext ) {
     let newObject = txContext['value'];
     newObject.rewards_for_validator = txContext['rewards_for_validator'];
+    newObject.delegations = txContext['delegations'];
     newObject.chain_id = 'secret-1';
     return newObject;
   }

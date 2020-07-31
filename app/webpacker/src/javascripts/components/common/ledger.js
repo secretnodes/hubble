@@ -489,6 +489,7 @@ export class Ledger {
   formatTxContext( txContext ) {
     let newObject = txContext['value'];
     newObject.rewards_for_validator = txContext['rewards_for_validator'];
+    newObject.delegations = txContext['delegations']
     newObject.chain_id = 'secret-1';
     newObject.public_key = Buffer.from(this.pubKey).toString('base64');
     return newObject;
