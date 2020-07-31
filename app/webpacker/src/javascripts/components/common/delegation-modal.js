@@ -6,7 +6,7 @@ class DelegationModal {
     this.DELEGATION_GAS_WANTED = 200000
     this.REDELEGATION_GAS_WANTED = 220000
     this.GAS_PRICE = 0.025
-    this.MEMO = 'Delegate to your favorite validator with Puzzle - https://puzzle.report'
+    this.MEMO = 'https://puzzle.report'
     this.modal = el
 
     this.reset()

@@ -15,7 +15,7 @@ const REQUIRED_COSMOS_APP_VERSION = '1.5.0';
 const DEFAULT_DENOM = 'uscrt';
 const DEFAULT_GAS = 200000;
 export const DEFAULT_GAS_PRICE = 0.025;
-export const DEFAULT_MEMO = 'Delegate to your favorite validator with Puzzle - https://puzzle.report';
+export const DEFAULT_MEMO = 'https://puzzle.report';
 
 /*
 HD wallet derivation path (BIP44)

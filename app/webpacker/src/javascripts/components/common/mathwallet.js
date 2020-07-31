@@ -3,7 +3,7 @@ const network = {
   chainId: "secret-1"
 };
 
-const DEFAULT_MEMO = 'Delegate to your favorite validator with Puzzle - https://puzzle.report';
+const DEFAULT_MEMO = 'https://puzzle.report';
 const DEFAULT_GAS = 200000;
 export const DEFAULT_GAS_PRICE = 0.025;
 
