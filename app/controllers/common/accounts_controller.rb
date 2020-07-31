@@ -19,6 +19,7 @@ class Common::AccountsController < Common::BaseController
           }
         else
           account_info = syncer.get_account_info( params[:id] )
+          account_info[:delegations] = syncer.get_account_delegations( params[:id] )
 
           if account_info && params[:validator]
             account_info['rewards_for_validator'] = syncer.get_account_rewards( params[:id], params[:validator] )
