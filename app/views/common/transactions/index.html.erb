@@ -42,7 +42,7 @@
                   </div>
                 <% end -%>
               </td>
-              <td data-order=<%= tr.timestamp %>>
+              <td data-order=<%= tr.timestamp.to_datetime.strftime("%Y-%m-%d %H:%I") %>>
                 <%= tr.time_ago %>
               </td>
               <td data-order='<%= tr.error? ? 'error' : 'success' %>'>
