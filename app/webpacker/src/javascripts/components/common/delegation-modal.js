@@ -1,5 +1,6 @@
 import { DEFAULT_MEMO, Ledger } from './ledger.js';
 import { MathWallet } from './mathwallet.js'
+import { Keplr } from './keplr.js'
 
 class DelegationModal {
   constructor( el ) {
@@ -24,6 +25,11 @@ class DelegationModal {
       this.modal.find('.choice-mathwallet').click( async () => {
         this.modal.find('.step-choose-wallet').hide()
         this.setupMathwallet();
+      } )
+
+      this.modal.find('.choice-keplr').click( async () => {
+        this.modal.find('.step-choose-wallet').hide()
+        this.setupKeplr();
       } )
     } )
   }
@@ -53,6 +59,19 @@ class DelegationModal {
     }
     this.wallet_type = "mathwallet";
     let btn = this.modal.find('.submit-delegation').text("Sign with Mathwallet");
+    this.showStepChoice();
+  }
+
+  async setupKeplr() {
+    this.modal.find('.step-setup').show()
+    this.wallet = new Keplr();
+    await this.wallet.setupConnection();
+
+    if ( !App.config.walletPresent ) {
+      await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    }
+    this.wallet_type = "keplr";
+    let btn = this.modal.find('.submit-delegation').text("Sign with Keplr");
     this.showStepChoice();
   }
 
@@ -176,8 +195,99 @@ class DelegationModal {
       this.modal.find('.modal-dialog').removeClass('modal-lg')
       this.modal.find('.step-confirm').show()
 
+      let broadcastError = null;
+      
+      if (this.wallet_type == "keplr") {
+        const msg = await this.wallet.sendDelegationMsg(
+          this.wallet.publicAddress,
+          App.config.validatorOperatorAddress,
+          this.delegationAmount,
+          this.DELEGATION_GAS_WANTED,
+          this.delegationTransactionFee(false),
+          this.MEMO);
+
+        if (msg.deliverTx.code == 0) {
+          this.modal.find('.delegation-step').hide()
+          this.modal.find('.view-transaction').hide()
+          this.modal.find('.step-complete').show()
+          ga('send', 'event', 'delegation', 'completed')
+          return
+        }
+        else {
+          let broadcastError = msg.deliverTx.log
+        }
+
+      } else {
+        if (this.wallet_type == "ledger") {
+          let txObject = Ledger.createSkeleton(this.wallet.txContext, this.delegationTransactionObject());
+          let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
+  
+          this.modal.find('.transaction-json').text(
+            JSON.stringify( txObject, undefined, 2 )
+          )
+  
+          this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+        } else if (this.wallet_type == "mathwallet") {
+          let txObject = MathWallet.createTx(
+            this.wallet.txContext,
+            this.delegationTransactionObject(),
+            this.DELEGATION_GAS_WANTED.toString()
+          );
+  
+  
+          this.txSignature = await this.wallet.buildAndSign(txObject);
+        }
+  
+        if( this.txSignature ) {
+          const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
+          if( broadcastResult.ok ) {
+            this.modal.find('.delegation-step').hide()
+            this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
+            this.modal.find('.step-complete').show()
+            ga('send', 'event', 'delegation', 'completed')
+            return
+          }
+          else {
+            broadcastError = broadcastResult.error_message
+          }
+        }
+      }
+      ga('send', 'event', 'delegation', 'failed')
+      this.modal.find('.delegation-step').hide()
+      this.modal.find('.step-error')
+        .find('.delegation-error').text(broadcastError || this.wallet.signError || "Unknown error")
+        .end().show()
+    } )
+  }
+
+  async withdrawal() {
+    this.modal.find('.modal-dialog').removeClass('modal-lg')
+    this.modal.find('.step-confirm').show()
+
+    let broadcastError = null;
+
+    if (this.wallet_type == "keplr") {
+      const msg = await this.wallet.sendWithdrawalMsg(
+        this.wallet.publicAddress,
+        App.config.validatorOperatorAddress,
+        this.DELEGATION_GAS_WANTED,
+        this.delegationTransactionFee(false),
+        this.MEMO);
+
+      if (msg.deliverTx.code == 0) {
+        this.modal.find('.delegation-step').hide()
+        this.modal.find('.view-transaction').hide()
+        this.modal.find('.step-complete').show()
+        ga('send', 'event', 'delegation', 'completed')
+        return
+      }
+      else {
+        let broadcastError = msg.deliverTx.log
+      }
+
+    } else {
       if (this.wallet_type == "ledger") {
-        let txObject = Ledger.createSkeleton(this.wallet.txContext, this.delegationTransactionObject());
+        let txObject = Ledger.createSkeleton(this.wallet.txContext, this.withdrawalTransactionObject());
         let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
 
         this.modal.find('.transaction-json').text(
@@ -188,19 +298,17 @@ class DelegationModal {
       } else {
         let txObject = MathWallet.createTx(
           this.wallet.txContext,
-          this.delegationTransactionObject(),
+          this.withdrawalTransactionObject(),
           this.DELEGATION_GAS_WANTED.toString()
         );
-
 
         this.txSignature = await this.wallet.buildAndSign(txObject);
       }
 
-      let broadcastError = null
       if( this.txSignature ) {
         const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
         if( broadcastResult.ok ) {
-          this.modal.find('.delegation-step').hide()
+          this.modal.find('.step-confirm').hide()
           this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
           this.modal.find('.step-complete').show()
           ga('send', 'event', 'delegation', 'completed')
@@ -210,57 +318,11 @@ class DelegationModal {
           broadcastError = broadcastResult.error_message
         }
       }
-
-      ga('send', 'event', 'delegation', 'failed')
-      this.modal.find('.delegation-step').hide()
-      this.modal.find('.step-error')
-        .find('.delegation-error').text("this.ledger.signError" || broadcastError || "Unknown error")
-        .end().show()
-    } )
-  }
-
-  async withdrawal() {
-    this.modal.find('.modal-dialog').removeClass('modal-lg')
-    this.modal.find('.step-confirm').show()
-
-
-    if (this.wallet_type == "ledger") {
-      let txObject = Ledger.createSkeleton(this.wallet.txContext, this.withdrawalTransactionObject());
-      let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
-
-      this.modal.find('.transaction-json').text(
-        JSON.stringify( txObject, undefined, 2 )
-      )
-
-      this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
-    } else {
-      let txObject = MathWallet.createTx(
-        this.wallet.txContext,
-        this.withdrawalTransactionObject(),
-        this.DELEGATION_GAS_WANTED.toString()
-      );
-
-      this.txSignature = await this.wallet.buildAndSign(txObject);
-    }
-
-    let broadcastError = null
-    if( this.txSignature ) {
-      const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
-      if( broadcastResult.ok ) {
-        this.modal.find('.step-confirm').hide()
-        this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
-        this.modal.find('.step-complete').show()
-        ga('send', 'event', 'delegation', 'completed')
-        return
-      }
-      else {
-        broadcastError = broadcastResult.error_message
-      }
     }
     this.modal.find('.step-confirm').hide()
     ga('send', 'event', 'delegation', 'failed')
     this.modal.find('.step-error')
-      .find('.delegation-error').text(this.wallet.signError || broadcastError || "Unknown error")
+      .find('.delegation-error').text(broadcastError || this.wallet.signError || "Unknown error")
       .end().show()
   }
 
@@ -326,47 +388,70 @@ class DelegationModal {
       this.modal.find('.step-confirm').show()
 
       this.validator_dst_address = this.modal.find('.to-validator option:selected').val();
-      console.log(this.validator_dst_address);
+      let broadcastError = null;
 
-      if (this.wallet_type == "ledger") {
-        let txObject = Ledger.createSkeleton(this.wallet.txContext, this.redelegationTransactionObject());
-        let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.REDELEGATION_GAS_WANTED.toString());
+      if (this.wallet_type == "keplr") {
+        const msg = await this.wallet.sendRedelegationMsg(
+          this.wallet.publicAddress,
+          App.config.validatorOperatorAddress,
+          this.validator_dst_address,
+          this.delegationAmount,
+          this.REDELEGATION_GAS_WANTED,
+          this.redelegationTransactionFee(false),
+          this.MEMO);
 
-        this.modal.find('.transaction-json').text(
-          JSON.stringify( txObject, undefined, 2 )
-        )
-
-        this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
-      } else {
-        let txObject = MathWallet.createTx(
-          this.wallet.txContext,
-          this.redelegationTransactionObject(),
-          this.REDELEGATION_GAS_WANTED.toString()
-        );
-
-
-        this.txSignature = await this.wallet.buildAndSign(txObject);
-      }
-
-      let broadcastError = null
-      if( this.txSignature ) {
-        const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
-        if( broadcastResult.ok ) {
+        if (msg.deliverTx.code == 0) {
           this.modal.find('.delegation-step').hide()
-          this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
+          this.modal.find('.view-transaction').hide()
           this.modal.find('.step-complete').show()
           ga('send', 'event', 'delegation', 'completed')
           return
         }
         else {
-          broadcastError = broadcastResult.error_message
+          broadcastError = msg.deliverTx.log
+        }
+
+      } else {
+
+        if (this.wallet_type == "ledger") {
+          let txObject = Ledger.createSkeleton(this.wallet.txContext, this.redelegationTransactionObject());
+          let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.REDELEGATION_GAS_WANTED.toString());
+
+          this.modal.find('.transaction-json').text(
+            JSON.stringify( txObject, undefined, 2 )
+          )
+
+          this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+        } else {
+          let txObject = MathWallet.createTx(
+            this.wallet.txContext,
+            this.redelegationTransactionObject(),
+            this.REDELEGATION_GAS_WANTED.toString()
+          );
+
+
+          this.txSignature = await this.wallet.buildAndSign(txObject);
+        }
+
+        if( this.txSignature ) {
+          const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
+          if( broadcastResult.ok ) {
+            this.modal.find('.delegation-step').hide()
+            this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
+            this.modal.find('.step-complete').show()
+            ga('send', 'event', 'delegation', 'completed')
+            return
+          }
+          else {
+            broadcastError = broadcastResult.error_message
+          }
         }
       }
 
       ga('send', 'event', 'delegation', 'failed')
       this.modal.find('.delegation-step').hide()
       this.modal.find('.step-error')
-        .find('.delegation-error').text("this.ledger.signError" || broadcastError || "Unknown error")
+        .find('.delegation-error').text(broadcastError || this.wallet.signError || "Unknown error")
         .end().show()
     } )
   }

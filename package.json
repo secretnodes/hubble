@@ -2,6 +2,7 @@
   "name": "puzzle",
   "private": true,
   "dependencies": {
+    "@chainapsis/cosmosjs": "^0.0.3-alpha.3",
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ledgerhq/hw-transport-webusb": "^5.17.0",
     "@lunie/cosmos-api": "^0.2.5",
