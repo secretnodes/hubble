@@ -1,5 +1,6 @@
 import { DEFAULT_MEMO, Ledger } from './ledger.js';
 import { MathWallet } from './mathwallet.js';
+import { Keplr } from './keplr.js'
 
 class GovProposalSubmitModal {
   constructor( el ) {
@@ -25,6 +26,11 @@ class GovProposalSubmitModal {
       this.modal.find('.choice-mathwallet').click( async () => {
         this.modal.find('.step-choose-wallet').hide()
         this.setupMathwallet();
+      } )
+
+      this.modal.find('.choice-keplr').click( async () => {
+        this.modal.find('.step-choose-wallet').hide()
+        this.setupKeplr();
       } )
     } )
   }
@@ -53,6 +59,19 @@ class GovProposalSubmitModal {
     }
     this.wallet_type = "mathwallet";
     this.modal.find('.submit-proposal').text('Sign with Mathwallet');
+    this.showStepChoice();
+  }
+
+  async setupKeplr() {
+    this.modal.find('.step-setup').show()
+    this.wallet = new Keplr();
+    await this.wallet.setupConnection();
+
+    if ( !App.config.walletPresent ) {
+      await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    }
+    this.wallet_type = "keplr";
+    let btn = this.modal.find('.submit-proposal').text("Sign with Keplr");
     this.showStepChoice();
   }
 
@@ -133,41 +152,66 @@ class GovProposalSubmitModal {
       this.modal.find('.modal-dialog').removeClass('modal-lg')
       this.modal.find('.step-confirm').show()
 
-      if ( this.wallet_type == "ledger" ) {
-        const txObject = Ledger.createSkeleton(
-          this.wallet.txContext, 
-          this.proposalTransactionObject()
-        )
+      let broadcastError = null;
+      
+      if (this.wallet_type == "keplr") {
+        const msg = await this.wallet.sendSubmitProposalMsg(
+          $.trim( $('.proposal-title').val()),
+          $.trim( $('.proposal-title').val()),
+          this.wallet.publicAddress,
+          this.depositAmount,
+          this.GAS_WANTED,
+          this.transactionFee(false),
+          this.MEMO);
 
-        let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.GAS_WANTED.toString());
-  
-        this.modal.find('.transaction-json').text(
-          JSON.stringify( txObject, undefined, 2 )
-        )
-  
-        this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
-      } else {
-        let txObject = MathWallet.createTx(
-          this.wallet.txContext,
-          this.proposalTransactionObject(),
-          this.GAS_WANTED.toString()
-        );
-
-        this.txSignature = await this.wallet.buildAndSign(txObject);
-      }
-
-      let broadcastError = null
-      if( txSignature ) {
-        const broadcastResult = await this.wallet.broadcastTransaction( txSignature )
-        if( broadcastResult.ok ) {
-          this.modal.find('.proposal-step').hide()
-          this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
+        if (msg.deliverTx.code == 0) {
+          this.modal.find('.delegation-step').hide()
+          this.modal.find('.view-transaction').hide()
           this.modal.find('.step-complete').show()
-          ga('send', 'event', 'gov-proposal-submit', 'completed')
+          ga('send', 'event', 'delegation', 'completed')
           return
         }
         else {
-          broadcastError = broadcastResult.error_message
+          broadcastError = msg.deliverTx.log
+        }
+
+      } else { 
+
+        if ( this.wallet_type == "ledger" ) {
+          const txObject = Ledger.createSkeleton(
+            this.wallet.txContext, 
+            this.proposalTransactionObject()
+          )
+
+          let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.GAS_WANTED.toString());
+    
+          this.modal.find('.transaction-json').text(
+            JSON.stringify( txObject, undefined, 2 )
+          )
+    
+          this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+        } else {
+          let txObject = MathWallet.createTx(
+            this.wallet.txContext,
+            this.proposalTransactionObject(),
+            this.GAS_WANTED.toString()
+          );
+
+          this.txSignature = await this.wallet.buildAndSign(txObject);
+        }
+
+        if( txSignature ) {
+          const broadcastResult = await this.wallet.broadcastTransaction( txSignature )
+          if( broadcastResult.ok ) {
+            this.modal.find('.proposal-step').hide()
+            this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )
+            this.modal.find('.step-complete').show()
+            ga('send', 'event', 'gov-proposal-submit', 'completed')
+            return
+          }
+          else {
+            broadcastError = broadcastResult.error_message
+          }
         }
       }
 
