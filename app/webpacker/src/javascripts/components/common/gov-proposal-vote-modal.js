@@ -74,7 +74,7 @@ class GovProposalVoteModal {
     }
     this.wallet_type = "keplr";
     let btn = this.modal.find('.submit-proposal-deposit').text("Sign with Keplr");
-    let btn = this.modal.find('.submit-proposal-vote').text("Sign with Keplr");
+    this.modal.find('.submit-proposal-vote').text("Sign with Keplr");
     this.showStepChoice();
   }
 
