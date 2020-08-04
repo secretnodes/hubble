@@ -19,8 +19,8 @@ export class Keplr {
     this.cosmosJS = new GaiaApi({
       chainId: "secret-1",
       walletProvider: window.cosmosJSWalletProvider,
-      rpc: "https://client.secretnodes.org:26657",
-      rest: "https://lcd.secretnodes.org:1317",
+      rpc: "https://client.secretnodes.org",
+      rest: "https://lcd.secretnodes.org",
     }, {
       bech32Config: defaultBech32Config("secret")
     });
