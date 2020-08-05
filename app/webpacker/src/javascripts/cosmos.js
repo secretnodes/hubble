@@ -3,7 +3,7 @@ import 'lodash/lodash.min';
 import 'moment';
 import 'tooltipster/dist/js/tooltipster.bundle.min';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import 'clipboard/dist/clipboard.min';
+import 'clipboard';
 import 'datatables/media/js/jquery.dataTables.min'
 import  'chart.js';
 import './lib/custom-tooltip';
