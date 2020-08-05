@@ -244,7 +244,7 @@ class Common::SyncBase
     path += "?#{params.to_query}" if params
     url = "http://#{@host}:#{@rpc_port}/#{path}"
 
-    body = Rails.cache.fetch( ['rpc_get', @chain.network_name.downcase, @chain.ext_id.to_s, path].join('-'), force: Rails.env.development?, expires_in: 6.seconds, version: CACHE_VERSION ) do
+    body = Rails.cache.fetch( ['rpc_get', @chain.network_name.downcase, @chain.ext_id.to_s, path].join('-'), force: Rails.env.development?, expires_in: 1.second, version: CACHE_VERSION ) do
       start_time = Time.now.utc.to_f
       Rails.logger.debug "#{@chain.network_name} RPC GET: #{url}"
       r = Typhoeus.get( url, timeout_ms: @timeout * 2, connecttimeout_ms: @timeout )
@@ -261,7 +261,7 @@ class Common::SyncBase
     path += "?#{params.to_query}" if params
     url = "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}:#{@lcd_port}/#{path}"
 
-    body = Rails.cache.fetch( ['lcd_get', @chain.network_name.downcase, @chain.ext_id.to_s, path].join('-'), force: Rails.env.development?, expires_in: 6.seconds, version: CACHE_VERSION ) do
+    body = Rails.cache.fetch( ['lcd_get', @chain.network_name.downcase, @chain.ext_id.to_s, path].join('-'), force: Rails.env.development?, expires_in: 1.second, version: CACHE_VERSION ) do
       start_time = Time.now.utc.to_f
       Rails.logger.debug "#{@chain.network_name} LCD GET: #{url}"
       opts = { timeout_ms: @timeout * 2, connecttimeout_ms: @timeout }
