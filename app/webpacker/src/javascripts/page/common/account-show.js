@@ -36,6 +36,7 @@ $(document).ready( function() {
 
   $('.copy-button').each( function() {
     const copyButton = $(this)
+    let ClipboardJS = require('clipboard');
     if( ClipboardJS.isSupported() ) {
       copyButton.show()
       const clipboard = new ClipboardJS(
