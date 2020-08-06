@@ -207,8 +207,9 @@ class DelegationModal {
           this.MEMO);
 
         if (msg.deliverTx.code == 0) {
+          let hash = Buffer.from(msg.hash).toString('hex');
           this.modal.find('.delegation-step').hide()
-          this.modal.find('.view-transaction').hide()
+          this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', hash) )
           this.modal.find('.step-complete').show()
           ga('send', 'event', 'delegation', 'completed')
           return
@@ -275,8 +276,9 @@ class DelegationModal {
         this.MEMO);
 
       if (msg.deliverTx.code == 0) {
+        let hash = Buffer.from(msg.hash).toString('hex');
         this.modal.find('.delegation-step').hide()
-        this.modal.find('.view-transaction').hide()
+        this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', hash) )
         this.modal.find('.step-complete').show()
         ga('send', 'event', 'delegation', 'completed')
         return
@@ -401,8 +403,9 @@ class DelegationModal {
           this.MEMO);
 
         if (msg.deliverTx.code == 0) {
+          let hash = Buffer.from(msg.hash).toString('hex');
           this.modal.find('.delegation-step').hide()
-          this.modal.find('.view-transaction').hide()
+          this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', hash) )
           this.modal.find('.step-complete').show()
           ga('send', 'event', 'delegation', 'completed')
           return
