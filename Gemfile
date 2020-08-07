@@ -59,6 +59,9 @@ gem 'groupdate'
 #monitoring software
 gem "skylight"
 
+# job queue
+gem 'sidekiq'
+
 group :development, :test do
   gem 'puma'
   gem 'capistrano', '~> 3.13', require: false
