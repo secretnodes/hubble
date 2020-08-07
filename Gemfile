@@ -59,12 +59,16 @@ gem 'groupdate'
 #monitoring software
 gem "skylight"
 
+# job queue
+gem 'sidekiq'
+
 group :development, :test do
   gem 'puma'
   gem 'capistrano', '~> 3.13', require: false
   gem 'capistrano-rails', '~> 1.4', require: false
   gem 'capistrano-linked-files', require: false
   gem 'capistrano-npm', require: false
+  gem 'capistrano-sidekiq', require: false
   gem 'ed25519', '~> 1.2'
   gem 'bcrypt_pbkdf', '~> 1'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
