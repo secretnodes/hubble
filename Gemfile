@@ -68,6 +68,7 @@ group :development, :test do
   gem 'capistrano-rails', '~> 1.4', require: false
   gem 'capistrano-linked-files', require: false
   gem 'capistrano-npm', require: false
+  gem 'capistrano-sidekiq', require: false
   gem 'ed25519', '~> 1.2'
   gem 'bcrypt_pbkdf', '~> 1'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
