@@ -75,7 +75,7 @@ module Faucetlike
       account_number: account_info['value']['account_number'],
       sequence: self.current_sequence,
       chain_id: chain.ext_id,
-      memo: "Community Faucet for #{chain.ext_id}#{' (testnet)' if chain.testnet?} via https://puzzle.secretnodes.org/#{chain.network_name.downcase}/chains/#{chain.slug}/faucet"
+      memo: "Community Faucet for #{chain.ext_id}#{' (testnet)' if chain.testnet?} via https://puzzle.report/#{chain.network_name.downcase}/chains/#{chain.slug}/faucet"
     }.sort_by_key( true )
 
     sig = secp256k1_private_key.ecdsa_sign( tx.to_json )
