@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
   get '/login' => 'sessions#new', as: 'login'
   post '/login' => 'sessions#create', as: 'login_submit'
   get '/logout' => 'sessions#destroy', as: 'logout'
