@@ -8,7 +8,6 @@ require 'capistrano/linked_files'
 require 'capistrano/rails/assets'
 
 require 'capistrano/sidekiq'
-require 'capistrano/sidekiq/monit' #to require monit tasks # Only for capistrano3
 
 require 'capistrano/scm/git'
 install_plugin Capistrano::SCM::Git
