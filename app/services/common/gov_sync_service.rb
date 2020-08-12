@@ -155,7 +155,7 @@ class Common::GovSyncService
 
   def sync_governance_proposal_votes(puzzle_proposal)
     votes = @syncer.get_proposal_votes(puzzle_proposal.ext_id)
-    return if votes.nil?
+    return if !votes.present?
 
     by_voter = votes.group_by { |vote| vote['voter'] }
 
