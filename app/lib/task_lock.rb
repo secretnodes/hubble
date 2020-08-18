@@ -11,7 +11,8 @@ class TaskLock
     alerts: File.join( 'task-lock--alerts.lock' ),
     digests: File.join( 'task-lock--digests.lock' ),
     faucet: File.join( 'task-lock--faucet--{{ID}}.lock' ),
-    cleanup: File.join( 'task-lock--cleanup.lock' )
+    cleanup: File.join( 'task-lock--cleanup.lock' ),
+    balances: File.join( 'task-lock--balances--{{ID}}.lock')
   }
 
   class << self
