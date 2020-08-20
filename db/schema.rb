@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_17_165746) do
+ActiveRecord::Schema.define(version: 2020_08_18_011612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -690,6 +690,12 @@ ActiveRecord::Schema.define(version: 2020_07_17_165746) do
     t.bigint "validator_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "total_balance", default: 0
+    t.bigint "available_balance", default: 0
+    t.bigint "delegated_balance", default: 0
+    t.bigint "rewards_balance", default: 0
+    t.bigint "unbonding_balance", default: 0
+    t.bigint "commission_balance", default: 0
     t.index ["address"], name: "index_secret_accounts_on_address"
     t.index ["chain_id"], name: "index_secret_accounts_on_chain_id"
   end
@@ -753,6 +759,7 @@ ActiveRecord::Schema.define(version: 2020_07_17_165746) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "total_supply"
+    t.datetime "last_balance_sync"
   end
 
   create_table "secret_faucets", force: :cascade do |t|
@@ -1087,6 +1094,7 @@ ActiveRecord::Schema.define(version: 2020_07_17_165746) do
     t.string "public_key"
     t.integer "wallet_type"
     t.integer "user_id"
+    t.boolean "default_wallet", default: false
   end
 
   add_foreign_key "cosmos_blocks", "cosmos_chains", column: "chain_id"
