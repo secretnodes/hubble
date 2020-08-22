@@ -1,0 +1,230 @@
+<% content_for :body_class, 'wallets-index' %>
+
+<div class='row'>
+  <div class='col-5 mr-5'>
+    <div class='wallet-actions-container'>
+      <h2 class='header text-center d-block'>
+        Wallet Actions
+      </h2>
+      <div class="d-flex justify-content-center flex-column">
+        <button class='btn btn-outline-primary d-block my-2'>Send</button>
+        <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#delegation-modal'>Delegate</button>
+        <button class='btn btn-outline-primary d-block my-2'>Redelegate</button>
+        <button class='btn btn-outline-primary d-block my-2'>Undelegate</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-5 ml-5">
+    <div class='wallet-choices-container hidden'>
+      <h2 class='header text-center d-block mb-3'>
+        Choose Default Wallet
+      </h2>
+      <%= form_with url: default_wallet_path, method: :put, local: true do %>
+        <%= select_tag :id, grouped_options_for_select(@wallet_types, @default_wallet&.id), class: "form-control"%>
+        <div class="d-flex justify-content-center">
+        <%= submit_tag "Submit", class: 'submit-button btn btn-lg btn-primary my-5' %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% content_for :modals do -%>
+  <div class='modal fade' id='delegation-modal' tabindex='-1' role='dialog'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+      <div class='modal-content'>
+        <div class='modal-body'>
+          <button type='button' class='close float-right' data-dismiss='modal' aria-label='Close'>
+            <span aria-hidden='true'>&times;</span>
+          </button>
+
+          <div class='delegation-step step-choose-wallet text-center p-5'>
+            <h3>Choose a Wallet Type</h3>
+            <button class='mt-4 btn btn-lg btn-outline-primary choice-ledger'>Ledger</button>
+            <button class='mt-4 btn btn-lg btn-outline-primary choice-mathwallet'>Mathwallet</button>
+            <button class='mt-4 btn btn-lg btn-outline-primary choice-keplr'>Keplr</button>
+          </div>
+
+          <div class='delegation-step step-error text-center p-5'>
+            <h3>An Error Occurred</h3>
+            <p>
+              Sorry, something went wrong. Please disconnect
+              your Ledger, refresh the page, and try again.
+            </p>
+            <div class='alert alert-danger mt-4 mb-0'>
+              <p class='delegation-error mb-0'></p>
+            </div>
+          </div>
+
+          <div class='delegation-step step-setup text-center p-5'>
+            <h3>Connecting...</h3>
+            <p class="ledger-instructions">Connect, unlock, and open the Cosmos app on your ledger.</p>
+            <div class='p-4'>
+              <span class='fas fa-spin fa-slash text-muted'></span>
+            </div>
+          </div>
+
+          <div class='delegation-step step-choice text-center p-5'>
+            <div class='d-flex flex-column align-items-center'>
+              <button class='mt-4 btn btn-lg btn-outline-primary choice-new-delegation'>New Delegation</button>
+              <button class='mt-3 btn btn-lg btn-outline-primary choice-withdraw'>Withdraw Rewards</button>
+              <button class="mt-3 btn btn-lg btn-outline-primary choice-redelegate">Redelegate</button>
+              <div class='text-muted text-sm mt-1'>Pending Rewards: <span class='ml-2 reward-balance text-monospace text-md'></span></div>
+            </div>
+          </div>
+
+          <div class='delegation-step step-new-delegation text-center py-5 px-3'>
+            <h3>New Delegation</h3>
+
+            <form class='delegation-form mt-3'>
+              <div class='d-flex align-items-center'>
+                <div class='w-50'>
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Validator:</label>
+                    <select class="form-control to-validator" id="delegate-validator">
+                      <option value="null" selected>Select a Validator</option>
+                      <% @validators.each do |v| %>
+                        <option value="<%= v.owner %>"><%= v.long_name %></option>
+                      <% end %>
+                    </select>
+                  </div>
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Account Address:</label>
+                    <span class='account-address text-monospace' style='overflow-wrap: break-word; hyphens: auto;'></span>
+                  </div>
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Account Balance:</label>
+                    <span class='account-balance text-monospace'></span>
+                  </div>
+                </div>
+
+                <div class='w-50'>
+                  <div>
+                    <label class='text-muted mb-0 d-inline'>Amount:</label>
+
+                    <div class='d-flex align-items-center justify-content-center'>
+                      <input class='form-control delegation-amount w-third text-monospace' />
+                      <span class='ml-2 text-monospace'><%= @chain.token_map[@chain.primary_token]['display'] %></span>
+                      <!--<button type='button' class='btn btn-outline-secondary btn-tiny set-max ml-2'><span class='fas fa-arrow-up'></span> max</button>-->
+                    </div>
+                  </div>
+
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Transaction Fee:</label>
+                    <span class='transaction-fee text-monospace'></span>
+                  </div>
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Total:</label>
+                    <span class='transaction-total text-monospace'>&mdash;</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class='d-flex justify-content-center'>
+                <div class='amount-error alert alert-danger mb-0 mt-5 text-sm'></div>
+                <div class='amount-warning alert alert-warning mb-0 mt-5 text-sm'></div>
+              </div>
+
+              <div class='text-center'>
+                <button type='submit' class='mt-4 btn btn-primary submit-delegation' disabled>Sign with Ledger</button>
+              </div>
+            </form>
+          </div>
+
+          <div class='delegation-step step-redelegation text-center py-5 px-3'>
+            <h3>Redelegate</h3>
+
+            <form class='delegation-form mt-3'>
+              <div class='d-flex align-items-center'>
+                <div class='w-50'>
+                  <div class='d-flex flex-column mt-3'>
+                  </div>
+
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>To Validator:</label>
+                    <select class="form-control to-validator">
+                      <% @validators.each do |v| %>
+                        <option value="<%= v.owner %>"><%= v.long_name %></option>
+                      <% end %>
+                    </select>
+                  </div>
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Account Address:</label>
+                    <span class='account-address text-monospace' style='overflow-wrap: break-word; hyphens: auto;'></span>
+                  </div>
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Account Stake:</label>
+                    <span class='account-balance text-monospace'></span>
+                  </div>
+                </div>
+
+                <div class='w-50'>
+                  <div>
+                    <label class='text-muted mb-0 d-inline'>Amount:</label>
+
+                    <div class='d-flex align-items-center justify-content-center'>
+                      <input class='form-control delegation-amount w-third text-monospace' />
+                      <span class='ml-2 text-monospace'><%= @chain.token_map[@chain.primary_token]['display'] %></span>
+                      <!--<button type='button' class='btn btn-outline-secondary btn-tiny set-max ml-2'><span class='fas fa-arrow-up'></span> max</button>-->
+                    </div>
+                  </div>
+
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Transaction Fee:</label>
+                    <span class='transaction-fee text-monospace'></span>
+                  </div>
+                  <div class='d-flex flex-column mt-3'>
+                    <label class='text-muted mb-0'>Total:</label>
+                    <span class='transaction-total text-monospace'>&mdash;</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class='d-flex justify-content-center'>
+                <div class='amount-error alert alert-danger mb-0 mt-5 text-sm'></div>
+                <div class='amount-warning alert alert-warning mb-0 mt-5 text-sm'></div>
+              </div>
+
+              <div class='text-center'>
+                <button type='submit' class='mt-4 btn btn-primary submit-delegation' disabled>Sign with Ledger</button>
+              </div>
+            </form>
+          </div>
+
+          <div class='delegation-step step-confirm text-center'>
+            <div class='p-5'>
+              <h3>Confirm Transaction</h3>
+              <p>Review the details on your Ledger and sign the transaction.</p>
+              <div class='p-4'>
+                <span class='fas fa-spin fa-slash text-muted'></span>
+              </div>
+              <button class='mt-4 btn btn-sm btn-outline-secondary show-transaction-json'>View Raw Transaction</button>
+            </div>
+            <div class='transaction-json-container'>
+              <pre class='transaction-json text-left'></pre>
+            </div>
+          </div>
+
+          <div class='delegation-step step-complete text-center p-5'>
+            <h3>Success</h3>
+            <p>Delegation successfully submitted!</p>
+            <div class='p-4 text-center'>
+              <a class='btn btn-primary view-transaction' href='' target='_blank'>View Transaction</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end -%>
+
+<script>
+  <% if current_user.present? %>
+    App.config.userId = '<%= current_user.present? ? current_user.id : nil %>';
+    App.config.walletPresent = <%= current_user.wallets.present? %>;
+    App.config.accountIndex = <%= current_user.wallets.first.present? ? current_user.wallets.first.account_index : 0 %>;
+    App.config.chainId = '1';
+  <% end %>
+  App.config.addressInfoPathTemplate = '<%= namespaced_path( 'account', 'ADDRESS' ) %>';
+  App.config.broadcastTxPath = '<%= namespaced_path( 'broadcast', pre_path: true ) %>';
+  App.config.viewTxPath = '<%= namespaced_path( 'transaction', 'TRANSACTION_HASH' ) %>';
+</script>

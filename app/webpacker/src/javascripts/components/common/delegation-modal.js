@@ -40,9 +40,12 @@ class DelegationModal {
     this.wallet = new Ledger({ testModeAllowed: false });
     await this.wallet.setupConnection();
 
-    if ( !App.config.walletPresent ) {
+    try {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    } catch (error) {
+      console.log(error);
     }
+
     this.wallet_type = "ledger";
     let button_text = "Sign with Ledger";
     this.modal.find('.submit-delegation').text('Sign with Ledger');
@@ -54,9 +57,12 @@ class DelegationModal {
     this.wallet = new MathWallet();
     await this.wallet.setupConnection();
 
-    if ( !App.config.walletPresent ) {
+    try {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    } catch (error) {
+      console.log(error);
     }
+
     this.wallet_type = "mathwallet";
     let btn = this.modal.find('.submit-delegation').text("Sign with Mathwallet");
     this.showStepChoice();
@@ -67,9 +73,12 @@ class DelegationModal {
     this.wallet = new Keplr();
     await this.wallet.setupConnection();
 
-    if ( !App.config.walletPresent ) {
+    try {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    } catch (error) {
+      console.log(error);
     }
+
     this.wallet_type = "keplr";
     let btn = this.modal.find('.submit-delegation').text("Sign with Keplr");
     this.showStepChoice();
@@ -119,6 +128,8 @@ class DelegationModal {
     } )
   }
 
+
+
   reset() {
     this.modal.find('.modal-dialog').removeClass('modal-lg')
     this.modal.find('.delegation-step').hide()
@@ -144,46 +155,20 @@ class DelegationModal {
       .find('.transaction-fee').text( `${this.delegationTransactionFee()} ${App.config.denom}` ).end()
       .show()
 
+    this.validatorAddress = App.config.validatorOperatorAddress;
+
     this.modal.find('.set-max').click( ( e ) => {
       e.preventDefault()
       this.modal.find('.delegation-amount').val( this.maxDelegation() ).trigger('set-to-max')
     } )
 
+    this.modal.find('#delegate-validator').on('change', (e) => {
+      this.validatorAddress = this.modal.find('#delegate-validator').val();
+      this.validateDelegationForm(e);
+    })
+
     this.modal.find('.delegation-amount').on( 'input set-to-max', ( e ) => {
-      const amount = parseFloat( $(e.currentTarget).val() )
-      if( isNaN( amount ) ) {
-        this.modal.find('.amount-warning').hide()
-        this.modal.find('.amount-error').hide()
-        this.modal.find('.delegation-form').data( 'disabled', true )
-        this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
-        this.modal.find('.transaction-total').html( '&mdash;' )
-        return
-      }
-
-      this.modal.find('.transaction-total').text( `${this.delegationTotal(amount)} ${App.config.denom}` )
-
-      if( !this.checkDelegationAmount( amount ) ) {
-        this.modal.find('.amount-warning').hide()
-        this.setDelegationAmount( null )
-        const msg = amount == 0 ?
-          `You can't delegate <tt>0 ${App.config.denom}</tt>...` :
-          `The amount to delegate must take transaction fees into account.<br/><b>Max: <tt class='text-md'>${this.maxDelegation()} ${App.config.denom}</tt></b>`
-        this.modal.find('.amount-error').html(msg).show()
-        this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
-      }
-      else {
-        if( amount == this.maxDelegation() ) {
-          const msg = `It is recommended to leave some ${App.config.denom} in your account to pay fees on future transactions!`
-          this.modal.find('.amount-warning').html(msg).show()
-        }
-        else {
-          this.modal.find('.amount-warning').hide()
-        }
-        this.setDelegationAmount( amount )
-        this.modal.find('.amount-error').hide()
-        this.modal.find('.delegation-form').data( 'disabled', false )
-        this.modal.find('.submit-delegation').removeAttr( 'disabled' )
-      }
+      this.validateDelegationForm(e);
     } )
 
     this.modal.find('.delegation-form').submit( async ( e ) => {
@@ -200,7 +185,7 @@ class DelegationModal {
       if (this.wallet_type == "keplr") {
         const msg = await this.wallet.sendDelegationMsg(
           this.wallet.publicAddress,
-          App.config.validatorOperatorAddress,
+          this.validatorAddress,
           this.delegationAmount,
           this.DELEGATION_GAS_WANTED,
           this.delegationTransactionFee(false),
@@ -466,7 +451,7 @@ class DelegationModal {
         value: {
           amount: { amount: this.delegationAmount.toString(), denom: App.config.remoteDenom },
           delegator_address: this.wallet.publicAddress,
-          validator_address: App.config.validatorOperatorAddress
+          validator_address: this.validatorAddress
         }
       }
     ]
@@ -532,6 +517,52 @@ class DelegationModal {
 
   setDelegationAmount( amount ) {
     this.delegationAmount = amount * App.config.remoteScaleFactor
+  }
+
+  validateDelegationForm( e ) {
+    const amount = parseFloat( this.modal.find('.delegation-amount').val() )
+      if( isNaN( amount ) ) {
+        this.modal.find('.amount-warning').hide()
+        this.modal.find('.amount-error').hide()
+        this.modal.find('.delegation-form').data( 'disabled', true )
+        this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
+        this.modal.find('.transaction-total').html( '&mdash;' )
+        return
+      }
+
+      this.modal.find('.transaction-total').text( `${this.delegationTotal(amount)} ${App.config.denom}` )
+
+      if( !this.checkDelegationAmount( amount ) ) {
+        this.modal.find('.amount-warning').hide()
+        this.setDelegationAmount( null )
+        const msg = amount == 0 ?
+          `You can't delegate <tt>0 ${App.config.denom}</tt>...` :
+          `The amount to delegate must take transaction fees into account.<br/><b>Max: <tt class='text-md'>${this.maxDelegation()} ${App.config.denom}</tt></b>`
+        this.modal.find('.amount-error').html(msg).show()
+        this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
+      }
+      else {
+        if( amount == this.maxDelegation() ) {
+          const msg = `It is recommended to leave some ${App.config.denom} in your account to pay fees on future transactions!`
+          this.modal.find('.amount-warning').html(msg).show()
+        }
+        else {
+          this.modal.find('.amount-warning').hide()
+        }
+        this.setDelegationAmount( amount )
+        this.modal.find('.amount-error').hide()
+        console.log("addr = " + this.validatorAddress);
+        console.log(this.modal.find('.delegation-form').data( 'disabled' ));
+        if ( this.validatorAddress != undefined && this.validatorAddress != "null") {
+          console.log('disabled false');
+          this.modal.find('.delegation-form').data( 'disabled', false )
+          this.modal.find('.submit-delegation').removeAttr( 'disabled' )
+        } else if (this.modal.find('.delegation-form').data( 'disabled' ) == false){
+          console.log('disabled true')
+          this.modal.find('.delegation-form').data( 'disabled', true )
+          this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
+        }
+      }
   }
 }
 

@@ -4,3 +4,5 @@ import 'tooltipster/dist/js/tooltipster.bundle.min';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './page/app-init';
 import './components/common/auto-alert-hide';
+import './page/common/wallets-index';
+import './components/common/delegation-modal';

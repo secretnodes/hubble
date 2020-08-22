@@ -28,6 +28,7 @@ export class Keplr {
     await this.cosmosJS.enable();
 
     const identity = await this.cosmosJS.getKeys()
+    console.log(identity);
 
     this.accAddress = new AccAddress(identity[0].address, "secret");
 
@@ -170,7 +171,7 @@ export class Keplr {
         public_key: this.txContext.public_key,
         chain_id: 1,
         chain_type: 'Secret',
-        account_index: HDPATH[2]
+        account_index: 0
       }
     }
 
