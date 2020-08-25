@@ -161,6 +161,12 @@
 
           <div class='delegation-step step-redelegation text-center py-5 px-3'>
             <h3>Redelegate</h3>
+            <div class="redelegation-warning text-center">
+              <small>
+                Warning: Any tokens you redelegate to another validator will be locked for 21 days after the transaction succeeds. 
+                You will not be able to withdraw them or redelegate them again for that period of time.
+              </small>
+            </div>
 
             <form class='delegation-form mt-3'>
               <div class='d-flex align-items-center'>
@@ -173,6 +179,7 @@
                   <div class='d-flex flex-column mt-3'>
                     <label class='text-muted mb-0'>To Validator:</label>
                     <select class="form-control to-validator">
+                      <option value="null" selected>Select a Validator</option>
                       <% @validators.each do |v| %>
                         <option value="<%= v.owner %>"><%= v.long_name %></option>
                       <% end %>
