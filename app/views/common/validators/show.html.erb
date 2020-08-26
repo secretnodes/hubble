@@ -1,6 +1,6 @@
 <% content_for :body_class, 'validator-show' %>
 
-<%= render partial: '/common/shared/chain_header', locals: { summary_link: true } %>
+<%= render partial: '/common/shared/chain_header', locals: { summary_link: true, transactions_link: true, swaps_link: true, accounts_link: true } %>
 <%= render partial: '/common/shared/sync_errors' %>
 
 <% if @validator.has_info? %>

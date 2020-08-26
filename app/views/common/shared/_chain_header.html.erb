@@ -10,6 +10,9 @@
       <% if defined?(faucet_link) && @chain.faucet && @chain.faucet.enabled? -%>
         <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'faucet' ) %>'>Faucet</a>
       <% end -%>
+      <% if defined?(accounts_link) %>
+        <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'accounts' ) %>'>Accounts</a>
+      <% end %>
       <% if defined?(swaps_link) %>
         <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'swaps' ) %>'>Swaps</a>
       <% end %>

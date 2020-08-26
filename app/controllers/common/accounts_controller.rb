@@ -1,6 +1,11 @@
 class Common::AccountsController < Common::BaseController
   before_action :ensure_chain
 
+  def index
+    @accounts = @chain.accounts.order('total_balance DESC')
+
+  end
+
   def show
     respond_to do |format|
       format.html {

@@ -48,7 +48,7 @@ Rails.application.routes.draw do
         resources :subscriptions, only: %i{ index create }, controller: '/util/subscriptions'
       end
 
-      resources :accounts, only: %i{ show }
+      resources :accounts, only: %i{ show index }
 
       resources :blocks, only: %i{ show } do
         resources :transactions, only: %i{ show }
