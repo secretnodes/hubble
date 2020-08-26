@@ -150,9 +150,9 @@ class UndelegateModal {
       let broadcastError = null;
 
       if (this.wallet_type == "keplr") {
-        const msg = await this.wallet.undelegateMsg(
+        const msg = await this.wallet.sendUndelegateMsg(
           this.wallet.publicAddress,
-          this.toAddress,
+          this.fromValidatorAddress,
           this.undelegateAmount,
           this.UNDELEGATE_GAS_WANTED,
           this.undelegateTransactionFee(false),

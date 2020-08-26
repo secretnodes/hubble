@@ -139,7 +139,7 @@ class SendModal {
       let broadcastError = null;
 
       if (this.wallet_type == "keplr") {
-        const msg = await this.wallet.sendMsg(
+        const msg = await this.wallet.sendSendMsg(
           this.wallet.publicAddress,
           this.toAddress,
           this.sendAmount,

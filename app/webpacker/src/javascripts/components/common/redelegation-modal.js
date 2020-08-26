@@ -4,8 +4,8 @@ import { Keplr } from './keplr.js'
 
 class RedelegationModal {
   constructor( el ) {
-    this.REDELEGATION_GAS_WANTED = 220000
-    this.GAS_PRICE = 0.025
+    this.REDELEGATION_GAS_WANTED = 300000
+    this.GAS_PRICE = 0.01
     this.MEMO = 'https://puzzle.report'
     this.modal = el
 

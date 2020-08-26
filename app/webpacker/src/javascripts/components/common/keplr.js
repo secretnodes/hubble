@@ -1,7 +1,8 @@
 const { GaiaApi } = require("@chainapsis/cosmosjs/gaia/api");
 const { AccAddress, ValAddress } = require("@chainapsis/cosmosjs/common/address");
 const { Coin } = require("@chainapsis/cosmosjs/common/coin");
-const { MsgDelegate, MsgBeginRedelegate } = require("@chainapsis/cosmosjs/x/staking");
+const { MsgDelegate, MsgBeginRedelegate, MsgUndelegate } = require("@chainapsis/cosmosjs/x/staking");
+const { MsgSend } = require('@chainapsis/cosmosjs/x/bank');
 const { ProposalKind, VoteOption, MsgSubmitProposal, MsgDeposit, MsgVote } = require("@chainapsis/cosmosjs/x/gov");
 const { MsgWithdrawDelegatorReward } = require("@chainapsis/cosmosjs/x/distribution");
 const {defaultBech32Config} = require("@chainapsis/cosmosjs/core/bech32Config");
@@ -103,6 +104,27 @@ export class Keplr {
     const msg = new MsgVote(proposal_id, voteAddr, vote);
 
     const result = await this.sendMsg([msg], gas, memo, fee);
+    return result;
+  }
+
+  async sendSendMsg(fromAddr, toAddr, amount, gas, fee, memo) {
+    let from = AccAddress.fromBech32(fromAddr, 'secret');
+    let to = AccAddress.fromBech32(toAddr, 'secret');
+
+    const msg = new MsgSend(from, to, [new Coin('uscrt', amount)])
+
+    let result = await this.sendMsg([msg], gas, memo, fee)
+    return result;
+  }
+
+  async sendUndelegateMsg(delegator_addr, validator_addr, amount, gas, fee, memo) {
+    let delAddress = AccAddress.fromBech32(delegator_addr, 'secret');
+    let valAddress = ValAddress.fromBech32(validator_addr, "secretvaloper");
+
+    const msg = new MsgUndelegate(delAddress, valAddress, new Coin("uscrt", amount));
+
+    let result = await this.sendMsg([msg], gas, memo, fee)
+    return result;
   }
 
   async sendMsg(msg, gas, memo, fee) {
