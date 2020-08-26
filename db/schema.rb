@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_14_205241) do
+ActiveRecord::Schema.define(version: 2020_08_18_011612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1094,6 +1094,7 @@ ActiveRecord::Schema.define(version: 2020_08_14_205241) do
     t.string "public_key"
     t.integer "wallet_type"
     t.integer "user_id"
+    t.boolean "default_wallet", default: false
   end
 
   add_foreign_key "cosmos_blocks", "cosmos_chains", column: "chain_id"
