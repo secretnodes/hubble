@@ -8,4 +8,5 @@ import './page/common/wallets-index';
 import './components/common/delegation-modal';
 import './components/common/redelegation-modal';
 import './components/common/send-modal';
+import './components/common/undelegate-modal';
 import 'clipboard';

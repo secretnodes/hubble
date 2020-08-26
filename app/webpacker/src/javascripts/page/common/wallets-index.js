@@ -4,6 +4,7 @@ $(document).ready( function() {
   new App.Common.DelegationModal( $('#delegation-modal') )
   new App.Common.RedelegationModal( $('#redelegation-modal') )
   new App.Common.SendModal( $('#send-modal') )
+  new App.Common.UndelegateModal( $('#undelegate-modal') )
 
   $('.copy-button').each( function() {
     const copyButton = $(this)

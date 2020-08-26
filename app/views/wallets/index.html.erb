@@ -10,7 +10,7 @@
         <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#send-modal'>Send</button>
         <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#delegation-modal'>Delegate</button>
         <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#redelegation-modal'>Redelegate</button>
-        <button class='btn btn-outline-primary d-block my-2'>Undelegate</button>
+        <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#undelegate-modal'>Undelegate</button>
       </div>
     </div>
   </div>
@@ -38,6 +38,7 @@
   <%= render partial: '/shared/wallet_modals/delegation_modal', locals: { chain: @chain, validators: @validators } %>
   <%= render partial: '/shared/wallet_modals/redelegation_modal', locals: { chain: @chain, validators: @validators } %>
   <%= render partial: '/shared/wallet_modals/send_modal', locals: { chain: @chain, validators: @validators } %>
+  <%= render partial: '/shared/wallet_modals/undelegate_modal', locals: { chain: @chain, validators: @validators } %>
 <% end -%>
 
 <script>
