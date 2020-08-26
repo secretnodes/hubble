@@ -6,3 +6,6 @@ import './page/app-init';
 import './components/common/auto-alert-hide';
 import './page/common/wallets-index';
 import './components/common/delegation-modal';
+import './components/common/redelegation-modal';
+import './components/common/send-modal';
+import 'clipboard';
