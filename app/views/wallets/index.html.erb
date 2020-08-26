@@ -21,12 +21,14 @@
       </h2>
       <%= form_with url: default_wallet_path, method: :put, local: true do %>
         <%= select_tag :id, grouped_options_for_select(@wallet_types, @default_wallet&.id), class: "form-control"%>
-        <div class="d-flex mt-3 flex-column">
-          <strong>Current Default:</strong> 
-          <div class="d-inline-flex">
-            <%= @default_wallet.public_address %> <span class='btn btn-link btn-tiny copy-button' data-hash='<%= @default_wallet.public_address %>'><span class='fas fa-copy'></span></button>
+        <% if @default_wallet.present? %>
+          <div class="d-flex mt-3 flex-column">
+            <strong>Current Default:</strong> 
+            <div class="d-inline-flex">
+              <%= @default_wallet.public_address %> <span class='btn btn-link btn-tiny copy-button' data-hash='<%= @default_wallet.public_address %>'><span class='fas fa-copy'></span></button>
+            </div>
           </div>
-        </div>
+        <% end %>
         <div class="d-flex justify-content-center">
         <%= submit_tag "Submit", class: 'submit-button btn btn-lg btn-primary my-5' %>
       <% end %>
