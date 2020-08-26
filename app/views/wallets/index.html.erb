@@ -1,0 +1,54 @@
+<% content_for :body_class, 'wallets-index' %>
+
+<div class='row'>
+  <div class='col-5 mr-5'>
+    <div class='wallet-actions-container'>
+      <h2 class='header text-center d-block'>
+        Wallet Actions
+      </h2>
+      <div class="d-flex justify-content-center flex-column">
+        <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#send-modal'>Send</button>
+        <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#delegation-modal'>Delegate</button>
+        <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#redelegation-modal'>Redelegate</button>
+        <button class='btn btn-outline-primary d-block my-2' data-toggle='modal' data-target='#undelegate-modal'>Undelegate</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-5 ml-5">
+    <div class='wallet-choices-container hidden'>
+      <h2 class='header text-center d-block mb-3'>
+        Choose Default Wallet
+      </h2>
+      <%= form_with url: default_wallet_path, method: :put, local: true do %>
+        <%= select_tag :id, grouped_options_for_select(@wallet_types, @default_wallet&.id), class: "form-control"%>
+        <div class="d-flex mt-3 flex-column">
+          <strong>Current Default:</strong> 
+          <div class="d-inline-flex">
+            <%= @default_wallet.public_address %> <span class='btn btn-link btn-tiny copy-button' data-hash='<%= @default_wallet.public_address %>'><span class='fas fa-copy'></span></button>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+        <%= submit_tag "Submit", class: 'submit-button btn btn-lg btn-primary my-5' %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% content_for :modals do -%>
+  <%= render partial: '/shared/wallet_modals/delegation_modal', locals: { chain: @chain, validators: @validators } %>
+  <%= render partial: '/shared/wallet_modals/redelegation_modal', locals: { chain: @chain, validators: @validators } %>
+  <%= render partial: '/shared/wallet_modals/send_modal', locals: { chain: @chain, validators: @validators } %>
+  <%= render partial: '/shared/wallet_modals/undelegate_modal', locals: { chain: @chain, validators: @validators } %>
+<% end -%>
+
+<script>
+  <% if current_user.present? %>
+    App.config.userId = '<%= current_user.present? ? current_user.id : nil %>';
+    App.config.walletPresent = <%= current_user.wallets.present? %>;
+    App.config.accountIndex = <%= current_user.wallets.first.present? ? current_user.wallets.first.account_index : 0 %>;
+    App.config.chainId = '1';
+  <% end %>
+  App.config.addressInfoPathTemplate = '<%= namespaced_path( 'account', 'ADDRESS' ) %>';
+  App.config.broadcastTxPath = '<%= namespaced_path( 'broadcast', pre_path: true ) %>';
+  App.config.viewTxPath = '<%= namespaced_path( 'transaction', 'TRANSACTION_HASH' ) %>';
+</script>

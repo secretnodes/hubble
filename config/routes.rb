@@ -18,6 +18,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :wallets, only: %i{ index }
+
+  put '/default_wallet' => 'wallets#update', as: :default_wallet
+  
   # PUZZLE
   root to: 'secret/chains#show', id: 'secret-1'
   get '/privacy_policy' => 'home#privacy_policy'

@@ -16,6 +16,7 @@ export class MathWallet {
     await this.initMathExtension();
 
     const identity = await mathExtension.getIdentity(network);
+    console.log(identity);
 
     this.publicAddress = identity['account'];
 
@@ -131,7 +132,7 @@ export class MathWallet {
         public_key: this.txContext.public_key,
         chain_id: 1,
         chain_type: 'Secret',
-        account_index: HDPATH[2]
+        account_index: 0
       }
     }
 

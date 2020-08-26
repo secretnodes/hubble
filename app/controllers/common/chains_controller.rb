@@ -68,7 +68,6 @@ class Common::ChainsController < Common::BaseController
 
   def broadcast
     tx = { tx: params[:payload], return: 'sync' }
-
     ok = !r.has_key?('code') && !r.has_key?('error')
     Rails.logger.error "\n\nBROADCAST RESULT: #{r.inspect}\n\n"
     render json: { ok: ok }.merge(r)

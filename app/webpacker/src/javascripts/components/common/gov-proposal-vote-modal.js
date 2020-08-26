@@ -41,9 +41,12 @@ class GovProposalVoteModal {
     this.wallet = new Ledger({ testModeAllowed: false });
     await this.wallet.setupConnection();
 
-    if ( !App.config.walletPresent ) {
+    try {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    } catch (error) {
+      console.log(error);
     }
+
     this.wallet_type = "ledger";
     this.modal.find('.submit-proposal-deposit').text('Sign with Ledger');
     this.modal.find('.submit-proposal-vote').text('Sign with Ledger');
@@ -55,9 +58,12 @@ class GovProposalVoteModal {
     this.wallet = new MathWallet();
     await this.wallet.setupConnection();
 
-    if ( !App.config.walletPresent ) {
+    try {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    } catch (error) {
+      console.log(error);
     }
+
     this.wallet_type = "mathwallet";
     this.modal.find('.submit-proposal-deposit').text('Sign with Mathwallet');
     this.modal.find('.submit-proposal-vote').text('Sign with Mathwallet');
@@ -69,9 +75,12 @@ class GovProposalVoteModal {
     this.wallet = new Keplr();
     await this.wallet.setupConnection();
 
-    if ( !App.config.walletPresent ) {
+    try {
       await this.wallet.addWallet(App.config.userId, App.config.chainId);
+    } catch (error) {
+      console.log(error);
     }
+
     this.wallet_type = "keplr";
     let btn = this.modal.find('.submit-proposal-deposit').text("Sign with Keplr");
     this.modal.find('.submit-proposal-vote').text("Sign with Keplr");
