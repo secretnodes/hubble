@@ -71,11 +71,12 @@
           <% end -%>
 
           <li class='nav-item dropdown'>
-            <a class='nav-link dropdown-toggle' href='#' id='account-menu-link' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+            <a class='nav-link dropdown-toggle' href='#' id='account-menu-link' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' aria-labelledby='account-menu-link'>
               Account
             </a>
             <div class='dropdown-menu' aria-labelledby='account-menu-link'>
               <a class='dropdown-item' href='<%= settings_users_path %>'>Settings</a>
+              <a class='dropdown-item' href='<%= wallets_path %>'>Wallets</a>
               <a class='dropdown-item' href='<%= logout_path %>'>Logout</a>
             </div>
           </li>
