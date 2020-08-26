@@ -105,7 +105,6 @@ class RedelegationModal {
 
   newRedelegation() {
     this.modal.find('.modal-dialog').addClass('modal-lg')
-    console.log(this.wallet.txContext.delegations);
 
     this.wallet.txContext.delegations.forEach(element => {
       this.modal.find('.from-validator').append($('<option>', {
@@ -116,7 +115,7 @@ class RedelegationModal {
 
     this.modal.find('.from-validator').on( 'change', ( e ) => {
       this.fromValidatorAddress = $(e.currentTarget).val();
-      console.log(this.fromValidatorAddress);
+
       let delegation_index = this.wallet.txContext.delegations.findIndex(v => v.validator_address == this.fromValidatorAddress );
       this.max_redelegation_amount = this.wallet.txContext.delegations[delegation_index]['balance']['amount'];
       this.modal.find('.account-balance').text( `${this.maxRedelegation()} ${App.config.denom}` ).end()
@@ -200,8 +199,6 @@ class RedelegationModal {
         }
 
         if( this.txSignature ) {
-
-          console.log(this.txSignature);
 
           const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
           if( broadcastResult.ok ) {
@@ -292,15 +289,11 @@ class RedelegationModal {
         }
         this.setRedelegationAmount( amount )
         this.modal.find('.amount-error').hide()
-        console.log("from addr = " + this.fromValidatorAddress);
-        console.log('')
-        console.log(this.modal.find('.redelegation-form').data( 'disabled' ));
+
         if ( this.fromValidatorAddress != undefined && this.fromValidatorAddress != "null" && this.validator_dst_address != undefined && this.validator_dst_address != 'null' ) {
-          console.log('disabled false');
           this.modal.find('.redelegation-form').data( 'disabled', false )
           this.modal.find('.submit-redelegation').removeAttr( 'disabled' )
         } else if (this.modal.find('.redelegation-form').data( 'disabled' ) == false){
-          console.log('disabled true')
           this.modal.find('.redelegation-form').data( 'disabled', true )
           this.modal.find('.submit-redelegation').attr( 'disabled', 'disabled' )
         }

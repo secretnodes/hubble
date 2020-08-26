@@ -551,14 +551,11 @@ class DelegationModal {
         }
         this.setDelegationAmount( amount )
         this.modal.find('.amount-error').hide()
-        console.log("addr = " + this.validatorAddress);
-        console.log(this.modal.find('.delegation-form').data( 'disabled' ));
+
         if ( this.validatorAddress != undefined && this.validatorAddress != "null") {
-          console.log('disabled false');
           this.modal.find('.delegation-form').data( 'disabled', false )
           this.modal.find('.submit-delegation').removeAttr( 'disabled' )
         } else if (this.modal.find('.delegation-form').data( 'disabled' ) == false){
-          console.log('disabled true')
           this.modal.find('.delegation-form').data( 'disabled', true )
           this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
         }

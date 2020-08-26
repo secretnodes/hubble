@@ -29,7 +29,6 @@ export class Keplr {
     await this.cosmosJS.enable();
 
     const identity = await this.cosmosJS.getKeys()
-    console.log(identity);
 
     this.accAddress = new AccAddress(identity[0].address, "secret");
 
