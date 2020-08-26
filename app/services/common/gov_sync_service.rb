@@ -79,11 +79,11 @@ class Common::GovSyncService
       end
     end
 
-    to_purge = @chain.governance_proposals.where.not( ext_id: tracked_proposal_ids )
-    if to_purge.any?
-      puts "Purging old dead proposals: #{to_purge.map(&:ext_id)}"
-      to_purge.map(&:destroy)
-    end
+    # to_purge = @chain.governance_proposals.where.not( ext_id: tracked_proposal_ids )
+    # if to_purge.any?
+    #   puts "Purging old dead proposals: #{to_purge.map(&:ext_id)}"
+    #   to_purge.map(&:destroy)
+    # end
 
     ProgressReport.instance.report
   end
