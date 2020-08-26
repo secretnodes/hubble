@@ -4,7 +4,6 @@ class Common::ValidatorSyncService
   end
 
   def update_history_height!
-    puts @chain.valid?
     @chain.update! history_height: @chain.latest_local_height
   end
 
@@ -52,6 +51,8 @@ class Common::ValidatorSyncService
                 existing_validators[new_addr] = v
               elsif ENV['DEBUG']
                 puts "Invalid validator found: #{new_addr.inspect}\nALL: #{all_addresses.inspect}\nTO CREATE: #{to_create.inspect}\n\n"
+              else
+                v.destroy
               end
             end
           end

@@ -17,7 +17,7 @@ class SendAlertsWorker
     end
   ensure
     workers = Sidekiq::Workers.new
-    if workers.select { |w| w[2]['payload']['class'] == 'SendAlertsWorker' }.size < 2
+    if workers.select { |w| w[2]['payload']['class'] == 'SendAlertsWorker' }.size < 4
       SendAlertsWorker.perform_in(1.second, time_frame)
     end
   end
