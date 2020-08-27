@@ -80,6 +80,8 @@ GEM
     buftok (0.2.0)
     builder (3.2.4)
     byebug (10.0.2)
+    cable_ready (4.3.0)
+      rails (>= 5.2)
     capistrano (3.13.0)
       airbrussh (>= 1.0.0)
       i18n
@@ -285,6 +287,11 @@ GEM
     sshkit (1.21.0)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
+    stimulus_reflex (3.2.3)
+      cable_ready (>= 4.1.2)
+      nokogiri
+      rack
+      rails (>= 5.2)
     thor (1.0.1)
     thread_safe (0.3.6)
     tilt (2.0.8)
@@ -377,6 +384,7 @@ DEPENDENCIES
   sass-rails (~> 5.0)
   sidekiq
   skylight
+  stimulus_reflex (~> 3.2)
   twitter
   typhoeus
   unicorn

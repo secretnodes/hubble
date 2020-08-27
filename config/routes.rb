@@ -40,6 +40,7 @@ Rails.application.routes.draw do
         get :halted
         get :prestart
         post :broadcast
+        get :info_cards
       end
 
       resources :events, only: %i{ index show }
