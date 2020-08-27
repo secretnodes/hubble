@@ -37,7 +37,7 @@ module Blocklike
   def transaction_objects
     return [] if transactions.nil?
     begin
-      transactions.map { |hash| chain.namespace::TransactionDecorator.new(chain, hash) }
+      transactions.map { |hash| chain.namespace::TransactionDecorator.new(chain, hash, hash.hash_id) }
     rescue
       nil
     end

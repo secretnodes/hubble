@@ -54,7 +54,7 @@ class Common::AccountDecorator
     return nil if @_delegation_transactions.nil?
 
     @_delegation_transactions
-      .map { |dt| @chain.namespace::TransactionDecorator.new( @chain, dt ) }
+      .map { |dt| @chain.namespace::TransactionDecorator.new( @chain, dt, dt.hash_id) }
       .reject(&:error?)
   end
 
