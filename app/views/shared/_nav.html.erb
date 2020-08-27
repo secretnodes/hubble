@@ -18,12 +18,14 @@
       <span class='navbar-toggler-icon'></span>
     </button>
     <div class='collapse navbar-collapse' id='navbarNavDropdown'>
-      <ul class='navbar-nav ml-auto'>
+      <ul class='navbar-nav'>
         <% if @chain -%>
 
           <% if current_user && current_user.wallets.first.present? %>
             <li class='address-nav'>
-              <span class='public-address'><%= image_tag 'secret_logo.png', class: 'secret-logo'%> | <%= current_user.wallets.first.public_address %></span>
+              <span class='public-address'><%= image_tag 'secret_logo.png', class: 'secret-logo'%> | <%= truncate(current_user.wallets.first.public_address) %>
+                <button class='btn btn-link btn-tiny copy-button' data-hash='<%= current_user.wallets.first.public_address %>'><span class='fas fa-copy'></span></button>
+              </span>
             </li>
             <li class='sep'>|</li>
           <% end %>
@@ -70,13 +72,16 @@
             <li class='sep'>|</li>
           <% end -%>
 
+          <li class='nav-item'>
+            <a class='nav-link' href='<%= wallets_path %>'>Wallets</a>
+          </li>
+
           <li class='nav-item dropdown'>
             <a class='nav-link dropdown-toggle' href='#' id='account-menu-link' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' aria-labelledby='account-menu-link'>
               Account
             </a>
             <div class='dropdown-menu' aria-labelledby='account-menu-link'>
               <a class='dropdown-item' href='<%= settings_users_path %>'>Settings</a>
-              <a class='dropdown-item' href='<%= wallets_path %>'>Wallets</a>
               <a class='dropdown-item' href='<%= logout_path %>'>Logout</a>
             </div>
           </li>
