@@ -1,5 +1,5 @@
 <header class='network-chain-header'>
-  <div class='buttons ml-auto'>
+  <div class='buttons ml-auto d-flex flex-wrap'>
     <% if @chain -%>
       <% if current_admin -%>
         <a class='ml-1 btn btn-info' href='<%= namespaced_path( admin: true ) %>'>
@@ -8,28 +8,28 @@
         </a>
       <% end -%>
       <% if defined?(faucet_link) && @chain.faucet && @chain.faucet.enabled? -%>
-        <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'faucet' ) %>'>Faucet</a>
+        <a class='ml-1 mb-1 btn btn-outline-primary' href='<%= namespaced_path( 'faucet' ) %>'>Faucet</a>
       <% end -%>
       <% if defined?(accounts_link) %>
-        <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'accounts' ) %>'>Accounts</a>
+        <a class='ml-1 mb-1 btn btn-outline-primary' href='<%= namespaced_path( 'accounts' ) %>'>Accounts</a>
       <% end %>
       <% if defined?(swaps_link) %>
-        <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'swaps' ) %>'>Swaps</a>
+        <a class='ml-1 mb-1 btn btn-outline-primary' href='<%= namespaced_path( 'swaps' ) %>'>Swaps</a>
       <% end %>
       <% if defined?(transactions_link) -%>
-        <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'transactions' ) %>'>Transactions</a>
+        <a class='ml-1 mb-1 btn btn-outline-primary' href='<%= namespaced_path( 'transactions' ) %>'>Transactions</a>
       <% end -%>
       <% if defined?(events_link) -%>
-        <a class='ml-1 btn btn-outline-primary' href='<%= namespaced_path( 'events' ) %>'>Events</a>
+        <a class='ml-1 mb-1 btn btn-outline-primary' href='<%= namespaced_path( 'events' ) %>'>Events</a>
       <% end -%>
       <% if defined? governance_link -%>
-        <a class='btn btn-outline-secondary ml-1' href='<%= namespaced_path( 'governance_root' ) %>'>
+        <a class='btn btn-outline-secondary ml-1 mb-1' href='<%= namespaced_path( 'governance_root' ) %>'>
           <span class='d-none d-md-inline'>Proposals</span>
           <span class='d-inline d-md-none fa fa-chevron-left'></span>
         </a>
       <% end -%>
       <% if defined? summary_link -%>
-        <a class='ml-1 btn btn-outline-secondary' href='<%= namespaced_path %>'>
+        <a class='ml-1 btn btn-outline-secondary mb-1' href='<%= namespaced_path %>'>
           <span class='d-none d-md-inline'>Summary</span>
           <span class='d-inline d-md-none fa fa-arrow-circle-up'></span>
         </a>
