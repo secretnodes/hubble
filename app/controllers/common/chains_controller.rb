@@ -72,4 +72,8 @@ class Common::ChainsController < Common::BaseController
     Rails.logger.error "\n\nBROADCAST RESULT: #{r.inspect}\n\n"
     render json: { ok: ok }.merge(r)
   end
+
+  def info_cards
+    render partial: 'info_cards', chain: @chain, latest_block: @latest_block
+  end
 end

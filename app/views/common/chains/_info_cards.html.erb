@@ -1,0 +1,57 @@
+
+<% if @chain.total_supply.present? %>
+  <div class='card'>
+    <h5 class='card-header'>Total Supply</h5>
+    <div class='card-body'>
+      <div><%= format_amount( @chain.total_supply, @chain, denom: 'uscrt' ) %></div>
+    </div>
+  </div>
+<% end %>
+
+<% if @chain.governance_params_synced? -%>
+  <div class='card'>
+    <h5 class='card-header'>Governance</h5>
+    <div class='card-body'>
+      <div>
+        <label class='d-inline'>Total Proposals:</label>
+        <div class='stat-value d-inline'>
+          <span class='technical'><%= @chain.governance_proposals.count %></span>
+        </div>
+      </div>
+      <div>
+        <label class='d-inline'>Pending Proposals:</label>
+        <div class='stat-value d-inline'>
+          <span class='technical'><%= @chain.governance_proposals.voting_open.count %></span>
+        </div>
+      </div>
+
+      <div class='mt-3'>
+        <%= link_to 'View Proposals', namespaced_path( 'governance_root' ), class: 'btn btn-outline-secondary btn-sm d-block' %>
+      </div>
+    </div>
+  </div>
+<% end -%>
+
+<div class='card'>
+  <h5 class='card-header'>Current Block</h5>
+  <div class='card-body'>
+    <a class='large-number'>
+      <span class='technical'><%= @latest_block.height %></span>
+    </a>
+    <div class='sub-info'>
+      <small class='text-muted technical'><%= @latest_block.timestamp.strftime('%Y-%m-%d %H:%M %Z') %></small>
+      <small class='text-muted'><%= time_ago_in_words( @latest_block.timestamp, true ) %> ago</small>
+    </div>
+  </div>
+</div>
+
+<% if @chain.community_pool -%>
+  <div class='card'>
+    <h5 class='card-header'>Community Pool</h5>
+    <div class='card-body'>
+      <% @chain.community_pool.each do |balance| -%>
+        <div><%= format_amount( balance['amount'], @chain, denom: balance['denom'] ) %></div>
+      <% end -%>
+    </div>
+  </div>
+<% end -%>
