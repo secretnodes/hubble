@@ -21,7 +21,7 @@
     "core-js": "^3.6.5",
     "crypto-js": "^4.0.0",
     "datatables": "^1.10.13",
-    "elliptic": "^6.5.2",
+    "elliptic": "^6.5.3",
     "font-awesome": "^4.7.0",
     "jquery": "^3.5.1",
     "ledger-cosmos-js": "^2.1.7",
