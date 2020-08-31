@@ -27,7 +27,7 @@
             <%= render partial: event.to_partial_path, locals: { event: event, icon_classes: icon_classes } %>
           </div>
           <div class='timestamp ml-md-auto text-sm text-muted ml-md-3 mt-2 mt-md-0 text-nowrap text-md-right'>
-            <a href='<%= namespaced_path( 'event', event ) %>'>
+            <a href='<%= namespaced_path( 'event', {id: event.id, type: event.type}) %>'>
               <% date_string = event.timestamp.strftime("%B %d, %Y") -%>
               <% time_string = event.timestamp.strftime("at %H:%M %Z") -%>
               <div class='d-inline d-md-block'><%= date_string %></div>

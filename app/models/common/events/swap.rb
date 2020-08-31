@@ -8,10 +8,10 @@ class Common::Events::Swap < Common::Event
   end
 
   def twitter_msg
-    "#{accountlike.public_address} swapped #{amount} ENG for SCRT. #{namespaced_path('transaction', transactionlike.hash_id)}"
+    "#{accountlike.address} swapped #{amount} ENG for SCRT."
   end
 
   def page_title
-    "#{accountlike.public_address} swapped #{amount} ENG for SCRT. #{namespaced_path('transaction', transactionlike.hash_id)}"
+    "#{accountlike.address} swapped #{amount} ENG for SCRT."
   end
 end

@@ -8,7 +8,7 @@ class Common::EventsController < Common::BaseController
     events = (@chain.events + @chain.validator_events).sort_by { |e| -e.timestamp.to_i }
 
     if params[:validator] && (@validator = @chain.validators.find_by( address: params[:validator] ))
-      events = events.where( validatorlike: @validator )
+      events = events.select{ |e| e.validatorlike_id == @validator.id }
       page_title @chain.network_name, @chain.name, "Events for #{@validator.long_name}"
       meta_description "Validator events for #{@validator.name_and_owner} on #{@chain.network_name} - #{@chain.name}"
     else
@@ -21,8 +21,11 @@ class Common::EventsController < Common::BaseController
   end
 
   def show
-    @event = @chain.events.find params[:id]
-    @validator = @event.validatorlike
+    @event = params[:type].constantize.find params[:id]
+
+    if @event.type.include?("Common::ValidatorEvents")
+      @validator = @event.validatorlike
+    end
     page_title @chain.network_name, @chain.name, @event.page_title
     meta_description @event.page_title
   end
