@@ -10,7 +10,8 @@ module Chainlike
     has_many :validators, class_name: "#{namespace}::Validator", dependent: :delete_all
     has_many :transactions, class_name: "#{namespace}::Transaction", dependent: :delete_all
 
-    has_many :events, as: :chainlike, class_name: 'Common::ValidatorEvent', dependent: :delete_all
+    has_many :validator_events, as: :chainlike, class_name: 'Common::ValidatorEvent', dependent: :delete_all
+    has_many :events, as: :chainlike, class_name: "Common::Event", dependent: :delete_all
     has_many :latches, as: :chainlike, class_name: 'Common::ValidatorEventLatch', dependent: :delete_all
 
     has_many :average_snapshots, as: :chainlike, class_name: 'Stats::AverageSnapshot', dependent: :delete_all
@@ -76,14 +77,30 @@ module Chainlike
     end
   end
 
-  def get_event_height( defn_id )
+  def get_validator_event_height( defn_id )
     defn = self.validator_event_defs.find { |defn| defn['unique_id'] == defn_id }
     defn ? (defn['height'] || 0) : 0
   end
 
-  def set_event_height!( defn_id, height )
+  def set_validator_event_height!( defn_id, height )
     self.validator_event_defs_will_change!
     self.validator_event_defs = self.validator_event_defs.map do |defn|
+      if defn['unique_id'] == defn_id
+        defn['height'] = height
+      end
+      defn
+    end
+    self.save!
+  end
+
+  def get_event_height( defn_id )
+    defn = event_defs.find { |defn| defn['unique_id'] == defn_id }
+    defn ? (defn['height'] || 0) : 0
+  end
+
+  def set_event_height!( defn_id, height )
+    self.event_defs_will_change!
+    self.event_defs = self.event_defs.map do |defn|
       if defn['unique_id'] == defn_id
         defn['height'] = height
       end

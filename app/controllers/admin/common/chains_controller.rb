@@ -64,9 +64,10 @@ class Admin::Common::ChainsController < Admin::BaseController
         %i{
           sdk_version notes
           gaiad_host rpc_port lcd_port primary disabled dead
-          validator_event_defs use_ssl_for_lcd
+          validator_event_defs use_ssl_for_lcd event_defs
         },
         validator_event_defs: %i{ unique_id kind n m height },
+        event_defs: %i{ unique_id kind height },
         twitter_events_config: @chain.class::TWITTER_CONFIG_FIELDS
       )
     else

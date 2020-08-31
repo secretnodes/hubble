@@ -21,6 +21,10 @@ module Transactionlike
 
   def to_param; hash_id.to_s; end
 
+  def swap?
+    transaction_type == :swap
+  end
+
   module ClassMethods
     def convert_transaction_type( raw_type )
       sanitized = raw_type.sub( /^cosmos-sdk\//, '' )

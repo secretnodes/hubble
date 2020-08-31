@@ -1,0 +1,10 @@
+<div>
+  <span class='d-inline d-md-none <%= icon_classes %> mr-1'></span>
+  <span class='font-weight-bold'>
+      <a href='<%= namespaced_path( 'account', event.accountlike.address ) %>'><%= event.accountlike.address %></a> swapped
+    <span class='technical'><%= format_amount(event.data['amount'], @chain, denom: 'eng', hide_units: true, in_millions: true) %></span> ENG for SCRT.
+  </span>
+  <span class='text-muted'>
+    <a class='technical' href='<%= namespaced_path( 'transaction', event.transactionlike ) %>'><%= event.transactionlike.hash_id %></a>
+  </span>
+</div>

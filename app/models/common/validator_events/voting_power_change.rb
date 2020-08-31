@@ -1,7 +1,7 @@
 class Common::ValidatorEvents::VotingPowerChange < Common::ValidatorEvent
   def icon_name; 'battery-half'; end
 
-  THRESHOLD = 0.5 / 100.0
+  THRESHOLD = 0.1 / 100.0
 
   class << self
     def validator_removed_from_active_set_in_same_block?
