@@ -61,6 +61,16 @@ class ChainSyncWorker
         end
 
         begin
+          log.set_status 'events'
+          chain = chain.namespace::Chain.find chain.id
+          es = chain.namespace::EventsService.new(chain)
+          es.run!
+        rescue
+          log.report_error $!
+          log.end && next if $!.is_a?(chain.namespace::SyncBase::CriticalError)
+        end
+
+        begin
           log.set_status 'stats'
           stats = chain.namespace::AverageSnapshotsGeneratorService.new( chain )
           stats.generate_block_time_snapshots!

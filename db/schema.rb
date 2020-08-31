@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_18_011612) do
+ActiveRecord::Schema.define(version: 2020_08_28_042138) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -43,6 +43,27 @@ ActiveRecord::Schema.define(version: 2020_08_18_011612) do
     t.index ["alertable_type", "alertable_id"], name: "index_alert_subscriptions_on_alertable_type_and_alertable_id"
     t.index ["user_id", "alertable_type", "alertable_id"], name: "index_alerts_u_a"
     t.index ["user_id"], name: "index_alert_subscriptions_on_user_id"
+  end
+
+  create_table "common_events", force: :cascade do |t|
+    t.string "type"
+    t.bigint "height"
+    t.datetime "timestamp"
+    t.integer "chainlike_id"
+    t.integer "validatorlike_id"
+    t.jsonb "data"
+    t.string "chainlike_type"
+    t.string "validatorlike_type"
+    t.string "accountlike_type"
+    t.integer "accountlike_id"
+    t.string "proposallike_type"
+    t.integer "proposallike_id"
+    t.string "votelike_type"
+    t.integer "votelike_id"
+    t.string "transactionlike_type"
+    t.integer "transactionlike_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "common_validator_event_latches", force: :cascade do |t|
@@ -760,6 +781,7 @@ ActiveRecord::Schema.define(version: 2020_08_18_011612) do
     t.datetime "updated_at", null: false
     t.bigint "total_supply"
     t.datetime "last_balance_sync"
+    t.jsonb "event_defs"
   end
 
   create_table "secret_faucets", force: :cascade do |t|

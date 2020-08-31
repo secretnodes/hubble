@@ -25,7 +25,7 @@ class Common::ValidatorEventsService
   end
 
   def run_n_consecutive!( defn_id, n )
-    from = @chain.get_event_height( defn_id )+1
+    from = @chain.get_validator_event_height( defn_id )+1
     to = @chain.latest_local_height
 
     if to < from
@@ -88,7 +88,7 @@ class Common::ValidatorEventsService
           latch.save! if latch.changed?
         end
 
-        @chain.set_event_height! defn_id, block.height
+        @chain.set_validator_event_height! defn_id, block.height
       end
 
       ProgressReport.instance.report
@@ -96,7 +96,7 @@ class Common::ValidatorEventsService
   end
 
   def run_n_of_m!( defn_id, n, m )
-    from = @chain.get_event_height( defn_id )+1
+    from = @chain.get_validator_event_height( defn_id )+1
     to = @chain.latest_local_height
 
     if to < from
@@ -159,7 +159,7 @@ class Common::ValidatorEventsService
           latch.save! if latch.changed?
         end
 
-        @chain.set_event_height! defn_id, block.height
+        @chain.set_validator_event_height! defn_id, block.height
       end
 
       ProgressReport.instance.report
@@ -167,7 +167,7 @@ class Common::ValidatorEventsService
   end
 
   def run_voting_power_change!( defn_id )
-    from = @chain.get_event_height( defn_id )+1
+    from = @chain.get_validator_event_height( defn_id )+1
     to = @chain.latest_local_height
 
     if to < from
@@ -245,7 +245,7 @@ class Common::ValidatorEventsService
           end
         end
 
-        @chain.set_event_height! defn_id, block.height
+        @chain.set_validator_event_height! defn_id, block.height
       end
 
       ProgressReport.instance.report
@@ -253,7 +253,7 @@ class Common::ValidatorEventsService
   end
 
   def run_active_set_inclusion!( defn_id )
-    from = @chain.get_event_height( defn_id )+1
+    from = @chain.get_validator_event_height( defn_id )+1
     to = @chain.latest_local_height
 
     if to < from
@@ -307,7 +307,7 @@ class Common::ValidatorEventsService
           end
         end
 
-        @chain.set_event_height! defn_id, block.height
+        @chain.set_validator_event_height! defn_id, block.height
         prev_block = block
       end
 
