@@ -10,8 +10,6 @@ class SwapHistory {
     const data = App.seed.SWAP_HISTORY
     const format = 'MMM D'
 
-    console.log(Object.keys(data));
-
     new Chart( this.target.get(0), {
       type: 'line',
       data: {

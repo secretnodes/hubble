@@ -1,72 +1,20 @@
 <% content_for :body_class, 'block-show' -%>
+<% if @type == "swaps"
+  locals = { summary_link: true, transactions_link: true, accounts_link: true }
+  url = "#{namespaced_path( 'swaps', partial: true, page: @page, chain: @chain )}"
+ else
+  locals = { summary_link: true, swaps_link: true, accounts_link: true }
+  url = "#{namespaced_path( 'transactions', partial: true, page: @page, chain: @chain )}"
+ end
+ %>
 
-<%= render partial: '/common/shared/chain_header', locals: { summary_link: true, swaps_link: true, accounts_link: true } %>
+<%= render partial: '/common/shared/chain_header', locals: locals %>
 
-<div class='row'>
-  <div class="col-12">
-    <div class='transactions-table-header'>
-      <h4>
-        Transactions
-        <small>&nbsp;&mdash; <%= @transactions_total %> total&nbsp;</small>
-      </h4>
-    </div>
-
-    <div class='transactions-table'>
-      <table data-empty='<%= @decorated_txs.nil? || @decorated_txs.empty? %>'>
-        <thead>
-          <tr>
-            <th>Activity</th>
-            <th>Timestamp</th>
-            <th>Result</th>
-            <th>Chain ID</th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if @decorated_txs.nil? -%>
-            <tr>
-              <td class='p-3 text-center' colspan='5'>Unable to retrieve transaction data.</td>
-            </tr>
-          <% elsif @decorated_txs.empty? -%>
-            <tr>
-              <td class='p-3 text-center' colspan='5'>No transactions in this block.</td>
-            </tr>
-          <% end -%>
-
-          <% @decorated_txs.each do |tr| -%>
-            <tr>
-              <td>
-                <% tr.messages.each do |msg| -%>
-                  <div class="pb-2">
-                    <%= msg.humanize_message_short %>
-                  </div>
-                <% end -%>
-              </td>
-              <td data-order=<%= tr.timestamp.to_datetime.strftime("%Y-%m-%d %H:%I") %>>
-                <%= tr.time_ago %>
-              </td>
-              <td data-order='<%= tr.error? ? 'error' : 'success' %>'>
-                <% if tr.error? -%>
-                  <span class='badge badge-danger' data-toggle='tooltip' title='<%= tr.error_message %>'>ERROR</span>
-                <% else -%>
-                  <span class='badge badge-success'>SUCCESS</span>
-                <% end -%>
-              </td>
-              <td data-order='<%= tr.chain_id %>'>
-                <div class="pb-2">
-                  <%= link_to tr.chain_id, namespaced_path( nil, @chain ), class: 'badge badge-pill badge-dark text-uppercase mb-3', style: 'cursor: pointer'%>
-                </div>
-              </td>
-              <td class='text-right'>
-                <a class='btn btn-outline-primary btn-sm' href='<%= namespaced_path( 'block_transaction', tr.height, tr ) %>'>Details...</a>
-              </td>
-            </tr>
-          <% end -%>
-        </tbody>
-      </table>
-      <div class='mt-4'>
-        <%= will_paginate @transactions, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-      </div>
-    </div>
-  </div>
+<div
+  class="transactions-table-container"
+  data-controller="transaction-refresher"
+  data-transaction-refresher-url="<%= url %>"
+  data-transaction-refresher-refresh-interval="30000"
+>
+  <%= render partial: 'transactions_table', locals: { transactions: @transactions, decorated_txs: @decorated_txs, transactions_total: @transactions_total, type: @type, page: @page }%>
 </div>
