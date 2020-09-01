@@ -2,6 +2,7 @@ import { Controller } from "stimulus"
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'datatables/media/js/jquery.dataTables.min';
 import '../javascripts/components/common/transactions-table';
+import '../javascripts/components/common/accounts-table';
 import '../javascripts/components/common/swap-history';
 
 export default class extends Controller {
@@ -22,7 +23,12 @@ export default class extends Controller {
       .then(response => response.text())
       .then(html => {
         this.element.innerHTML = html
-        new App.Common.TransactionsTable( $('.transactions-table') ).render();
+
+        if ( $('.account-header').length == 1 ) {
+          new App.Common.AccountsTable( $('.transactions-table') ).render();
+        } else {
+          new App.Common.TransactionsTable( $('.transactions-table') ).render();
+        }
 
         if ( $('.swap-history-chart').html() != undefined ) {
           new App.Common.SwapHistory( $(`.swap-history-chart`) ).render()

@@ -1,0 +1,31 @@
+<div class="col-12">
+  <div class='transactions-table-header'>
+    <h4 class="account-header">
+      Accounts
+      <small>Last Updated: <%= time_ago_in_words(chain.last_balance_sync) %> ago</small>
+    </h4>
+  </div>
+
+  <div class='transactions-table'>
+    <table data-empty='<%= accounts.nil? || accounts.empty? %>'>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Address</th>
+          <th>Quantity(SCRT)</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% accounts.each_with_index do |account, i| %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td data-order=<%= account.address %>><%= link_to account.address, namespaced_path( 'account', account.address ) %></td>
+          <td data-order=<%= account.total_balance %>><%= format_amount(account.total_balance, chain, denom: 'uscrt') %></td>
+          <td data-order=<%= (account.total_balance / chain.total_supply.to_f) * 100 %>><%= ((account.total_balance / chain.total_supply.to_f) * 100).round(5)%>%</td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
