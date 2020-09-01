@@ -3,6 +3,7 @@ class Common::EventsService
     swaps
     proposals
     votes
+    deposits
   }
 
   def initialize( chain )
@@ -118,6 +119,38 @@ class Common::EventsService
     end
   end
 
+  def run_deposits!(defn_id)
+    from = @chain.get_event_height( defn_id )+1
+    deposits = Secret::Transaction.deposit.where('height > ?', from).reverse
+    
+    deposits.each do |deposit|
+      begin
+        account = @chain.namespace::Account.find_by_address(deposit.message[0]['value']['depositor'])
+        Common::Events::Deposit.create!(
+          chainlike: deposit.chain,
+          accountlike: account,
+          transactionlike: deposit,
+          proposallike: deposit.proposal,
+          height: deposit.height,
+          timestamp: deposit.timestamp,
+          data: { amount: deposit.message[0]['value']['amount'][0]['amount'] },
+          type: 'Common::Events::Deposit',
+          chainlike_type: 'Secret::Chain',
+          accountlike_type: 'Secret::Account',
+          transactionlike_type: 'Secret::Transaction',
+          proposallike_type: 'Secret::Governance::Proposal'
+        )
+
+        @chain.set_event_height! defn_id, deposit.height
+      rescue StandardError => e
+        puts "#{deposit.height}: #{e}"
+      ensure
+        @chain.set_event_height! defn_id, deposit.height
+        next
+      end
+    end
+  end
+
   private
 
   def defn_params( defn )
@@ -125,6 +158,7 @@ class Common::EventsService
     when 'swaps' then [ defn['unique_id'] ]
     when 'proposals' then [ defn['unique_id'] ]
     when 'votes' then [ defn['unique_id'] ]
+    when 'deposits' then [ defn['unique_id'] ]
     end
   end
 
@@ -133,6 +167,7 @@ class Common::EventsService
     when 'swaps' then true
     when 'proposals' then true
     when 'votes' then true
+    when 'deposits' then true
     else
       false
     end

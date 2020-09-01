@@ -14,6 +14,6 @@ class Common::Events::Vote < Common::Event
   end
 
   def page_title
-    "#{accountlike.address} voted #{data['message']['option']} on Proposal #{proposallike.ext_id} #{proposallike.title}."
+    "#{accountlike.address} voted #{data['message']['option']} on Proposal #{proposallike.ext_id}: #{proposallike.title}."
   end
 end
