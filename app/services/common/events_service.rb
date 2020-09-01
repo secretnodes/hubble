@@ -2,6 +2,7 @@ class Common::EventsService
   EVENT_ORDER = %w{
     swaps
     proposals
+    votes
   }
 
   def initialize( chain )
@@ -85,12 +86,45 @@ class Common::EventsService
     end
   end
 
+  def run_votes!(defn_id)
+    from = @chain.get_event_height( defn_id )+1
+    votes = Secret::Transaction.vote.where('height > ?', from).reverse
+    
+    votes.each do |vote|
+      begin
+        account = @chain.namespace::Account.find_by_address(vote.message[0]['value']['voter'])
+        Common::Events::Vote.create!(
+          chainlike: vote.chain,
+          accountlike: account,
+          transactionlike: vote,
+          proposallike: vote.proposal,
+          height: vote.height,
+          timestamp: vote.timestamp,
+          data: { message: vote.message[0]['value'] },
+          type: 'Common::Events::Vote',
+          chainlike_type: 'Secret::Chain',
+          accountlike_type: 'Secret::Account',
+          transactionlike_type: 'Secret::Transaction',
+          proposallike_type: 'Secret::Governance::Proposal'
+        )
+
+        @chain.set_event_height! defn_id, vote.height
+      rescue StandardError => e
+        puts "#{vote.height}: #{e}"
+      ensure
+        @chain.set_event_height! defn_id, vote.height
+        next
+      end
+    end
+  end
+
   private
 
   def defn_params( defn )
     case defn['kind']
     when 'swaps' then [ defn['unique_id'] ]
     when 'proposals' then [ defn['unique_id'] ]
+    when 'votes' then [ defn['unique_id'] ]
     end
   end
 
@@ -98,6 +132,7 @@ class Common::EventsService
     case defn['kind']
     when 'swaps' then true
     when 'proposals' then true
+    when 'votes' then true
     else
       false
     end
