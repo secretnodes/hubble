@@ -43,6 +43,8 @@ Rails.application.routes.draw do
         get :info_cards
       end
 
+      get '/events_table' => 'events#events_table', as: :events_table
+
       resources :events, only: %i{ index show }
 
       resources :validators, only: %i{ show } do
