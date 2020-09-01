@@ -6,7 +6,7 @@ class Common::TransactionsController < Common::BaseController
     @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr, tr.hash_id) }
     @transactions_total = @transactions.count
     @type = 'transactions'
-    binding.pry
+
     if params[:partial] == "true"
       render partial: 'transactions_table', locals: { transactions: @transactions, decorated_txs: @decorated_txs, transactions_total: @transactions_total, type: @type, page: @page }
       return
