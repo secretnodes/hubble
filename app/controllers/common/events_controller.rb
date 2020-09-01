@@ -39,7 +39,7 @@ class Common::EventsController < Common::BaseController
     end
 
     @total = events.count
-    @events = events.paginate(page: params[:page], per_page: @chain.class::EVENTS_PAGE_SIZE)
+    @events = events.paginate(page: @page, per_page: @chain.class::EVENTS_PAGE_SIZE)
 
     render partial: 'events_table', locals: { events: @events, page: @page, total: @total }
   end

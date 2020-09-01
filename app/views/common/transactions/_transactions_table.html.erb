@@ -1,13 +1,16 @@
-<% content_for :body_class, 'block-show' -%>
-<%= render partial: '/common/shared/chain_header', locals: { summary_link: true, transactions_link: true, accounts_link: true } %>
-
 <div class='row'>
   <div class="col-12">
-    <%= render partial: 'swap_graph'%>
+    <% if type == "swaps" %>
+      <%= render partial: 'swap_graph'%>
+    <% end %>
     <div class='transactions-table-header'>
       <h4>
-        Swaps
-        <small><%= @transactions_total %> total&nbsp; | <%= format_amount(@total_swap, @chain, denom: 'eng', hide_units: true, in_millions: true) %> ENG Swapped for SCRT to <%= @swap_address_count %> Addresses</small>
+        <%= type.capitalize %>
+        <small>&nbsp;&mdash; <%= @transactions_total %> total&nbsp;
+        <% if type == "swaps" %>
+          | <%= format_amount(@total_swap, @chain, denom: 'eng', hide_units: true, in_millions: true) %> ENG Swapped for SCRT to <%= @swap_address_count %> Addresses</small>
+        <% end %>
+        </small>
       </h4>
     </div>
 
@@ -65,7 +68,7 @@
         </tbody>
       </table>
       <div class='mt-4'>
-        <%= will_paginate @transactions, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+        <%= will_paginate @transactions, renderer: WillPaginate::ActionView::BootstrapLinkRenderer, params: {partial: false} %>
       </div>
     </div>
   </div>
