@@ -30,4 +30,17 @@ class Common::EventsController < Common::BaseController
     meta_description @event.page_title
   end
 
+  def events_table
+    @page = (params[:page] || 1).to_i
+    events = (@chain.events + @chain.validator_events).sort_by { |e| -e.timestamp.to_i }
+
+    if params[:validator] && (@validator = @chain.validators.find_by( address: params[:validator] ))
+      events = events.select{ |e| e.validatorlike_id == @validator.id }
+    end
+
+    @total = events.count
+    @events = events.paginate(page: params[:page], per_page: @chain.class::EVENTS_PAGE_SIZE)
+
+    render partial: 'events_table', locals: { events: @events, page: @page, total: @total }
+  end
 end
