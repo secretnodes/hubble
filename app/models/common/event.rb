@@ -29,7 +29,7 @@ class Common::Event < ApplicationRecord
 
     begin
       r = Router.new
-      msg = "#{twitter_msg} - #{r.namespaced_path( 'event', self, chain: chainlike, full: true )}"
+      msg = "#{twitter_msg} - #{r.namespaced_path( 'event', id: id, type: type, chain: chainlike, full: true )}"
 
       tc = chainlike.twitter_events_config
       client = Twitter::REST::Client.new do |config|
