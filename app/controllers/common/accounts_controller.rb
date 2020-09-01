@@ -3,7 +3,9 @@ class Common::AccountsController < Common::BaseController
 
   def index
     @accounts = @chain.accounts.order('total_balance DESC')
-
+    if params[:partial] == "true"
+      render partial: 'accounts_table', locals: { accounts: @accounts, chain: @chain }
+    end
   end
 
   def show
