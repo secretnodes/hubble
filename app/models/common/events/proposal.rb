@@ -14,6 +14,6 @@ class Common::Events::Proposal < Common::Event
   end
 
   def page_title
-    "#{accountlike.address} submitted Proposal #{proposallike.ext_id} #{proposallike.title}."
+    "#{accountlike.address} submitted Proposal #{proposallike.ext_id}: #{proposallike.title}."
   end
 end
