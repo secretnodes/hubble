@@ -106,6 +106,8 @@ class SendModal {
   newSend() {
     this.modal.find('.modal-dialog').addClass('modal-lg')
 
+    this.toAddress = this.modal.find('.to-address').val();
+
     this.modal.find('.to-address').on( 'change', ( e ) => {
       this.toAddress = $(e.currentTarget).val();
       this.validateSendForm(e);
@@ -241,7 +243,7 @@ class SendModal {
 
   validateSendForm( e ) {
     const amount = parseFloat( this.modal.find('.send-amount').val() )
-    
+
     if( isNaN( amount ) ) {
       this.modal.find('.amount-warning').hide()
       this.modal.find('.amount-error').hide()

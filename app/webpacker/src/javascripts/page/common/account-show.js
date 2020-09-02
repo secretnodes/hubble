@@ -1,7 +1,8 @@
 $(document).ready( function() {
   if( !_.includes(App.mode, 'account-show') ) { return }
 
-  new App.Common.DelegationsTable( $('.delegations-table') ).render()
+  new App.Common.DelegationsTable( $('.delegations-table') ).render();
+  new App.Common.SendModal( $('#send-modal') );
 
   const table = $('.transactions-table').find('table')
   const isEmpty = table.data('empty')

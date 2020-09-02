@@ -38,3 +38,4 @@ import './components/common/delegation-modal';
 import './components/common/gov-proposal-submit-modal';
 import './components/common/gov-proposal-deposit-modal';
 import './components/common/gov-proposal-vote-modal';
+import './components/common/send-modal';
