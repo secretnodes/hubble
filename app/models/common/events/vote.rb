@@ -10,7 +10,7 @@ class Common::Events::Vote < Common::Event
 
   def twitter_msg
     r = Router.new
-    "#{accountlike.address} voted #{data['message']['option']} on Proposal #{proposallike.ext_id}: #{proposallike.title}. #{r.namespaced_path( 'governance_proposal', id: proposallike_id, chain: chainlike, full: true )}"
+    "#{accountlike.address} voted #{data['message']['option']} on Proposal #{proposallike.ext_id}: #{proposallike.title}. #{r.namespaced_path( 'governance_proposal', id: proposallike.ext_id, chain: chainlike, full: true )}"
   end
 
   def page_title
