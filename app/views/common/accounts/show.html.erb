@@ -2,9 +2,12 @@
 
 <%= render partial: '/common/shared/chain_header', locals: { summary_link: true, accounts_link: true, transactions_link: true, swaps_link: true } %>
 
-<h2 class='mb-0'>
-  <label class='text-muted'>Account</label>
-  <span class='technical text-lg'><%= params[:id] %></span>
+<h2 class='mb-0 d-flex justify-content-between'>
+  <div>
+    <label class='text-muted'>Account</label>
+    <span class='technical text-lg'><%= params[:id] %></span>
+  </div>
+  <button class='btn btn-outline-primary px-5 mr-5 mb-2' data-toggle='modal' data-target='#send-modal'>Send</button>
 </h2>
 <% if @found_account && @found_account.validator -%>
   <h5 class='mb-4'>
@@ -62,4 +65,19 @@
       <%= render partial: 'transactions' %>
     </div>
   </div>
+  <% content_for :modals do -%>
+    <%= render partial: '/shared/wallet_modals/send_modal', locals: { chain: @chain, validators: @validators, to_address: @account.address } %>
+  <% end %>
 <% end -%>
+
+<script>
+  <% if current_user.present? %>
+    App.config.userId = '<%= current_user.present? ? current_user.id : nil %>';
+    App.config.walletPresent = <%= current_user.wallets.present? %>;
+    App.config.accountIndex = <%= current_user.wallets.first.present? ? current_user.wallets.first.account_index : 0 %>;
+    App.config.chainId = '1';
+  <% end %>
+  App.config.addressInfoPathTemplate = '<%= namespaced_path( 'account', 'ADDRESS' ) %>';
+  App.config.broadcastTxPath = '<%= namespaced_path( 'broadcast', pre_path: true ) %>';
+  App.config.viewTxPath = '<%= namespaced_path( 'transaction', 'TRANSACTION_HASH' ) %>';
+</script>
