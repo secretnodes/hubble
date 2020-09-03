@@ -56,30 +56,9 @@ module ApplicationHelper
   def current_ip
     request.try(:remote_ip)
   end
-  def current_user
-    @current_user
-  end
-
-  def get_user
-    if session[:masq]
-      if session[:masq].to_i < Time.now.to_i
-        session.delete :masq
-        session.delete :uid
-      else
-        logger.debug "LOGIN-AS: you had #{session[:masq].to_i - Time.now.to_i} seconds remaining"
-        session[:masq] = User::MASQ_TIMEOUT.from_now.to_i
-      end
-    end
-    if session.has_key?(:uid) && @current_user.nil?
-      @current_user = User.find_by_id(session[:uid])
-      @current_user = nil if @current_user.try(:deleted?)
-      if @current_user && !session[:masq]
-        # dont bother parsing ua here, just on login
-        @current_user.update_for_request( ua: nil, ip: current_ip )
-      end
-      logger.debug "#{session[:masq] ? 'Masquerading' : 'Authenticated'} as #{@current_user.try(:email).inspect}"
-    end
-  end
+  # def current_user
+  #   @current_user
+  # end
 
   def require_user( user=nil )
     unless current_user && (user.nil? || current_user.id == user.id)
@@ -88,7 +67,7 @@ module ApplicationHelper
         return false
       else
         flash[:error] = "We couldn't show you that page for some reason. You might have been logged out, so login below and try again."
-        redirect_to login_path( return_path: request.fullpath )
+        redirect_to sign_in_path
         return false
       end
     end

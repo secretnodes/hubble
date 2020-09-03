@@ -81,17 +81,17 @@
               Account
             </a>
             <div class='dropdown-menu' aria-labelledby='account-menu-link'>
-              <a class='dropdown-item' href='<%= settings_users_path %>'>Settings</a>
-              <a class='dropdown-item' href='<%= logout_path %>'>Logout</a>
+              <a class='dropdown-item' href='<%= edit_user_registration_path %>'>Settings</a>
+              <%= link_to 'Logout', destroy_user_session_path, method: :delete, class: 'dropdown-item' %>
             </div>
           </li>
         <% else -%>
           <li class='nav-item'>
-            <a class='nav-link' href='<%= login_path %>'>Login</a>
+            <a class='nav-link' href='<%= new_user_session_path %>'>Login</a>
           </li>
           <li class='sep'>/</li>
           <li class='nav-item'>
-            <a class='nav-link' href='<%= new_user_path %>'>Signup</a>
+            <a class='nav-link' href='<%= new_user_registration_path %>'>Signup</a>
           </li>
         <% end -%>
       </ul>

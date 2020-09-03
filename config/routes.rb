@@ -1,14 +1,13 @@
 Rails.application.routes.draw do
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations',
+    passwords: 'users/passwords'
+  }
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
-  get '/login' => 'sessions#new', as: 'login'
-  post '/login' => 'sessions#create', as: 'login_submit'
-  get '/logout' => 'sessions#destroy', as: 'logout'
-  get '/password/forgot' => 'sessions#forgot_password', as: 'forgot_password'
-  post '/password/reset' => 'sessions#reset_password', as: 'reset_password'
-  get '/password/recover' => 'sessions#recover_password', as: 'recover_password'
 
-  resources :users, only: %i{ new create update } do
+  resources :users, only: %i{ update } do
     collection do
       get :welcome
       get :confirm

@@ -47,6 +47,23 @@
           <p style="margin: auto;">By using this website, you agree to our <%= link_to 'Privacy policy', privacy_policy_path %></p>
           <button class='close'>&times;</button>
         </div>
+                <% if flash[:error] -%>
+          <div class='alert alert-danger'>
+            <%= flash[:error].html_safe %>
+          </div>
+        <% end -%>
+
+        <% if flash[:notice] %>
+          <div class='alert alert-primary auto-alert-hide'>
+            <%= flash[:notice].html_safe %>
+          </div>
+        <% end -%>
+
+        <% if flash[:warning] %>
+          <div class='alert alert-warning'>
+            <%= flash[:warning].html_safe %>
+          </div>
+        <% end -%>
         <%= yield %>
       </div>
     </div>

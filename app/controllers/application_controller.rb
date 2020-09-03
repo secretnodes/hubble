@@ -6,7 +6,6 @@ class ApplicationController < ActionController::Base
   include ActionView::Helpers::DateHelper
 
   before_action :http_basic_auth if REQUIRE_HTTP_BASIC
-  before_action :get_user
 
   if !Rails.env.development?
     rescue_from StandardError,

@@ -106,6 +106,12 @@ GEM
       addressable
     curb (0.9.10)
     dalli (2.7.9)
+    devise (4.7.1)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 4.1.0)
+      responders
+      warden (~> 1.2.3)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
     dotiw (4.0.0)
@@ -186,6 +192,7 @@ GEM
     nio4r (2.5.2)
     nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
+    orm_adapter (0.5.0)
     pg (1.0.0)
     postmark (1.11.0)
       json
@@ -249,6 +256,9 @@ GEM
     redis (4.2.1)
     request_store (1.4.1)
       rack (>= 1.4)
+    responders (3.0.0)
+      actionpack (>= 5.0)
+      railties (>= 5.0)
     rinku (2.0.5)
     rollbar (2.18.0)
       multi_json
@@ -317,6 +327,8 @@ GEM
       kgio (~> 2.6)
       raindrops (~> 0.7)
     useragent (0.16.8)
+    warden (1.2.8)
+      rack (>= 2.0.6)
     web-console (3.6.2)
       actionview (>= 5.0)
       activemodel (>= 5.0)
@@ -359,6 +371,7 @@ DEPENDENCIES
   capistrano-sidekiq!
   curb
   dalli
+  devise
   dotiw
   ed25519 (~> 1.2)
   groupdate
