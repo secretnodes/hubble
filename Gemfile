@@ -56,9 +56,6 @@ gem 'webpacker', '~>5.1.1'
 
 gem 'groupdate'
 
-#monitoring software
-gem "skylight"
-
 # job queue
 gem 'sidekiq'
 
