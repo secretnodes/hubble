@@ -39,7 +39,7 @@
 <% content_for :modals do -%>
   <%= render partial: '/shared/wallet_modals/delegation_modal', locals: { chain: @chain, validators: @validators } %>
   <%= render partial: '/shared/wallet_modals/redelegation_modal', locals: { chain: @chain, validators: @validators } %>
-  <%= render partial: '/shared/wallet_modals/send_modal', locals: { chain: @chain, validators: @validators } %>
+  <%= render partial: '/shared/wallet_modals/send_modal', locals: { chain: @chain, validators: @validators, to_address: nil } %>
   <%= render partial: '/shared/wallet_modals/undelegate_modal', locals: { chain: @chain, validators: @validators } %>
 <% end -%>
 
