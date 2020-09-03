@@ -58,7 +58,7 @@
                   <label class='text-muted mb-0'>To Validator:</label>
                   <select class="form-control to-validator">
                     <option value="null" selected>Select a Validator</option>
-                    <% validators.each do |v| %>
+                    <% validators.shuffle.each do |v| %>
                       <option value="<%= v.owner %>"><%= v.long_name %></option>
                     <% end %>
                   </select>
