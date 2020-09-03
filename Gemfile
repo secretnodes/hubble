@@ -62,6 +62,9 @@ gem 'sidekiq'
 # js framework
 gem "stimulus_reflex", "~> 3.2"
 
+# authentication
+gem 'devise'
+
 group :development, :test do
   gem 'puma'
   gem 'capistrano', '~> 3.13', require: false
