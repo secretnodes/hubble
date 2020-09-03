@@ -3,7 +3,7 @@ class Util::SubscriptionsController < ApplicationController
 
   def index
     unless current_user
-      redirect_to new_user_path
+      redirect_to new_user_session_path
       return
     end
     @subscription = current_user.alert_subscriptions.where( alertable: @validator ).first
