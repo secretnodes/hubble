@@ -111,7 +111,7 @@ class GovProposalVoteModal {
 
     this.modal.find('.modal-dialog').addClass('modal-lg')
     this.modal.find('.step-proposal-vote')
-      .find('.account-balance').text( `${this.wallet.accountBalance} ${App.config.denom}` ).end()
+      .find('.account-balance').text( `${this.wallet.scaledBalance} ${App.config.denom}` ).end()
       .find('.account-address').html( this.wallet.publicAddress ).end()
       .find('.transaction-fee').text( `${this.transactionFee()} ${App.config.denom}` ).end()
       .show()
