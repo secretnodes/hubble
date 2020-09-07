@@ -11,7 +11,7 @@ class Common::Events::Deposit < Common::Event
 
   def twitter_msg
     r = Router.new
-    "#{accountlike.address} deposited #{format_amount(amount, chainlike, denom: 'uscrt', in_millions: true, html: false)} in support of Proposal #{proposallike.ext_id}: #{proposallike.title}. #{r.namespaced_path( 'governance_proposal', id: proposallike_id, chain: chainlike, full: true )}"
+    "#{accountlike.address} deposited #{format_amount(amount, chainlike, denom: 'uscrt', in_millions: true, html: false)} in support of Proposal #{proposallike.ext_id}: #{proposallike.title}. #{r.namespaced_path( 'governance_proposal', id: proposallike.ext_id, chain: chainlike, full: true )}"
   end
 
   def page_title
