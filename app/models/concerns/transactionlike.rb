@@ -14,7 +14,9 @@ module Transactionlike
 
     enum transaction_type: [:send_token, :delegate_token, :undelegate, :redelegate, :submit_proposal,
                             :deposit, :vote, :swap, :withdraw_all_rewards, :withdraw_rewards, :withdraw_commission,
-                            :unjail, :edit_validator, :modify_withdraw_address, :create_validator]
+                            :unjail, :edit_validator, :modify_withdraw_address, :create_validator, :register, :store_contract_code,
+                            :initialize_contract, :execute_contract]
+
     validates :hash_id, uniqueness: true, presence: true
     validates :height, :transaction_type, presence: true
   end
@@ -27,7 +29,7 @@ module Transactionlike
 
   module ClassMethods
     def convert_transaction_type( raw_type )
-      sanitized = raw_type.sub( /^cosmos-sdk\//, '' )
+      sanitized = raw_type.split('/').second
       case sanitized
         when 'MsgSend' then :send_token
         when 'MsgDelegate' then :delegate_token
@@ -36,7 +38,7 @@ module Transactionlike
         when 'MsgSubmitProposal' then :submit_proposal
         when 'MsgDeposit' then :deposit
         when 'MsgVote' then :vote
-        when 'tokenswap/TokenSwap' then :swap
+        when 'TokenSwap' then :swap
         when 'MsgWithdrawValidatorRewardsAll' then :withdraw_all_rewards
         when 'MsgWithdrawDelegationReward' then :withdraw_rewards
         when 'MsgWithdrawValidatorCommission' then :withdraw_commission
@@ -44,6 +46,10 @@ module Transactionlike
         when 'MsgEditValidator' then :edit_validator
         when 'MsgModifyWithdrawAddress' then :modify_withdraw_address
         when 'MsgCreateValidator' then :create_validator
+        when 'authenticate' then :register
+        when 'MsgStoreCode' then :store_contract_code
+        when 'MsgInstantiateContract' then :initialize_contract
+        when 'MsgExecuteContract' then :execute_contract
       end
     end
 
@@ -86,7 +92,6 @@ module Transactionlike
       signature = tx['value']['signatures']
       hash_id = hash['txhash']
       timestamp = hash['timestamp']
-      msg = tx['value']['msg']
       error_message = hash['code'] ? error_message(hash['code']) : nil
       memo = tx['value']['memo']
       

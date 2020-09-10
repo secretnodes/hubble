@@ -96,7 +96,7 @@ class Common::BlockSyncService
           end
 
           if obj[:transactions].try(:any?)
-            txs = obj[:transactions].map { |hash| syncer.get_transaction(hash) }
+            txs = syncer.get_transactions("tx.minheight": height, "tx.maxheight": height )['txs']
             txs.each do |tx|
               begin
                 transaction = @chain.namespace::Transaction.assemble(@chain, created, tx)
