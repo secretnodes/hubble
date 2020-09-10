@@ -2,7 +2,7 @@ class Common::TransactionsController < Common::BaseController
 
   def index
     @page = params[:page] || 1
-    @transactions = @chain.namespace::Transaction.paginate(page: @page, per_page: 50)
+    @transactions = @chain.txs.paginate(page: @page, per_page: 50)
     @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr, tr.hash_id) }
     @transactions_total = @transactions.count
     @type = 'transactions'
@@ -15,7 +15,7 @@ class Common::TransactionsController < Common::BaseController
 
   def show
     begin
-      transaction = @chain.namespace::Transaction.find_by_hash_id params[:id]
+      transaction = @chain.txs.find_by_hash_id params[:id]
       @decorated_tx = @chain.namespace::TransactionDecorator.new( @chain, transaction, params[:id] )
       @block = @chain.blocks.find_by( height: @decorated_tx.height ) ||
                @namespace::Block.stub( @chain, @decorated_tx.height )
@@ -33,12 +33,12 @@ class Common::TransactionsController < Common::BaseController
 
   def swaps
     @page = params[:page] || 1
-    @raw_transactions = @chain.namespace::Transaction.swap
+    @raw_transactions = @chain.txs.swap
     @transactions = @raw_transactions.paginate(page: @page, per_page: 50)
     @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr, tr.hash_id) }
     @transactions_total = @transactions.count
     @swap_address_count = @chain.namespace::Transaction.swap_address_count
-    @total_swaps_data = @chain.namespace::Transaction.unscoped.where(transaction_type: :swap).group_by_day(:timestamp).count.to_json
+    @total_swaps_data = @chain.txs.unscoped.where(transaction_type: :swap).group_by_day(:timestamp).count.to_json
     @type = 'swaps'
 
     @total_swap = 0
