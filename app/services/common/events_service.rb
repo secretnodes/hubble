@@ -11,6 +11,7 @@ class Common::EventsService
   end
 
   def run!
+    return if @chain.event_defs.nil?
     definitions = @chain.event_defs.group_by { |defn| defn['kind'] }
 
     EVENT_ORDER.each do |kind|
