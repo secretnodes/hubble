@@ -7,9 +7,10 @@ class Common::Transactions::MessageDecorator
   include FormattingHelper
   include NamespacedChainsHelper
 
-  def initialize( json, chain )
+  def initialize( json, chain, logs )
     @object = json
     @chain = chain
+    @logs = logs
   end
 
   def type( tooltip: true )
@@ -63,6 +64,15 @@ class Common::Transactions::MessageDecorator
       "#{handle_validator( data['delegator_address'], html: true)} #{handle_badges('changed')} their withdraw address".html_safe
     when 'Create Validator'
       "#{handle_validator( data['delegator_address'], html: true)} #{handle_badges('created')} a validator with moniker #{handle_validator(data['validator_address'])}".html_safe
+    when 'Register'
+      "#{handle_validator( data['sender'], html: true)} #{handle_badges('registered')} a new contract.".html_safe
+    when 'Store Contract Code'
+      code_id = @logs.nil? ? '' : " with code ID #{@logs[0]['events'][0]['attributes'].select { |hash| hash['key'] == 'code_id' }.first['value']}"
+      "#{handle_validator( data['sender'], html: true)} #{handle_badges('stored')} a new contract#{code_id}.".html_safe
+    when 'Initialize Contract'
+      "#{handle_validator( data['sender'], html: true)} #{handle_badges('initialized')} a new contract labeled #{data['label']} with code ID #{data['code_id']}.".html_safe
+    when 'Execute Contract'
+      "#{handle_validator( data['sender'], html: true)} #{handle_badges('executed')} a contract at #{handle_account( data['contract'])}.".html_safe
     end
   end
 
@@ -97,13 +107,24 @@ class Common::Transactions::MessageDecorator
       "#{handle_validator( data['delegator_address'], html: true)} changed their withdraw address".html_safe
     when 'Create Validator'
       "The #{handle_validator( data['delegator_address'], html: true)} secret node was created.".html_safe
+    when 'Register'
+      "#{handle_validator( data['sender'], html: true)} registered a new contract.".html_safe
+    when 'Store Contract Code'
+      code_id = @logs.nil? ? '' : " with code ID #{@logs[0]['events'][0]['attributes'].select { |hash| hash['key'] == 'code_id' }.first['value']}"
+      "#{handle_validator( data['sender'], html: true)} stored a new contract#{code_id}.".html_safe
+    when 'Initialize Contract'
+      code_id = data['code_id'].present? ? " with code ID #{data['code_id']}" : nil
+      "#{handle_validator( data['sender'], html: true)} initialized a new contract labeled #{data['label']}#{code_id}.".html_safe
+    when 'Execute Contract'
+      code_id = data['code_id'].present? ? " with code ID #{data['code_id']}" : nil
+      "#{handle_validator( data['sender'], html: true)} executed a contract at #{handle_account( data['contract'])}#{code_id}.".html_safe
     end
   end
 
   private
 
   def humanized_type
-    sanitized = @object['type'].sub( /^cosmos-sdk\//, '' )
+    sanitized = @object['type'].split('/').second
     case sanitized
     when 'MsgWithdrawValidatorRewardsAll' then 'Withdraw All Rewards'
     when 'MsgWithdrawDelegationReward' then 'Withdraw Rewards'
@@ -115,11 +136,15 @@ class Common::Transactions::MessageDecorator
     when 'MsgSubmitProposal' then 'Submit Proposal'
     when 'MsgSend' then 'Send'
     when 'MsgUnjail' then 'Unjail'
-    when 'tokenswap/TokenSwap' then 'Swap'
+    when 'TokenSwap' then 'Swap'
     when 'MsgVote' then 'Vote'
     when 'MsgEditValidator' then 'Edit Validator'
     when 'MsgModifyWithdrawAddress' then 'Modify Withdraw Address'
     when 'MsgCreateValidator' then 'Create Validator'
+    when 'authenticate' then 'Register'
+    when 'MsgStoreCode' then 'Store Contract Code'
+    when 'MsgInstantiateContract' then 'Initialize Contract'
+    when 'MsgExecuteContract' then 'Execute Contract'
     else sanitized
     end
   end
@@ -291,6 +316,14 @@ class Common::Transactions::MessageDecorator
       '#90A8C3'
     when 'created' || 'create validator'
       '#64A6BD'
+    when 'stored'
+      '#78586F'
+    when 'registered'
+      '#C1DF1F'
+    when 'executed'
+      '#FF8552'
+    when 'initialized'
+      '#8AA2A9'
     end
   end
 end
