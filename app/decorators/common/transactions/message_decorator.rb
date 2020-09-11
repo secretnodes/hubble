@@ -113,9 +113,11 @@ class Common::Transactions::MessageDecorator
       code_id = @logs.nil? ? '' : " with code ID #{@logs[0]['events'][0]['attributes'].select { |hash| hash['key'] == 'code_id' }.first['value']}"
       "#{handle_validator( data['sender'], html: true)} stored a new contract#{code_id}.".html_safe
     when 'Initialize Contract'
-      "#{handle_validator( data['sender'], html: true)} initialized a new contract labeled #{data['label']} with code ID #{data['code_id']}.".html_safe
+      code_id = data['code_id'].present? ? " with code ID #{data['code_id']}" : nil
+      "#{handle_validator( data['sender'], html: true)} initialized a new contract labeled #{data['label']}#{code_id}.".html_safe
     when 'Execute Contract'
-      "#{handle_validator( data['sender'], html: true)} executed a contract at #{handle_account( data['contract'])} with code ID #{data['code_id']}.".html_safe
+      code_id = data['code_id'].present? ? " with code ID #{data['code_id']}" : nil
+      "#{handle_validator( data['sender'], html: true)} executed a contract at #{handle_account( data['contract'])}#{code_id}.".html_safe
     end
   end
 
