@@ -166,9 +166,9 @@ class Common::TransactionDecorator
 
   def messages
     if @transaction
-      (@transaction.message||[]).map { |msg| @namespace::Transactions::MessageDecorator.new( msg, @chain ) }
+      (@transaction.message||[]).map { |msg| @namespace::Transactions::MessageDecorator.new( msg, @chain, @transaction.logs) }
     else
-      (@raw_transaction['tx']['value']['msg']||[]).map { |msg| @namespace::Transactions::MessageDecorator.new( msg, @chain ) }
+      (@raw_transaction['tx']['value']['msg']||[]).map { |msg| @namespace::Transactions::MessageDecorator.new( msg, @chain, @raw_transaction['tx']['logs'] ) }
     end
   end
 
