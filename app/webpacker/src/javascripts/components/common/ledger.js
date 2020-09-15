@@ -297,7 +297,7 @@ export class Ledger {
         },
       },
     ];
-    console.log(tmpCopy);
+
     return tmpCopy;
   }
 
