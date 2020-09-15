@@ -14,7 +14,7 @@ const INTERACTION_TIMEOUT = 10000;
 const REQUIRED_COSMOS_APP_VERSION = '1.5.0';
 const DEFAULT_DENOM = 'uscrt';
 const DEFAULT_GAS = 200000;
-export const DEFAULT_GAS_PRICE = 0.025;
+export const DEFAULT_GAS_PRICE = 0.25;
 export const DEFAULT_MEMO = 'https://puzzle.report';
 
 /*
@@ -297,6 +297,7 @@ export class Ledger {
         },
       },
     ];
+    console.log(tmpCopy);
     return tmpCopy;
   }
 
@@ -528,7 +529,7 @@ export class Ledger {
         wallet_type: 'ledger',
         public_address: this.publicAddress,
         public_key: this.txContext.public_key,
-        chain_id: 1,
+        chain_id: 3,
         chain_type: 'Secret',
         account_index: HDPATH[2]
       }

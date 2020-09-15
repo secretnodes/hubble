@@ -5,7 +5,7 @@ import { Keplr } from './keplr.js'
 class UndelegateModal {
   constructor( el ) {
     this.UNDELEGATE_GAS_WANTED = 200000
-    this.GAS_PRICE = 0.025
+    this.GAS_PRICE = 0.25
     this.MEMO = 'https://puzzle.report'
     this.modal = el
 
