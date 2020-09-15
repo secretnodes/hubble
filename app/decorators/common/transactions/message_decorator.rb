@@ -65,7 +65,7 @@ class Common::Transactions::MessageDecorator
     when 'Create Validator'
       "#{handle_validator( data['delegator_address'], html: true)} #{handle_badges('created')} a validator with moniker #{handle_validator(data['validator_address'])}".html_safe
     when 'Register'
-      "#{handle_validator( data['sender'], html: true)} #{handle_badges('registered')} a new contract.".html_safe
+      "#{handle_validator( data['sender'], html: true)} #{handle_badges('registered')} a new node.".html_safe
     when 'Store Contract Code'
       code_id = @logs.nil? ? '' : " with code ID #{@logs[0]['events'][0]['attributes'].select { |hash| hash['key'] == 'code_id' }.first['value']}"
       "#{handle_validator( data['sender'], html: true)} #{handle_badges('stored')} a new contract#{code_id}.".html_safe
@@ -108,7 +108,7 @@ class Common::Transactions::MessageDecorator
     when 'Create Validator'
       "The #{handle_validator( data['delegator_address'], html: true)} secret node was created.".html_safe
     when 'Register'
-      "#{handle_validator( data['sender'], html: true)} registered a new contract.".html_safe
+      "#{handle_validator( data['sender'], html: true)} registered a new node.".html_safe
     when 'Store Contract Code'
       code_id = @logs.nil? ? '' : " with code ID #{@logs[0]['events'][0]['attributes'].select { |hash| hash['key'] == 'code_id' }.first['value']}"
       "#{handle_validator( data['sender'], html: true)} stored a new contract#{code_id}.".html_safe
