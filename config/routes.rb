@@ -23,7 +23,7 @@ Rails.application.routes.draw do
   put '/default_wallet' => 'wallets#update', as: :default_wallet
   
   # PUZZLE
-  root to: 'secret/chains#show', id: 'secret-1'
+  root to: 'secret/chains#show', id: 'secret-2'
   get '/privacy_policy' => 'home#privacy_policy'
   get '/chains' => 'home#index'
 

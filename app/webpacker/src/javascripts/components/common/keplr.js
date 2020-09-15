@@ -18,7 +18,7 @@ export class Keplr {
     }
 
     this.cosmosJS = new GaiaApi({
-      chainId: "secret-1",
+      chainId: "secret-2",
       walletProvider: window.cosmosJSWalletProvider,
       rpc: "https://client.secretnodes.org",
       rest: "https://lcd.secretnodes.org",
@@ -155,7 +155,7 @@ export class Keplr {
   }
 
   async setTxContext( ) {
-    let url = '/secret/chains/secret-1/accounts/' + this.publicAddress + '?validator=' + App.config.validatorOperatorAddress;
+    let url = '/secret/chains/secret-2/accounts/' + this.publicAddress + '?validator=' + App.config.validatorOperatorAddress;
     return fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ export class Keplr {
     let newObject = txContext['value'];
     newObject.rewards_for_validator = txContext['rewards_for_validator'];
     newObject.delegations = txContext['delegations'];
-    newObject.chain_id = 'secret-1';
+    newObject.chain_id = 'secret-2';
     return newObject;
   }
 

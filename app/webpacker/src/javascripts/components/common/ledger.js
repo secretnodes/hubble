@@ -490,7 +490,7 @@ export class Ledger {
     let newObject = txContext['value'];
     newObject.rewards_for_validator = txContext['rewards_for_validator'];
     newObject.delegations = txContext['delegations']
-    newObject.chain_id = 'secret-1';
+    newObject.chain_id = 'secret-2';
     newObject.public_key = Buffer.from(this.pubKey).toString('base64');
     return newObject;
   }
@@ -548,7 +548,7 @@ export class Ledger {
   }
 
   async setTxContext( ) {
-    let url = '/secret/chains/secret-1/accounts/' + this.publicAddress + '?validator=' + App.config.validatorOperatorAddress;
+    let url = '/secret/chains/secret-2/accounts/' + this.publicAddress + '?validator=' + App.config.validatorOperatorAddress;
     return fetch(url, {
       headers: {
         'Content-Type': 'application/json',
