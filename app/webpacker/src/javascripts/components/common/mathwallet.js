@@ -5,7 +5,7 @@ const network = {
 
 const DEFAULT_MEMO = 'https://puzzle.report';
 const DEFAULT_GAS = 200000;
-export const DEFAULT_GAS_PRICE = 0.025;
+export const DEFAULT_GAS_PRICE = 0.25;
 
 export class MathWallet {
   constructor() {

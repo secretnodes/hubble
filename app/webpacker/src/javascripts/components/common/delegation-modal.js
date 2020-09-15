@@ -6,7 +6,7 @@ class DelegationModal {
   constructor( el ) {
     this.DELEGATION_GAS_WANTED = 200000
     this.REDELEGATION_GAS_WANTED = 220000
-    this.GAS_PRICE = 0.025
+    this.GAS_PRICE = 0.25
     this.MEMO = 'https://puzzle.report'
     this.modal = el
 
@@ -207,12 +207,13 @@ class DelegationModal {
         if (this.wallet_type == "ledger") {
           let txObject = Ledger.createSkeleton(this.wallet.txContext, this.delegationTransactionObject());
           let sign = await this.wallet.buildAndSign(this.wallet.txContext, txObject, this.DELEGATION_GAS_WANTED.toString());
-  
+
           this.modal.find('.transaction-json').text(
             JSON.stringify( txObject, undefined, 2 )
           )
-  
+
           this.txSignature = Ledger.applySignature(sign.newTxObject, this.wallet.txContext, sign.sigArray);
+
         } else if (this.wallet_type == "mathwallet") {
           let txObject = MathWallet.createTx(
             this.wallet.txContext,

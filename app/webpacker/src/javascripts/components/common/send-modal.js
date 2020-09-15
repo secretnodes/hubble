@@ -5,7 +5,7 @@ import { Keplr } from './keplr.js'
 class SendModal {
   constructor( el ) {
     this.SEND_GAS_WANTED = 100000
-    this.GAS_PRICE = 0.025
+    this.GAS_PRICE = 0.25
     this.MEMO = 'https://puzzle.report'
     this.modal = el
 
