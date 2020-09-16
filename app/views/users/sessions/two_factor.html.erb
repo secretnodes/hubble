@@ -1,0 +1,14 @@
+<div class="card w-25 m-auto">
+  <div class="card-header">Two Factor Authentication</div>
+  <div class="card-body">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), method: :post) do |f| %>
+      <div class="form-group">
+        <%= f.label '2fa Code' %><br />
+        <%= f.text_field :otp_attempt, label: '2fa Code' %>
+      </div>
+      <div class="actions">
+        <%= f.submit 'Login', class: 'btn btn-primary mt-2' %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -2,6 +2,12 @@
 
 class Users::SessionsController < Devise::SessionsController
   before_action :configure_sign_in_params, only: [:create]
+  include AuthenticateWithOtpTwoFactor
+  
+  prepend_before_action :authenticate_with_otp_two_factor,
+                        if: -> { action_name == 'create' && otp_two_factor_enabled? }
+
+  protect_from_forgery with: :exception, prepend: true, except: :destroy
   layout 'account'
 
   # GET /resource/sign_in
@@ -11,7 +17,11 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
-    super
+    self.resource = warden.authenticate!(auth_options)
+    set_flash_message!(:notice, :signed_in)
+    sign_in(resource_name, resource)
+    yield resource if block_given?
+    respond_with resource, location: after_sign_in_path_for(resource)
   end
 
   # DELETE /resource/sign_out

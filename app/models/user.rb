@@ -3,6 +3,8 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable
+  devise :two_factor_authenticatable,
+         :otp_secret_encryption_key => Rails.application.credentials[Rails.env.to_sym][:two_factor_key]
 
   MASQ_TIMEOUT = 10.minutes
 
@@ -40,6 +42,28 @@ class User < ApplicationRecord
   def update_for_signup( ua:, ip: )
     update_details ua: ua, ip: ip
     save
+  end
+
+  def generate_two_factor_secret_if_missing!
+    return unless otp_secret.nil?
+    update!(otp_secret: User.generate_otp_secret)
+  end
+
+  def enable_two_factor!
+    update!(otp_required_for_login: true)
+  end
+
+  def disable_two_factor!
+    update!(
+        otp_required_for_login: false,
+        otp_secret: nil)
+  end
+
+  def two_factor_qr_code_uri
+    issuer = 'Puzzle Report'
+    label = [issuer, email].join(':')
+
+    otp_provisioning_uri(label, issuer: issuer)
   end
 
   private
