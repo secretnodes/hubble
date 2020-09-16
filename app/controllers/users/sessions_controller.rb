@@ -2,7 +2,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   before_action :configure_sign_in_params, only: [:create]
-  include AuthenticateWithOtpTwoFactor
+  include Users::AuthenticateWithOtpTwoFactor
   
   prepend_before_action :authenticate_with_otp_two_factor,
                         if: -> { action_name == 'create' && otp_two_factor_enabled? }
