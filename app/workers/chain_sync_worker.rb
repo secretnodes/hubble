@@ -5,6 +5,7 @@ class ChainSyncWorker
   def perform(network='secret')
     network.titleize.constantize::Chain.enabled.find_each do |chain|
       TaskLock.with_lock!(:sync, "#{network}-#{chain.ext_id}") do
+        next if chain.dead?
         log = Stats::SyncLog.start( chain )
 
         begin

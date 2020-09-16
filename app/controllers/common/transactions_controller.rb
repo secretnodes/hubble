@@ -52,4 +52,22 @@ class Common::TransactionsController < Common::BaseController
       render 'index'
     end
   end
+
+  def contracts
+    @page = params[:page] || 1
+    @raw_transactions = @chain.txs.where(transaction_type: [:store_contract_code, :initialize_contract, :execute_contract])
+    @transactions = @raw_transactions.paginate(page: @page, per_page: 50)
+    @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr, tr.hash_id) }
+    @transactions_total = @transactions.count
+    @total_contracts_data = @chain.txs.unscoped.where(transaction_type: [:store_contract_code, :initialize_contract, :execute_contract]).group_by_day(:timestamp).count.to_json
+    @type = 'contracts'
+
+    @total_contracts = 0
+
+    if params[:partial] == "true"
+      render partial: 'transactions_table', locals: { transactions: @transactions, decorated_txs: @decorated_txs, transactions_total: @transactions_total, type: @type, page: @page }
+    else
+      render 'index'
+    end
+  end
 end
