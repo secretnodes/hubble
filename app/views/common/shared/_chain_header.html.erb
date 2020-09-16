@@ -16,6 +16,9 @@
       <% if defined?(swaps_link) %>
         <a class='ml-1 mb-1 btn btn-outline-primary' href='<%= namespaced_path( 'swaps' ) %>'>Swaps</a>
       <% end %>
+      <% if defined?(contracts_link) %>
+        <a class='ml-1 mb-1 btn btn-outline-primary' href='<%= namespaced_path( 'contracts' ) %>'>Contracts</a>
+      <% end %>
       <% if defined?(transactions_link) -%>
         <a class='ml-1 mb-1 btn btn-outline-primary' href='<%= namespaced_path( 'transactions' ) %>'>Transactions</a>
       <% end -%>

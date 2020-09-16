@@ -60,6 +60,7 @@ Rails.application.routes.draw do
       end
       resources :transactions, only: %i{ show index }
       get 'swaps' => 'transactions#swaps', as: :swaps
+      get 'contracts' => 'transactions#contracts', as: :contracts
 
       resources :logs, only: %i{ index }, controller: '/util/logs'
 
