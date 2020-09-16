@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   include ActionView::Helpers::DateHelper
 
   before_action :http_basic_auth if REQUIRE_HTTP_BASIC
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
   if !Rails.env.development?
     rescue_from StandardError,
@@ -87,5 +88,11 @@ class ApplicationController < ActionController::Base
         render body: '', status: 500, content_type: 'text/plain'
       }
     end
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_in, keys: [:otp_attempt])
   end
 end

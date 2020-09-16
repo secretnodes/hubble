@@ -18,6 +18,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :two_factor_settings, except: [:index, :show]
+
   resources :wallets, only: %i{ index }
 
   put '/default_wallet' => 'wallets#update', as: :default_wallet

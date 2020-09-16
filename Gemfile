@@ -39,7 +39,6 @@ gem 'twitter'
 # gem 'sqlite3'
 
 # admin session management
-gem 'active_model_otp', '~> 1.2.0'
 gem 'rqrcode', '~> 0.10.1'
 
 gem 'bitcoin-ruby', require: 'bitcoin' # bech32
@@ -64,6 +63,7 @@ gem "stimulus_reflex", "~> 3.2"
 
 # authentication
 gem 'devise'
+gem 'devise-two-factor', "~>3.1.0"
 
 group :development, :test do
   gem 'puma'
