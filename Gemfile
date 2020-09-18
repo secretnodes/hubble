@@ -16,7 +16,6 @@ gem 'rails-ujs', '~> 0.1.0'
 gem 'babel-transpiler'
 gem 'actionmailer_inline_css'
 
-gem 'curb'
 gem 'typhoeus'
 gem 'dotiw'
 gem 'useragent'
