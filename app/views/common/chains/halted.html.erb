@@ -1,6 +1,6 @@
 <% content_for :body_class, 'chain-halted' %>
 
-<%= render partial: '/common/shared/chain_header', locals: { summary_link: !@latest_block.nil? } %>
+<%= render partial: '/common/shared/chain_header', locals: { accounts_link: true, transactions_link: true, swaps_link: true, governance_link: true, contracts_link: true, events_link: true } %>
 
 <% if @latest_block.nil? -%>
   <h4>Chain has not yet started.</h4>

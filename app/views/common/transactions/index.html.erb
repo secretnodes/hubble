@@ -1,12 +1,12 @@
 <% content_for :body_class, 'block-show' -%>
 <% if @type == "swaps"
-    locals = { summary_link: true, transactions_link: true, contracts_link: true, accounts_link: true }
+    locals = { accounts_link: true, transactions_link: true, governance_link: true, contracts_link: true, summary_link: true, events_link: true }
     url = "#{namespaced_path( 'swaps', partial: true, page: @page, chain: @chain )}"
   elsif @type == "contracts"
-   locals = { summary_link: true, swaps_link: true, transactions_link: true, accounts_link: true }
+   locals = { accounts_link: true, transactions_link: true, swaps_link: true, governance_link: true, summary_link: true, events_link: true }
     url = "#{namespaced_path('contracts', partial: true, page: @page, chain: @chain) }"
   else
-    locals = { summary_link: true, swaps_link: true, contracts_link: true, accounts_link: true }
+    locals = { accounts_link: true, swaps_link: true, governance_link: true, contracts_link: true, summary_link: true, events_link: true }
     url = "#{namespaced_path( 'transactions', partial: true, page: @page, chain: @chain )}"
   end
  %>
