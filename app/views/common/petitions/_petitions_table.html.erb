@@ -1,0 +1,41 @@
+<div class='gov-proposals-table'>
+  <table data-empty='<%= petitions.empty? %>'>
+    <thead>
+      <tr role='row'>
+        <th>Title</th>
+        <th>Status</th>
+        <% if defined? with_validator -%>
+          <th>Activity</th>
+        <% else -%>
+          <th>Submitted</th>
+        <% end -%>
+      </tr>
+    </thead>
+    <tbody>
+      <% if petitions.empty? -%>
+        <tr>
+          <td colspan='3' class='text-center py-3'>
+              No proposals have been submitted yet.
+          </td>
+        </tr>
+      <% else %>
+        <% petitions.each do |petition| -%>
+          <tr>
+            <td data-order='<%= petition.title %>'>
+              <%= link_to petition.title, namespaced_path( 'petition', petition ) %>
+            </td>
+            <td data-order='<%= petition.status %>'>
+              <div class='badge badge-pill badge-primary text-uppercase'><%= petition.status %></div>
+              <% if !petition.ended? -%>
+                <div class='text-sm text-muted'>Current: <%= petition.status %></div>
+              <% end -%>
+            </td>
+            <td data-order='<%= petition.voting_start_time.to_i %>'>
+              <pre class='m-0'><%= petition.voting_start_time.strftime("%Y-%m-%d<br/>at %H:%M %Z").html_safe %></pre>
+            </td>
+          </tr>
+        <% end -%>
+      <% end -%>
+    </tbody>
+  </table>
+</div>

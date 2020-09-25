@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_16_035536) do
+ActiveRecord::Schema.define(version: 2020_09_22_020936) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -846,6 +846,30 @@ ActiveRecord::Schema.define(version: 2020_09_16_035536) do
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_secret_vote_on_account"
     t.index ["proposal_id"], name: "index_secret_vote_on_proposal"
+  end
+
+  create_table "secret_petition_votes", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "option"
+    t.integer "petition_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "secret_petitions", force: :cascade do |t|
+    t.integer "chain_id"
+    t.integer "user_id"
+    t.string "title"
+    t.text "description"
+    t.integer "status"
+    t.float "tally_result_yes"
+    t.float "tally_result_abstain"
+    t.float "tally_result_no"
+    t.datetime "voting_start_time"
+    t.datetime "voting_end_time"
+    t.boolean "finalized"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "secret_transactions", force: :cascade do |t|
