@@ -198,9 +198,12 @@ class RedelegationModal {
           this.txSignature = await this.wallet.buildAndSign(txObject);
         }
 
+        console.log(this.txSignature);
+
         if( this.txSignature ) {
 
           const broadcastResult = await this.wallet.broadcastTransaction( this.txSignature )
+          console.log(broadcastResult);
           if( broadcastResult.ok ) {
             this.modal.find('.redelegation-step').hide()
             this.modal.find('.view-transaction').attr( 'href', App.config.viewTxPath.replace('TRANSACTION_HASH', broadcastResult.txhash) )

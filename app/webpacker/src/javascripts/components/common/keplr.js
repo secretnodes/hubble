@@ -21,7 +21,7 @@ export class Keplr {
       chainId: "secret-2",
       walletProvider: window.cosmosJSWalletProvider,
       rpc: "https://client.secretnodes.org",
-      rest: "https://lcd.secretnodes.org",
+      rest: "http://client.secretnodes.org:1317",
     }, {
       bech32Config: defaultBech32Config("secret")
     });

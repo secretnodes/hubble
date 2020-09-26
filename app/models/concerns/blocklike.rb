@@ -120,6 +120,7 @@ module Blocklike
 
       if (t = self.new( obj )).invalid?
         puts "Invalid block at height: #{height}\n#{obj.inspect}\nError description: #{t.errors.full_messages.join(", ")}\n\n"
+        chain.blocks.first.destroy!
         raise chain.namespace::SyncBase::CriticalError.new("Invalid block at height #{height}.")
       end
 
