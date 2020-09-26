@@ -1,0 +1,50 @@
+<h1>Welcome, <%= @resource.email %>!</h1>
+<p>Thanks for signing up for Puzzle.</p>
+<p>Click the button or link below to verify your account:</p>
+<!-- Action -->
+<table class='body-action' align='center' width='100%' cellpadding='0' cellspacing='0'>
+  <tr>
+    <td align='center'>
+      <table width='100%' border='0' cellspacing='0' cellpadding='0'>
+        <tr>
+          <td align='center'>
+            <table border='0' cellspacing='0' cellpadding='0'>
+              <tr>
+                <td>
+                  <p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p>For reference, here's your login information:</p>
+<table class='attributes' width='100%' cellpadding='0' cellspacing='0'>
+  <tr>
+    <td class='attributes_content'>
+      <table width='100%' cellpadding='0' cellspacing='0'>
+        <tr>
+          <td class='attributes_item'><strong>Login Page:</strong> <a href='<%= new_user_session_url %>'><%= new_user_session_url %></a></td>
+        </tr>
+        <tr>
+          <td class='attributes_item'><strong>Login Email:</strong> <%= @resource.email %></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p>If you have any questions, please <a href='mailto:contact@secretnodes.org'>email us</a>.</p>
+<p>Thanks,
+  <br>The secretnodes.org Team</p>
+<!-- Sub copy -->
+<table class='body-sub'>
+  <tr>
+    <td>
+      <p class='sub'>If you’re having trouble with the button above, copy and paste the URL below into your web browser (it will only work once!).</p>
+      <p class='sub'><%= link_to confirmation_url(@resource, confirmation_token: @token), confirmation_url(@resource, confirmation_token: @token) %></p>
+    </td>
+  </tr>
+</table>
