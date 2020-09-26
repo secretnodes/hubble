@@ -31,7 +31,7 @@
           <span class='technical'><%= tr.address %></span>
           <div class='text-sm mt-1'>
             <% if tr.user %>
-              On behalf of user <a href='<%= admin_user_path(tr.user) %>'><%= tr.user.name %></a>
+              On behalf of user <a href='<%= admin_user_path(tr.user) %>'><%= tr.user.email %></a>
             <% end -%>
             (<label class='text-muted mb-0'>IP</label> <span class='technical'><%= tr.ip %></span>)
           </div>

@@ -10,7 +10,6 @@ class Admin::UsersController < Admin::BaseController
 
   def destroy
     @user = User.find params[:id]
-    name = @user.name
     @user.update_attributes deleted: true
     flash[:notice] = "#{name} has been deleted."
     redirect_to admin_users_path
