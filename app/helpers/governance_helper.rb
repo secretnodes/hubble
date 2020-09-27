@@ -9,13 +9,13 @@ module GovernanceHelper
 
   def proposal_status_string( proposal, tally=nil )
     tally ||= @chain.namespace::ProposalTallyDecorator.new(proposal)
-
+    type = proposal.class.to_s.include?("Proposal") ? "Proposal" : "Petition"
     if proposal.rejected?
-      return "Proposal rejected."
+      return "#{type} rejected."
     end
 
     if proposal.passed?
-      return "Proposal passed."
+      return "#{type} passed."
     end
 
     if !tally.quorum_reached?
@@ -24,7 +24,7 @@ module GovernanceHelper
 
     if proposal.class.to_s.include?("Proposal")
       if tally.percent_nowithveto_to_win >= 100
-        return "Proposal fails due to veto."
+        return "#{type} fails due to veto."
       end
 
       if proposal.try(:in_deposit_period?)
@@ -33,10 +33,10 @@ module GovernanceHelper
     end
 
     if tally.percent_yes_to_win >= 100
-      return "Proposal passes."
+      return "#{type} passes."
     end
 
-    return "Proposal fails."
+    return "#{type} fails."
   end
 
   def proposal_period_progress_percentage( proposal, period: )
