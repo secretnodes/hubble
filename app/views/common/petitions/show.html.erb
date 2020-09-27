@@ -25,7 +25,7 @@
               <% if @tally_result.quorum_reached? -%>
                 <div class='marker text-muted' style='left: <%= @tally_result.yes_threshold_percentage %>%;'><div class='notch bg-dark'></div>Pass Threshold</div>
               <% else -%>
-                <div class='marker text-muted' style='left: 40%;'><div class='notch bg-secondary'></div>Quorum (<%= round_if_whole(@chain.governance_params.quorum * 100, 0) %>%)</div>
+                <div class='marker text-muted' style='left: 40%;'><div class='notch bg-secondary'></div>Quorum (1 vote)</div>
               <% end -%>
               <div class='progress'>
                 <div class='progress-bar bg-success' data-toggle='tooltip' title="<div class='text-center'><div class='mb-1 text-strong text-success'>Yes</div><span class='technical'><%= @tally_result.percent_yes %>%</span></div>" style='width: <%= @tally_result.progress_yes %>%;'></div>
