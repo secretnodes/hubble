@@ -6,9 +6,15 @@
     <div class='transactions-table-header'>
       <h4>
         <%= type.capitalize %>
-        <small>&nbsp;&mdash; <%= @transactions_total %> total&nbsp;
+        <% if type == "contracts" %>
+          <small>&nbsp;&mdash; <%= @transactions_total %> transactions&nbsp;
+        <% else %>
+          <small>&nbsp;&mdash; <%= @transactions_total %> total&nbsp;
+        <% end %>
         <% if type == "swaps" %>
           | <%= format_amount(@total_swap, @chain, denom: 'eng', hide_units: true, in_millions: true) %> ENG Swapped for SCRT to <%= @swap_address_count %> Addresses</small>
+        <% elsif type == "contracts" %>
+          | Contracts Deployed: <%= @deployed_total %>
         <% end %>
         </small>
       </h4>

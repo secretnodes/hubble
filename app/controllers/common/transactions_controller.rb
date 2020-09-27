@@ -58,7 +58,8 @@ class Common::TransactionsController < Common::BaseController
     @raw_transactions = @chain.txs.where(transaction_type: [:store_contract_code, :initialize_contract, :execute_contract])
     @transactions = @raw_transactions.paginate(page: @page, per_page: 50)
     @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr, tr.hash_id) }
-    @transactions_total = @transactions.count
+    @transactions_total = @raw_transactions.count
+    @deployed_total = @raw_transactions.store_contract_code.where(error_message: nil).count
     @total_contracts_data = @chain.txs.unscoped.where(transaction_type: [:store_contract_code, :initialize_contract, :execute_contract]).group_by_day(:timestamp).count.to_json
     @type = 'contracts'
 
