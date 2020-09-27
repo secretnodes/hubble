@@ -1,0 +1,169 @@
+<% content_for :body_class, 'petition-show' %>
+
+<%= render partial: '/common/shared/chain_header', locals: { accounts_link: true, transactions_link: true, swaps_link: true, governance_link: true, petitions_link: true, contracts_link: true, summary_link: true, events_link: true } %>
+<%= render partial: '/common/shared/sync_errors' %>
+
+<div class='row'>
+  <div class='col-12 col-md-9'>
+    <div class='proposal-details'>
+      <div class='proposal-header d-flex align-items-center justify-content-between'>
+        <div class='d-flex align-items-start'>
+          <h3><%= @petition.title %></h3>
+          <span class='d-none d-md-inline badge badge-pill badge-primary ml-2 mt-2 text-uppercase'><%= @petition.status %></span>
+        </div>
+      </div>
+
+      <div class='such-progress'>
+        <div class='chart-status-string'>
+          <label class='text-sm text-muted mb-0'>Current Status:</label>
+          <%= proposal_status_string(@petition, @tally_result).html_safe %>
+        </div>
+
+        <% if @petition.in_voting_period? -%>
+          <div class='proposal-progress-wrapper'>
+            <div class='proposal-progress'>
+              <% if @tally_result.quorum_reached? -%>
+                <div class='marker text-muted' style='left: <%= @tally_result.yes_threshold_percentage %>%;'><div class='notch bg-dark'></div>Pass Threshold</div>
+              <% else -%>
+                <div class='marker text-muted' style='left: 40%;'><div class='notch bg-secondary'></div>Quorum (<%= round_if_whole(@chain.governance_params.quorum * 100, 0) %>%)</div>
+              <% end -%>
+              <div class='progress'>
+                <div class='progress-bar bg-success' data-toggle='tooltip' title="<div class='text-center'><div class='mb-1 text-strong text-success'>Yes</div><span class='technical'><%= @tally_result.percent_yes %>%</span></div>" style='width: <%= @tally_result.progress_yes %>%;'></div>
+                <div class='progress-bar bg-secondary' data-toggle='tooltip' title="<div class='text-center'><div class='mb-1 text-strong text-secondary'>Abstain</div><span class='technical'><%= @tally_result.percent_abstain %>%</span></div>" style='width: <%= @tally_result.progress_abstain %>%;'></div>
+                <div class='progress-bar bg-danger' data-toggle='tooltip' title="<div class='text-center'><div class='mb-1 text-strong text-danger'>No</div><span class='technical'><%= @tally_result.percent_no %>%</span></div>" style='width: <%= @tally_result.progress_no %>%;'></div>
+                <div class='progress-bar bg-light' data-toggle='tooltip' title="<div class='text-center'><div class='mb-1 text-strong text-dark'>Has Not Voted</div><span class='technical'><%= @tally_result.percent_didntvote %>%</span></div>" style='flex-grow: 1;'></div>
+              </div>
+            </div>
+          </div>
+        <% end -%>
+      </div>
+
+      <div class='info mt-5'>
+        <div class='title mb-1'>PETITION DESCRIPTION</div>
+        <div class='proposal-description-text'><%= Rinku.auto_link(strip_tags(@petition.description), :urls, "target='_blank' rel='nofollow'") { |url| "#{URI(url.split('#').first).host} <span class='fas fa-external-link-alt'></span>" }.html_safe -%></div>
+      </div>
+
+      <div class='mt-5'>
+        <div class='title mb-1'>VOTES</div>
+        <div class='table-responsive'>
+          <table class='table table-sm votes-table'>
+            <tbody>
+              <% if @petition.votes.empty? %>
+                <tr>
+                  <td colspan='2' align='middle'>
+                    <% if @petition.missing_vote_data? -%>
+                      Missing voting data.
+                    <% else -%>
+                      No votes cast.
+                    <% end -%>
+                  </td>
+                </tr>
+              <% else -%>
+                <% @petition.votes.each do |vote| -%>
+                  <tr data-vote-id='<%= vote.id %>'>
+                    <td class='text-uppercase text-md vote-option vote-<%= vote.option.downcase %>'><%= vote.option %></td>
+                    <td>
+                      <% if vote.user -%>
+                        <%= vote.user.email %>
+                      <% else -%>
+                        &mdash;
+                      <% end -%>
+                    </td>
+                  </tr>
+                <% end -%>
+              <% end -%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class='col-12 col-md-3'>
+    <% if @petition.in_voting_period? %>
+      <div class='d-flex align-items-center justify-content-center mb-4'>
+          <button class='btn btn-outline-primary d-block' data-toggle='modal' data-target='#proposal-vote-modal'>Vote</button>
+      </div>
+    <% end %>
+    <div class='card'>
+      <h5 class='card-header d-flex align-items-center justify-content-between'>
+        Info
+        <span class='badge badge-pill badge-sm badge-light'>#<%= @petition.id %></span>
+      </h5>
+      <div class='card-body'>
+        <label class='text-muted mb-0 mt-0'>Submitted</label>
+        <div>
+          <%= @petition.created_at.strftime("%Y-%m-%d at %H:%M %Z") %>
+        </div>
+
+        <div class='proposal-period-progress'>
+          <% if !@petition.rejected? && @petition.in_voting_period? -%>
+            <label class='text-muted mb-0 mt-3'>Voting Period</label>
+            <div class='progress position-relative mt-1'>
+              <div class='progress-bar bg-primary' style='width: <%= round_if_whole(proposal_period_progress_percentage(@petition, period: :voting) * 100, 2) %>%;'></div>
+              <small class='proposal-period-text justify-content-center d-flex position-absolute w-100 technical'><%= round_if_whole(proposal_period_progress_percentage(@petition, period: :voting) * 100, 0) %>%</small>
+            </div>
+            <div class='mt-1 text-sm text-muted proposal-period-time-left'>Ends in <%= distance_of_time_in_words(Time.now, @petition.voting_end_time, highest_measures: 2) %></div>
+          <% end -%>
+        </div>
+      </div>
+    </div>
+
+    <div class='card'>
+      <h5 class='card-header'>Tallying Procedure</h5>
+      <div class='card-body'>
+        <label class='text-muted mb-0 mt-0'>Quorum</label>
+        <div class='technical'>
+          <%= round_if_whole(@chain.governance_params.quorum * 100, 2) %>%
+        </div>
+
+        <label class='text-muted mb-0 mt-3'>Pass Threshold</label>
+        <div class='technical'>
+          <%= round_if_whole(@chain.governance_params.tally_param_threshold * 100, 2) %>%
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% content_for :modals do -%>
+<div class='modal fade' id='proposal-vote-modal' tabindex='-1' role='dialog'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+      <div class='modal-content'>
+        <div class='modal-body'>
+          <button type='button' class='close float-right' data-dismiss='modal' aria-label='Close'>
+            <span aria-hidden='true'>&times;</span>
+          </button>
+
+          <div class='text-center py-5 px-3'>
+            <h3>Vote on Petition</h3>
+              <%= form_with url:  public_send("#{@chain.namespace.to_s.downcase}_chain_petition_petition_votes_path", petition_id: @petition.id, chain_id: @chain.slug), local: true do |f| %>
+                <div class='w-50'>
+                  <div class='vote-options mt-3 btn-group' data-toggle='buttons'>
+                    <label class='btn vote-option vote-option-yes'>
+                      <%= f.radio_button :vote_options, 'yes', class: 'vote-option'%>
+
+                      Yes
+                    </label>
+                    <label class="btn vote-option vote-option-abstain">
+                      <%= f.radio_button :vote_options, 'abstain', class: 'vote-option'%>
+                      Abstain
+                    </label>
+                    
+                    <label class="btn vote-option vote-option-no">
+                      <%= f.radio_button :vote_options, 'no', class: 'vote-option' %>
+                      No
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class='text-center'>
+                <%= f.submit "Submit", class: 'mt-5 mb-2 btn btn-primary' %>
+              </div>
+              <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+<% end %>

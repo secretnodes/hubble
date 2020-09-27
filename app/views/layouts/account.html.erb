@@ -65,6 +65,12 @@
           </div>
         <% end -%>
         <%= yield %>
+
+        <% if flash[:info] %>
+          <div class='alert alert-info'>
+            <%= flash[:info].html_safe %>
+          </div>
+        <% end -%>
       </div>
     </div>
 

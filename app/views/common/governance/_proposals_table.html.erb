@@ -43,9 +43,13 @@
                 <%= deposits_for_proposal_by_account( proposal, with_validator.account ) %>
                 <%= vote_for_proposal_by_account( proposal, with_validator.account ) %>
               </td>
-            <% else -%>
+            <% elsif proposal.try :submit_time -%>
               <td data-order='<%= proposal.submit_time.to_i %>'>
                 <pre class='m-0'><%= proposal.submit_time.strftime("%Y-%m-%d<br/>at %H:%M %Z").html_safe %></pre>
+              </td>
+            <% else %>
+              <td data-order='<%= proposal.voting_start_time.to_i %>'>
+                <pre class='m-0'><%= proposal.voting_start_time.strftime("%Y-%m-%d<br/>at %H:%M %Z").html_safe %></pre>
               </td>
             <% end -%>
           </tr>

@@ -1,0 +1,22 @@
+<% content_for :body_class, 'governance-index' %>
+
+<%= render partial: '/common/shared/chain_header', locals: { accounts_link: true, transactions_link: true, swaps_link: true, contracts_link: true, summary_link: true, events_link: true } %>
+<%= render partial: '/common/shared/sync_errors' %>
+
+<div class='governance-proposals-list'>
+  <div class='row'>
+    <div class='col-12 col-md-12'>
+      <section class='gov-proposals'>
+        <div class='gov-proposals-table-header d-flex align-items-center justify-content-between'>
+          <h4>Off-Chain Petitions</h4>
+
+          <div class='controls'>
+            <%= link_to 'New Petition', public_send("new_#{@chain.namespace.to_s.downcase}_chain_petition_path"), class: 'btn btn-sm btn-outline-light'%>
+            </div>
+        </div>
+
+        <%= render 'petitions_table', petitions: @petitions %>
+      </section>
+    </div>
+  </div>
+</div>

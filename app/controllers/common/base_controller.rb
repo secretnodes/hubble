@@ -19,4 +19,11 @@ class Common::BaseController < ApplicationController
   def ensure_chain
     raise ActiveRecord::RecordNotFound unless @chain
   end
+
+  def ensure_current_user
+    if current_user.nil?
+      flash[:info] = "You must be logged in to use this feature. Please login and try again."
+      redirect_back(fallback_location: root_path)
+    end
+  end
 end
