@@ -5,10 +5,10 @@ class CreateSecretPetitions < ActiveRecord::Migration[5.2]
       t.integer :user_id
       t.string :title
       t.text :description
-      t.integer :status
-      t.float :tally_result_yes
-      t.float :tally_result_abstain
-      t.float :tally_result_no
+      t.integer :status, default: :voting_period, null: false
+      t.decimal :tally_result_yes, default: 0, null: false
+      t.decimal :tally_result_abstain, default: 0, null: false
+      t.decimal :tally_result_no, default: 0, null: false
       t.datetime :voting_start_time
       t.datetime :voting_end_time
       t.boolean :finalized

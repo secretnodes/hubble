@@ -5,7 +5,7 @@ module Petitionlike
     namespace = klass.name.split('::').first.constantize
 
     belongs_to :chain, class_name: "#{namespace}::Chain"
-    has_many :votes, class_name: "#{namespace}::Petition::Vote", dependent: :delete_all
+    has_many :votes, class_name: "#{namespace}::PetitionVote", dependent: :delete_all
 
     scope :ordered_by_submit_time, -> { order( voting_start_time: :desc ) }
     scope :voting_open, -> { where( 'voting_end_time > ?', Time.now ) }

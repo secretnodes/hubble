@@ -18,7 +18,7 @@ module GovernanceHelper
       return "Proposal passed."
     end
 
-    if proposal.in_deposit_period?
+    if proposal.try(:in_deposit_period?)
       return "Waiting for deposits..."
     end
 

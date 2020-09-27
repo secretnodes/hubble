@@ -64,7 +64,9 @@ Rails.application.routes.draw do
 
       resources :logs, only: %i{ index }, controller: '/util/logs'
 
-      resources :petitions
+      resources :petitions do
+        resources :petition_votes, only: [:create]
+      end
 
       namespace :governance do
         root to: 'main#index'

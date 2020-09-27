@@ -27,7 +27,7 @@
             <td data-order='<%= petition.status %>'>
               <div class='badge badge-pill badge-primary text-uppercase'><%= petition.status %></div>
               <% if !petition.ended? -%>
-                <div class='text-sm text-muted'>Current: <%= petition.status %></div>
+                <div class='text-sm text-muted'>Current: <%= petition.status.gsub('_', ' ') %></div>
               <% end -%>
             </td>
             <td data-order='<%= petition.voting_start_time.to_i %>'>

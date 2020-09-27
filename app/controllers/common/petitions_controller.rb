@@ -23,13 +23,18 @@ class Common::PetitionsController < Common::BaseController
     )
 
     if @petition.save!
-      FinalizePetitionWorker.perform_at(end_date, @petition.id, @chain)
+      FinalizePetitionWorker.perform_at(end_date, @petition.id, @chain.class.to_s, @chain.id)
       flash[:success] = "You successfully created a petition entitled #{@petition.title}!"
-      return
+      redirect_to namespaced_path('petitions')
     else
       flash[:error] = "There was an error creating your petition. Please try again."
       return
     end
+  end
+
+  def show
+    @petition = @chain.namespace::Petition.find params[:id]
+    @tally_result = @chain.namespace::PetitionTallyDecorator.new(@petition)
   end
 
   private

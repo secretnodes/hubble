@@ -2,7 +2,7 @@
 
 <h2 class='header'>
   Create a <%= @chain.network_name %> Petition
-  <a class='btn btn-sm btn-outline-secondary' href='<%= admin_root_path %>'>back</a>
+  <a class='btn btn-sm btn-outline-secondary' href='<%= namespaced_path('petitions') %>'>back</a>
 </h2>
 
 <%= form_with url: secret_chain_petitions_path, model: @petition, local: true do |f| %>
@@ -39,5 +39,5 @@
       </div>
     </div>
   </div>
-  <%= f.submit 'Create Chain', class: 'btn btn-lg btn-primary' %>
+  <%= f.submit 'Create Petition', class: 'btn btn-lg btn-primary' %>
 <% end -%>
