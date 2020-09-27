@@ -42,11 +42,11 @@ class Common::PetitionTallyDecorator
   end
 
   def quorum_target
-    total_users * @petition.chain.governance_params.quorum
+    total_users * 0.01
   end
 
   def quorum_percentage
-    cumulative_voting_power / total_users.to_f
+    0.0
   end
 
   def quorum_reached?
@@ -62,6 +62,7 @@ class Common::PetitionTallyDecorator
     return Float::INFINITY if non_abstain_voting_power.zero?
     non_abstain_voting_power * @petition.chain.governance_params.tally_param_threshold
   end
+
   def current_veto_threshold
     return Float::INFINITY if non_abstain_voting_power.zero?
     non_abstain_voting_power * @petition.chain.governance_params.tally_param_veto

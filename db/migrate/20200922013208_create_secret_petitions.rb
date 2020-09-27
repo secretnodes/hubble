@@ -11,7 +11,7 @@ class CreateSecretPetitions < ActiveRecord::Migration[5.2]
       t.decimal :tally_result_no, default: 0, null: false
       t.datetime :voting_start_time
       t.datetime :voting_end_time
-      t.boolean :finalized
+      t.boolean :finalized, default: false, null: false
       
       t.timestamps
     end

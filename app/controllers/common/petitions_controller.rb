@@ -1,5 +1,6 @@
 class Common::PetitionsController < Common::BaseController
   before_action :ensure_chain
+  before_action :ensure_current_user, only: [:new, :create]
 
   def index
     @petitions = @chain.namespace::Petition.ordered_by_submit_time
@@ -18,7 +19,8 @@ class Common::PetitionsController < Common::BaseController
       petition_params.merge(
         voting_start_time: Time.now,
         voting_end_time: end_date,
-        status: :voting_period
+        status: :voting_period,
+        user_id: current_user.id
       )
     )
 

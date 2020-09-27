@@ -1,5 +1,6 @@
 class Common::PetitionVotesController < Common::BaseController
   before_action :ensure_chain
+  before_action :ensure_current_user
 
   def create
     petition = @chain.petitions.find params[:petition_id]
@@ -13,15 +14,6 @@ class Common::PetitionVotesController < Common::BaseController
     else
       flash[:error] = "There was an error recording your vote. Please try again."
       redirect_back(fallback_location: namespaced_path('petitions'))
-    end
-  end
-
-  private
-
-  def ensure_current_user
-    unless current_user
-      flash[:error] = 'You must be signed in to do that!'
-      redirect_back(fallback_location: namespaced_path('petition') )
     end
   end
 end

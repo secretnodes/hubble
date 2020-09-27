@@ -1,6 +1,6 @@
 <% content_for :body_class, 'petition-show' %>
 
-<%= render partial: '/common/shared/chain_header', locals: { accounts_link: true, transactions_link: true, swaps_link: true, governance_link: true, contracts_link: true, summary_link: true, events_link: true } %>
+<%= render partial: '/common/shared/chain_header', locals: { accounts_link: true, transactions_link: true, swaps_link: true, governance_link: true, petitions_link: true, contracts_link: true, summary_link: true, events_link: true } %>
 <%= render partial: '/common/shared/sync_errors' %>
 
 <div class='row'>
@@ -80,9 +80,11 @@
   </div>
 
   <div class='col-12 col-md-3'>
-    <div class='d-flex align-items-center justify-content-center mb-4'>
-        <button class='btn btn-outline-primary d-block' data-toggle='modal' data-target='#proposal-vote-modal'>Vote</button>
-    </div>
+    <% if @petition.in_voting_period? %>
+      <div class='d-flex align-items-center justify-content-center mb-4'>
+          <button class='btn btn-outline-primary d-block' data-toggle='modal' data-target='#proposal-vote-modal'>Vote</button>
+      </div>
+    <% end %>
     <div class='card'>
       <h5 class='card-header d-flex align-items-center justify-content-between'>
         Info

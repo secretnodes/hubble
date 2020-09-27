@@ -18,16 +18,18 @@ module GovernanceHelper
       return "Proposal passed."
     end
 
-    if proposal.try(:in_deposit_period?)
-      return "Waiting for deposits..."
-    end
-
     if !tally.quorum_reached?
       return "Waiting to reach quorum <span class='text-muted text-sm'>(<span class='technical'>#{round_if_whole(tally.quorum_percentage * 100, 2)}%</span>)</span>..."
     end
 
-    if tally.percent_nowithveto_to_win >= 100
-      return "Proposal fails due to veto."
+    if proposal.class.to_s.include?("Proposal")
+      if tally.percent_nowithveto_to_win >= 100
+        return "Proposal fails due to veto."
+      end
+
+      if proposal.try(:in_deposit_period?)
+        return "Waiting for deposits..."
+      end
     end
 
     if tally.percent_yes_to_win >= 100

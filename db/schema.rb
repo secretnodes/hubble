@@ -867,7 +867,7 @@ ActiveRecord::Schema.define(version: 2020_09_22_020936) do
     t.decimal "tally_result_no", default: "0.0", null: false
     t.datetime "voting_start_time"
     t.datetime "voting_end_time"
-    t.boolean "finalized"
+    t.boolean "finalized", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
