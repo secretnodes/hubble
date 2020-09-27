@@ -4,6 +4,6 @@ production:
   :concurrency: 20
 :queues:
   - [default, 0]
-  - [sync, 1]
+  - [sync, 2]
   - [balances, 2]
   - [alerts, 4]
