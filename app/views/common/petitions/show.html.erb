@@ -63,11 +63,7 @@
                   <tr data-vote-id='<%= vote.id %>'>
                     <td class='text-uppercase text-md vote-option vote-<%= vote.option.downcase %>'><%= vote.option %></td>
                     <td>
-                      <% if vote.user -%>
-                        <%= vote.user.email %>
-                      <% else -%>
-                        &mdash;
-                      <% end -%>
+                      
                     </td>
                   </tr>
                 <% end -%>
