@@ -1,4 +1,4 @@
-<h1>Welcome, <%= @user.email %>!</h1>
+<h1>Welcome, <%= @resource.email %>!</h1>
 <p>Thanks for signing up for Puzzle.</p>
 <p>Click the button or link below to verify your account:</p>
 <!-- Action -->
@@ -11,7 +11,7 @@
             <table border='0' cellspacing='0' cellpadding='0'>
               <tr>
                 <td>
-                  <a href='<%= @confirm_url %>' class='button button--' target='_blank'>Verify Email</a>
+                  <p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
                 </td>
               </tr>
             </table>
@@ -27,10 +27,10 @@
     <td class='attributes_content'>
       <table width='100%' cellpadding='0' cellspacing='0'>
         <tr>
-          <td class='attributes_item'><strong>Login Page:</strong> <a href='<%= login_url %>'><%= login_url %></a></td>
+          <td class='attributes_item'><strong>Login Page:</strong> <a href='<%= new_user_session_url %>'><%= new_user_session_url %></a></td>
         </tr>
         <tr>
-          <td class='attributes_item'><strong>Login Email:</strong> <%= @user.email %></td>
+          <td class='attributes_item'><strong>Login Email:</strong> <%= @resource.email %></td>
         </tr>
       </table>
     </td>
@@ -44,7 +44,7 @@
   <tr>
     <td>
       <p class='sub'>If you’re having trouble with the button above, copy and paste the URL below into your web browser (it will only work once!).</p>
-      <p class='sub'><%= @confirm_url %></p>
+      <p class='sub'><%= link_to confirmation_url(@resource, confirmation_token: @token), confirmation_url(@resource, confirmation_token: @token) %></p>
     </td>
   </tr>
 </table>

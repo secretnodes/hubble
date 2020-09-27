@@ -11,7 +11,7 @@
     </tr>
   </thead>
   <tbody>
-    <% if @users.empty? -%>
+    <% if @users.empty? -%> 
       <tr>
         <td colspan=2' class='pt-3'><strong class='text-warning'>No users!</strong></td>
       </tr>
@@ -19,8 +19,7 @@
     <% @users.find_each do |user| -%>
       <tr>
         <td>
-          <%= user.name %>
-          <small class='ml-2 text-muted'><%= user.email %></small>
+          <%= user.email %>
           <% if !user.verified? -%>
             <span class='badge badge-danger'>pending</span>
           <% end -%>

@@ -136,7 +136,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get '/account_balance' => 'accounts#balance', as: :account_balance
       get '/account_info' => 'accounts#info', as: :account_info
-
+      get '/swap_total' => 'swaps#tokens_burned', as: :burned
       resources :wallets, only: [:create]
     end
   end

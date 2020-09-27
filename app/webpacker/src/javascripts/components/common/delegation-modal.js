@@ -5,7 +5,7 @@ import { Keplr } from './keplr.js'
 class DelegationModal {
   constructor( el ) {
     this.DELEGATION_GAS_WANTED = 200000
-    this.REDELEGATION_GAS_WANTED = 220000
+    this.REDELEGATION_GAS_WANTED = 250000
     this.GAS_PRICE = 0.25
     this.MEMO = 'https://puzzle.report'
     this.modal = el
@@ -329,6 +329,12 @@ class DelegationModal {
       this.modal.find('.delegation-amount').val( this.maxRedelegation() ).trigger('set-to-max')
     } )
 
+    this.modal.find('.to-validator').on( 'change', ( e ) => {
+      this.validator_dst_address = $(e.currentTarget).val();
+      this.validateRedelegationForm(e);
+      console.log(this.validator_dst_address);
+    });
+
     this.modal.find('.delegation-amount').on( 'input set-to-max', ( e ) => {
       const amount = parseFloat( $(e.currentTarget).val() )
       if( isNaN( amount ) ) {
@@ -375,7 +381,6 @@ class DelegationModal {
       this.modal.find('.modal-dialog').removeClass('modal-lg')
       this.modal.find('.step-confirm').show()
 
-      this.validator_dst_address = this.modal.find('.to-validator option:selected').val();
       let broadcastError = null;
 
       if (this.wallet_type == "keplr") {
@@ -559,6 +564,49 @@ class DelegationModal {
         } else if (this.modal.find('.delegation-form').data( 'disabled' ) == false){
           this.modal.find('.delegation-form').data( 'disabled', true )
           this.modal.find('.submit-delegation').attr( 'disabled', 'disabled' )
+        }
+      }
+  }
+
+  validateRedelegationForm( e ) {
+    const amount = parseFloat( this.modal.find('.redelegation-amount').val() )
+      if( isNaN( amount ) ) {
+        this.modal.find('.amount-warning').hide()
+        this.modal.find('.amount-error').hide()
+        this.modal.find('.redelegation-form').data( 'disabled', true )
+        this.modal.find('.submit-redelegation').attr( 'disabled', 'disabled' )
+        this.modal.find('.transaction-total').html( '&mdash;' )
+        return
+      }
+
+      this.modal.find('.transaction-total').text( `${this.redelegationTotal(amount)} ${App.config.denom}` )
+
+      if( !this.checkRedelegationAmount( amount ) ) {
+        this.modal.find('.amount-warning').hide()
+        this.setRedelegationAmount( null )
+        const msg = amount == 0 ?
+          `You can't redelegate <tt>0 ${App.config.denom}</tt>...` :
+          `The amount to redelegate must take transaction fees into account.<br/><b>Max: <tt class='text-md'>${this.maxRedelegation()} ${App.config.denom}</tt></b>`
+        this.modal.find('.amount-error').html(msg).show()
+        this.modal.find('.submit-redelegation').attr( 'disabled', 'disabled' )
+      }
+      else {
+        if( amount == this.maxRedelegation() ) {
+          const msg = `It is recommended to leave some ${App.config.denom} in your account to pay fees on future transactions!`
+          this.modal.find('.amount-warning').html(msg).show()
+        }
+        else {
+          this.modal.find('.amount-warning').hide()
+        }
+        this.setRedelegationAmount( amount )
+        this.modal.find('.amount-error').hide()
+
+        if ( this.fromValidatorAddress != undefined && this.fromValidatorAddress != "null" && this.validator_dst_address != undefined && this.validator_dst_address != 'null' ) {
+          this.modal.find('.redelegation-form').data( 'disabled', false )
+          this.modal.find('.submit-redelegation').removeAttr( 'disabled' )
+        } else if (this.modal.find('.redelegation-form').data( 'disabled' ) == false){
+          this.modal.find('.redelegation-form').data( 'disabled', true )
+          this.modal.find('.submit-redelegation').attr( 'disabled', 'disabled' )
         }
       }
   }

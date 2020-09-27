@@ -2,8 +2,8 @@ class ChainSyncWorker
   include Sidekiq::Worker
   sidekiq_options queue: :sync, retry: false, backtrace: true
 
-  def perform(network='secret')
-    network.titleize.constantize::Chain.enabled.find_each do |chain|
+  def perform(network='secret', testnet=false)
+    network.titleize.constantize::Chain.enabled.where(testnet: testnet).find_each do |chain|
       TaskLock.with_lock!(:sync, "#{network}-#{chain.ext_id}") do
         next if chain.dead?
         log = Stats::SyncLog.start( chain )
@@ -99,8 +99,8 @@ class ChainSyncWorker
     log.report_error $!
   ensure
     workers = Sidekiq::Workers.new
-    if workers.select { |w| w[2]['payload']['class'] == 'ChainSyncWorker' }.size < 2
-      ChainSyncWorker.perform_in(1.second, network)
+    if workers.select { |w| w[2]['payload']['class'] == 'ChainSyncWorker' }.size < 3
+      ChainSyncWorker.perform_in(1.second, network, testnet)
     end
   end
 end

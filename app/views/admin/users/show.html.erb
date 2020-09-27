@@ -3,8 +3,7 @@
 <h2 class='header'>
   <div>
     <label class='text-muted'>User</label>
-    <%= @user.name %>
-    <small class='text-muted'><%= @user.email %></small>
+    <%= @user.email %>
   </div>
   <div class='d-flex justify-content-end align-items-center'>
     <a class='btn btn-sm btn-outline-warning mr-2 <%= 'disabled' if !@user.verified? %>' <%= 'disabled=disabled' if !@user.verified? %> href='<%= masq_admin_user_path(@user) %>'>login-as</a>
