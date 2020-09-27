@@ -99,7 +99,7 @@ class ChainSyncWorker
     log.report_error $!
   ensure
     workers = Sidekiq::Workers.new
-    if workers.select { |w| w[2]['payload']['class'] == 'ChainSyncWorker' }.size < 2
+    if workers.select { |w| w[2]['payload']['class'] == 'ChainSyncWorker' }.size < 3
       ChainSyncWorker.perform_in(1.second, network, testnet)
     end
   end
