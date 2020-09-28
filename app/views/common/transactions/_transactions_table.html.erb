@@ -63,11 +63,11 @@
               </td>
               <td data-order='<%= tr.chain_id %>'>
                 <div class="pb-2">
-                  <%= link_to tr.chain_id, namespaced_path( nil, @chain ), class: 'badge badge-pill badge-dark text-uppercase mb-3', style: 'cursor: pointer'%>
+                  <%= link_to tr.chain_id, namespaced_path( nil, tr.chain ), class: 'badge badge-pill badge-dark text-uppercase mb-3', style: 'cursor: pointer'%>
                 </div>
               </td>
               <td class='text-right'>
-                <a class='btn btn-outline-primary btn-sm' href='<%= namespaced_path( 'block_transaction', tr.height, tr ) %>'>Details...</a>
+                <a class='btn btn-outline-primary btn-sm' href='<%= namespaced_path( 'block_transaction', tr.height, tr, chain: tr.chain ) %>'>Details...</a>
               </td>
             </tr>
           <% end -%>

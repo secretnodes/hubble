@@ -1,9 +1,11 @@
 class Common::TransactionsController < Common::BaseController
+  before_action :ensure_chain
 
   def index
     @page = params[:page] || 1
-    @transactions = @chain.txs.paginate(page: @page, per_page: 50)
-    @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr, tr.hash_id) }
+    chain_ids = @chain.namespace::Chain.where(testnet: @chain.testnet?).pluck(:id)
+    @transactions = @chain.namespace::Transaction.where(chain_id: chain_ids).reorder(timestamp: :desc).paginate(page: @page, per_page: 50)
+    @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(tr.chain, tr, tr.hash_id) }
     @transactions_total = @transactions.count
     @type = 'transactions'
 
@@ -16,7 +18,7 @@ class Common::TransactionsController < Common::BaseController
   def show
     begin
       transaction = @chain.txs.find_by_hash_id params[:id]
-      @decorated_tx = @chain.namespace::TransactionDecorator.new( @chain, transaction, params[:id] )
+      @decorated_tx = @chain.namespace::TransactionDecorator.new( transaction.chain, transaction, params[:id] )
       @block = @chain.blocks.find_by( height: @decorated_tx.height ) ||
                @namespace::Block.stub( @chain, @decorated_tx.height )
     end
@@ -33,12 +35,13 @@ class Common::TransactionsController < Common::BaseController
 
   def swaps
     @page = params[:page] || 1
-    @raw_transactions = @chain.txs.swap
+    chain_ids = @chain.namespace::Chain.where(testnet: @chain.testnet?).pluck(:id)
+    @raw_transactions = @chain.namespace::Transaction.swap.where(chain_id: chain_ids).reorder(timestamp: :desc)
     @transactions = @raw_transactions.paginate(page: @page, per_page: 50)
-    @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr, tr.hash_id) }
+    @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(tr.chain, tr, tr.hash_id) }
     @transactions_total = @transactions.count
     @swap_address_count = @chain.namespace::Transaction.swap_address_count
-    @total_swaps_data = @chain.txs.unscoped.where(transaction_type: :swap).group_by_day(:timestamp).count.to_json
+    @total_swaps_data = @chain.namespace::Transaction.unscoped.where(transaction_type: :swap, chain_id: chain_ids).group_by_day(:timestamp).count.to_json
     @type = 'swaps'
 
     @total_swap = 0
@@ -55,12 +58,23 @@ class Common::TransactionsController < Common::BaseController
 
   def contracts
     @page = params[:page] || 1
-    @raw_transactions = @chain.txs.where(transaction_type: [:store_contract_code, :initialize_contract, :execute_contract])
+    chain_ids = @chain.namespace::Chain.where(testnet: @chain.testnet?).pluck(:id)
+
+    @raw_transactions = @chain.namespace::Transaction.where(
+      chain_id: chain_ids,
+      transaction_type: [:store_contract_code, :initialize_contract, :execute_contract]
+    ).reorder(timestamp: :desc)
+
     @transactions = @raw_transactions.paginate(page: @page, per_page: 50)
-    @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(@chain, tr, tr.hash_id) }
+    @decorated_txs = @transactions.map { |tr| @chain.namespace::TransactionDecorator.new(tr.chain, tr, tr.hash_id) }
+
     @transactions_total = @raw_transactions.count
     @deployed_total = @raw_transactions.store_contract_code.where(error_message: nil).count
-    @total_contracts_data = @chain.txs.unscoped.where(transaction_type: [:store_contract_code, :initialize_contract, :execute_contract]).group_by_day(:timestamp).count.to_json
+    @total_contracts_data = @chain.namespace::Transaction.unscoped.where(
+      chain_id: chain_ids,
+      transaction_type: [:store_contract_code, :initialize_contract, :execute_contract]
+    ).group_by_day(:timestamp).count.to_json
+
     @type = 'contracts'
 
     @total_contracts = 0

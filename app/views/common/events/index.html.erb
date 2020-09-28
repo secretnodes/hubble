@@ -14,10 +14,6 @@
   </small>
 </h3>
 
-<div
-  class="events-container"
-  data-controller="content-loader"
-  data-content-loader-url="<%= namespaced_path( 'events_table', page: @page, chain: @chain ) %>"
-  data-content-loader-refresh-interval="30000">
+<div>
   <%= render partial: 'events_table', locals: { events: @events, page: @page, total: @total } %>
 </div>

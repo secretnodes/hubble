@@ -45,6 +45,15 @@ class Common::AccountDecorator
 
   def delegation_transactions
     begin
+      unless @_delegation_transactions.present?
+        @_delegation_transactions = []
+        @accounts = @chain.namespace::Account.where(address: @account.address)
+        @accounts.each do |account|
+          @_delegation_transactions += @account.txs 
+        end
+
+        @_delegation_transactions = @_delegation_transactions.uniq.sort { |a,b| a.timestamp <=> b.timestamp }.reverse
+      end
       @_delegation_transactions ||= @account.txs
 
     rescue @chain.namespace::SyncBase::CriticalError
@@ -54,7 +63,7 @@ class Common::AccountDecorator
     return nil if @_delegation_transactions.nil?
 
     @_delegation_transactions
-      .map { |dt| @chain.namespace::TransactionDecorator.new( @chain, dt, dt.hash_id) }
+      .map { |dt| @chain.namespace::TransactionDecorator.new( dt.chain, dt, dt.hash_id) }
       .reject(&:error?)
   end
 

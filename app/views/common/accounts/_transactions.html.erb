@@ -36,7 +36,7 @@
               </div>
             </td>
             <td>
-              <a href='<%= namespaced_path( 'block', tr.height ) %>'>
+              <a href='<%= namespaced_path( 'block', tr.height, chain: tr.chain ) %>'>
                 <span class='technical'><%= tr.height %></span>
               </a>
             <td>
@@ -45,7 +45,7 @@
               <% end -%>
             </td>
             <td class='text-right'>
-              <a class='btn btn-outline-primary btn-sm' href='<%= namespaced_path( 'block_transaction', tr.height, tr ) %>'>Details...</a>
+              <a class='btn btn-outline-primary btn-sm' href='<%= namespaced_path( 'block_transaction', tr.height, tr, chain: tr.chain ) %>'>Details...</a>
             </td>
           </tr>
         <% end -%>

@@ -13,7 +13,7 @@ class Common::BaseController < ApplicationController
 
   def get_chain_from_route
     @namespace = self.class.name.split('::').first.constantize
-    @chain = @namespace::Chain.alive.find_by( slug: (params[:chain_id] || params[:id]).try(:downcase) )
+    @chain = @namespace::Chain.find_by( slug: (params[:chain_id] || params[:id]).try(:downcase) )
   end
 
   def ensure_chain

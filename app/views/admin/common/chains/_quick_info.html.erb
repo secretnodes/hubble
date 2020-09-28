@@ -1,4 +1,4 @@
-<% chains = chains.order('last_sync_time DESC NULLS LAST') -%>
+<% chains = chains.reorder('last_sync_time DESC NULLS LAST') -%>
 
 <table class='table m-0'>
   <thead>

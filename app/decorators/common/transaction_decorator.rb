@@ -241,6 +241,10 @@ class Common::TransactionDecorator
     @chain.slug
   end
 
+  def chain
+    @chain
+  end
+
   private
 
   def get_amount_msg_type
