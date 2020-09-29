@@ -70,6 +70,8 @@ class Common::TransactionsController < Common::BaseController
 
     @transactions_total = @raw_transactions.count
     @deployed_total = @raw_transactions.store_contract_code.where(error_message: nil).count
+    @executions_total = @raw_transactions.execute_contract.where(error_message: nil).count
+    
     @total_contracts_data = @chain.namespace::Transaction.unscoped.where(
       chain_id: chain_ids,
       transaction_type: [:store_contract_code, :initialize_contract, :execute_contract]

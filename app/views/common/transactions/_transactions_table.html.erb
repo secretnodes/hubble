@@ -15,6 +15,7 @@
           | <%= format_amount(@total_swap, @chain, denom: 'eng', hide_units: true, in_millions: true) %> ENG Swapped for SCRT to <%= @swap_address_count %> Addresses</small>
         <% elsif type == "contracts" %>
           | Contracts Deployed: <%= @deployed_total %>
+          | Computation Count: <%= @executions_total %>
         <% end %>
         </small>
       </h4>
