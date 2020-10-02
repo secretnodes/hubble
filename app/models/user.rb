@@ -15,6 +15,7 @@ class User < ApplicationRecord
   has_many :wallets
 
   validates :email, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :username, uniqueness: true, allow_blank: true
 
   default_scope -> { where.not( deleted: true ) }
 
