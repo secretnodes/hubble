@@ -6,7 +6,7 @@ $(document).ready( function() {
     const input = $(e.currentTarget)
     this.voteOption = input.val()
     input.parents('.vote-option').addClass('selected').siblings('.vote-option').removeClass('selected')
-    this.modal.find('.proposal-form').data( 'disabled', false )
-    this.modal.find('.submit-proposal-vote').removeAttr( 'disabled' )
+    $('.proposal-form').data( 'disabled', false )
+    $('.submit-proposal-vote').removeAttr( 'disabled' )
   } );
 });

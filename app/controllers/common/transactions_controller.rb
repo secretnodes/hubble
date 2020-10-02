@@ -18,7 +18,8 @@ class Common::TransactionsController < Common::BaseController
   def show
     begin
       transaction = @chain.txs.find_by_hash_id params[:id]
-      @decorated_tx = @chain.namespace::TransactionDecorator.new( transaction.chain, transaction, params[:id] )
+      chain = transaction.present? ? transaction.chain : @chain
+      @decorated_tx = @chain.namespace::TransactionDecorator.new( chain, transaction, params[:id] )
       @block = @chain.blocks.find_by( height: @decorated_tx.height ) ||
                @namespace::Block.stub( @chain, @decorated_tx.height )
     end
@@ -71,7 +72,7 @@ class Common::TransactionsController < Common::BaseController
     @transactions_total = @raw_transactions.count
     @deployed_total = @raw_transactions.store_contract_code.where(error_message: nil).count
     @executions_total = @raw_transactions.execute_contract.where(error_message: nil).count
-    
+
     @total_contracts_data = @chain.namespace::Transaction.unscoped.where(
       chain_id: chain_ids,
       transaction_type: [:store_contract_code, :initialize_contract, :execute_contract]
