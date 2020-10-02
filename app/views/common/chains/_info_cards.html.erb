@@ -1,3 +1,16 @@
+<div class='card'>
+  <h5 class='card-header'>Current Price</h5>
+  <div class='card-body'>
+    <a class='large-number'>
+      <span class='technical'>$<%= @latest_block.usd_price %></span>
+    </a>
+    <div class='sub-info'>
+      <small class='text-muted technical'><%= @latest_block.timestamp.strftime('%Y-%m-%d %H:%M %Z') %></small>
+      <small class='text-muted'><%= time_ago_in_words( @latest_block.timestamp, true ) %> ago</small>
+    </div>
+  </div>
+</div>
+
 
 <% if @chain.total_supply.present? %>
   <div class='card'>
