@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_22_020936) do
+ActiveRecord::Schema.define(version: 2020_10_02_204318) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -740,6 +740,7 @@ ActiveRecord::Schema.define(version: 2020_09_22_020936) do
     t.string "transactions", array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "usd_price", precision: 8, scale: 2
     t.index ["chain_id", "height", "timestamp"], name: "index_secret_b_on_c__h__t"
     t.index ["chain_id", "height"], name: "index_secret_b_on_c__h", unique: true
     t.index ["chain_id", "id_hash"], name: "index_secret_b_on_hash", unique: true
@@ -1140,6 +1141,7 @@ ActiveRecord::Schema.define(version: 2020_09_22_020936) do
     t.string "encrypted_otp_secret_salt"
     t.boolean "otp_required_for_login", default: false
     t.integer "consumed_timestep"
+    t.string "username", default: ""
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
