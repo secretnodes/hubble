@@ -46,7 +46,7 @@
             </tr>
           </thead>
           <tbody>
-            <% @chain.validators.each do |v| -%>
+            <% @chain.validators.shuffle.each do |v| -%>
               <tr>
                 <td>
                   <a href='<%= namespaced_path( 'validator', v ) %>'>

@@ -38,7 +38,7 @@ class ValidatorTable {
       paging: false,
       autoWidth: false,
       className: 'validator-table',
-      order: [ [1, 'desc'], [2, 'desc'] ],
+      order: [],
       'columns': _.compact( [
         _.includes(this.skipColumns, 'address') ? null : {
           width: 'auto',
