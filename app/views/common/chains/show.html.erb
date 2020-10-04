@@ -8,7 +8,7 @@
     <section class='validators'>
       <div class='validator-table-header'>
         <h4>
-          Validators
+          <%= @chain.namespace.to_s %> Nodes
           <small>&nbsp;&mdash; <%= @chain.validators.count %> total&nbsp;</small>
           <div class='tiny-average-active-validators-chart-container'>
             <canvas class='average-active-validators-chart'></canvas>
