@@ -32,7 +32,10 @@
         <h5 class='card-header'>Balance</h5>
         <div class='card-body'>
           <% @account.balances.each do |balance| -%>
-            <div><%= format_amount( balance[:amount], @chain, denom: balance[:denom] ) %></div>
+            <div>
+              <%= format_amount( balance[:amount], @chain, denom: balance[:denom] ) %> |
+              <span class="text-monospace"><%= convert_to_usd(balance[:amount] / 10 ** @chain.token_map[balance[:denom]]['factor'].to_f) %></span> <span class="text-sm text-muted">USD</span>
+            </div>
           <% end -%>
         </div>
       </div>
@@ -41,7 +44,10 @@
         <div class='card-body'>
           <% if @account.has_outstanding_rewards? -%>
             <% @account.outstanding_rewards.each do |reward| -%>
-              <div><%= format_amount( reward[:amount], @chain, denom: reward[:denom] ) %></div>
+              <div>
+                <%= format_amount( reward[:amount], @chain, denom: reward[:denom] ) %> |
+                <span class="text-monospace"><%= convert_to_usd(reward[:amount] / 10 ** @chain.token_map[reward[:denom]]['factor'].to_f) %></span> <span class="text-sm text-muted">USD</span>
+              </div>
             <% end -%>
           <% else -%>
             <span class='text-muted'>None</span>
@@ -52,10 +58,12 @@
         <h5 class='card-header'>Delegation</h5>
         <div class='card-body'>
           <label class='text-muted mb-0 mt-0'>Bonded</label>
-          <%= format_amount( @account.total_delegations( filter: :bonded ), @chain, denom: @chain.token_map[@chain.primary_token]['display'] ) %>
+          <%= format_amount( @account.total_delegations( filter: :bonded ), @chain, denom: @chain.token_map[@chain.primary_token]['display'] ) %> |
+          <span class="text-monospace"><%= convert_to_usd(@account.total_delegations(filter: :bonded)) %></span> <span class="text-sm text-muted">USD</span>
 
           <label class='text-muted mb-0 mt-3'>Unbonding</label>
-          <%= format_amount( @account.total_delegations( filter: :unbonding ), @chain, denom: @chain.token_map[@chain.primary_token]['display'] ) %>
+          <%= format_amount( @account.total_delegations( filter: :unbonding ), @chain, denom: @chain.token_map[@chain.primary_token]['display'] ) %> |
+          <span class="text-monospace"><%= convert_to_usd(@account.total_delegations(filter: :unbonding)) %></span> <span class="text-sm text-muted">USD</span>
         </div>
       </div>
     </div>

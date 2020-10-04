@@ -63,4 +63,9 @@ module FormattingHelper
     number_with_delimiter round_if_whole(num, precision)
   end
 
+  def convert_to_usd(amount, latest_block = nil)
+    latest_block ||= @latest_block
+    number_to_currency(amount * latest_block.usd_price)
+  end
+
 end

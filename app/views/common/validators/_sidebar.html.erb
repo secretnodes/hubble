@@ -1,6 +1,15 @@
 <% latest_block = @chain.blocks.first -%>
 
 <div class='card'>
+  <h5 class='card-header'>Current Stake Value</h5>
+  <div class='card-body'>
+    <div class='large-number'>
+      <%= convert_to_usd(@validator.current_voting_power) %> <span class='text-sm text-muted'>USD</span>
+    </div>
+  </div>
+</div>
+
+<div class='card'>
   <h5 class='card-header'>Current Voting Power</h5>
   <div class='card-body'>
     <div class='large-number'><%= format_amount(@validator.current_voting_power, denom: @chain.token_map[@chain.primary_token]['display']) %></div>
