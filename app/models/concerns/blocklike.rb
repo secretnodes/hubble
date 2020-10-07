@@ -111,6 +111,9 @@ module Blocklike
         end
       end
 
+      response = CoinGeckoClient.new.get_usd_price(chain.namespace.to_s.downcase)
+      usd_price = response.code == 200 ? JSON.parse(response.body)[chain.namespace.to_s.downcase]['usd'] : 0.00
+
       obj = {
         chain_id: chain.id,
         height: height,
@@ -119,7 +122,8 @@ module Blocklike
         proposer_address: header['proposer_address'],
         precommitters: addresses,
         validator_set: validator_set,
-        transactions: transactions
+        transactions: transactions,
+        usd_price: usd_price
       }
 
       if (t = self.new( obj )).invalid?
