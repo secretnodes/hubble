@@ -13,7 +13,7 @@ class TransactionsTable {
       autoWidth: false,
       className: 'transactions-table',
       stripeClasses: isEmpty ? [] : ['even', 'odd'],
-      order: isEmpty ? [] : [ [1, 'desc'], [2, 'desc'] ],
+
       'columns': isEmpty ? [ { width: '45%' } ] : _.compact( [
         {
           width: 'auto',

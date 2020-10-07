@@ -114,7 +114,7 @@ module Validatorlike
   end
 
   def voting_power_at_height( height )
-    block = chain.blocks.find_by( height: height ) || Cosmos::Block.stub_from_cache( chain, height )
+    block = chain.blocks.find_by( height: height ) || chain.namespace::Block.stub_from_cache( chain, height )
     block.validator_set[self.address]
   end
 
