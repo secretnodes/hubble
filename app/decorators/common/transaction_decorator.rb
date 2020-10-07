@@ -8,10 +8,9 @@ class Common::TransactionDecorator
     @namespace = chain.namespace
     @transaction = transaction
     @transaction_hash = transaction_hash
-
     unless @transaction
       syncer = @chain.syncer
-      @raw_transaction = syncer.get_transaction( transaction_hash )
+      @raw_transaction = syncer.get_transactions("tx.minheight": height, "tx.maxheight": height )['txs'].select { |obj| obj['txhash'].downcase == transaction_hash.downcase }.first
     end
     raise RuntimeError.new("Could not retrieve transaction: #{transaction_hash}") if @transaction.nil? && @raw_transaction.nil?
   end
