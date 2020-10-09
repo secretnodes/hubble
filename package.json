@@ -30,6 +30,7 @@
     "moment-timezone": "^0.5.31",
     "popper.js": "^1.16.1",
     "process": "^0.11.10",
+    "rails-erb-loader": "^5.5.2",
     "regenerator-runtime": "^0.13.5",
     "secp256k1": "^4.0.1",
     "semver": "^7.3.2",

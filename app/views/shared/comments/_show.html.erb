@@ -1,0 +1,5 @@
+<div class="comment-container p-3 border border-primary">
+  <span class="d-inline"><%= comment.user.username %></span><br />
+  <p class="d-inline"><small><%= distance_of_time_in_words(Time.now.utc, comment.created_at, highest_measures: 2) %> ago</small></span>
+  <div class="mt-3 comment-body"><%= comment.comment %></div>
+</div>

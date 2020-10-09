@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
   resources :wallets, only: %i{ index }
 
+  resources :comments, only: %i{ new create }
+
   put '/default_wallet' => 'wallets#update', as: :default_wallet
   
   # PUZZLE

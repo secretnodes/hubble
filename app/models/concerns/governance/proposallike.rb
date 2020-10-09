@@ -8,6 +8,8 @@ module Governance::Proposallike
     has_many :deposits, class_name: "#{namespace}::Governance::Deposit", dependent: :delete_all
     has_many :votes, class_name: "#{namespace}::Governance::Vote", dependent: :delete_all
 
+    acts_as_commentable
+
     scope :ordered_by_submit_time, -> { order( submit_time: :desc ) }
     scope :voting_open, -> { where( 'voting_end_time > ?', Time.now ) }
   end
