@@ -69,7 +69,7 @@ echo "OK"
 
 echo
 echo "Creating admin user..."
-cmd="export PATH=/puzzle/ruby-2.5.1/bin:/puzzle/node-8.12/bin:\$PATH && cd /puzzle/app/current && bin/rails runner -e $PUZZLE_RAILS_ENV \"admin = Administrator.find_by(email: '$PUZZLE_ADMIN_EMAIL') || Administrator.create(name: 'Admin', email: '$PUZZLE_ADMIN_EMAIL', one_time_setup_token: SecureRandom.hex); exit(0) if admin.is_set_up?; puts %{Admin Setup: https://$PUZZLE_DOMAIN/admin/sessions/new?token=#{admin.one_time_setup_token}}\""
+cmd="export PATH=/puzzle/ruby-2.7.1/bin:/puzzle/node-8.12/bin:\$PATH && cd /puzzle/app/current && bin/rails runner -e $PUZZLE_RAILS_ENV \"admin = Administrator.find_by(email: '$PUZZLE_ADMIN_EMAIL') || Administrator.create(name: 'Admin', email: '$PUZZLE_ADMIN_EMAIL', one_time_setup_token: SecureRandom.hex); exit(0) if admin.is_set_up?; puts %{Admin Setup: https://$PUZZLE_DOMAIN/admin/sessions/new?token=#{admin.one_time_setup_token}}\""
 ssh -i $PUZZLE_KEY $PUZZLE_REMOTE_USER@$PUZZLE_HOST "$cmd"
 echo "OK"
 
