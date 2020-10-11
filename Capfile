@@ -1,9 +1,8 @@
 require 'capistrano/setup'
-
+require 'rvm/capistrano'
 require 'capistrano/deploy'
 require 'capistrano/rails'
 require 'capistrano/npm'
-require 'rvm/capistrano'
 require 'whenever/capistrano' unless ENV['NO_WHENEVER_SETUP']
 require 'capistrano/linked_files'
 require 'capistrano/rails/assets'
