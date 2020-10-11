@@ -306,6 +306,8 @@ GEM
       rqrcode_core (~> 0.1)
     rqrcode_core (0.1.2)
     ruby_dep (1.5.0)
+    rvm-capistrano (1.5.0)
+      capistrano (>= 2.15.4)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
@@ -432,6 +434,7 @@ DEPENDENCIES
   rinku
   rollbar
   rqrcode
+  rvm-capistrano
   sass-rails
   sidekiq
   sqlite3
