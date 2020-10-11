@@ -1,5 +1,5 @@
 require 'capistrano/setup'
-require 'rvm/capistrano'
+
 require 'capistrano/deploy'
 require 'capistrano/rails'
 require 'capistrano/npm'

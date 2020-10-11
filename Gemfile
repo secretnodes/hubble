@@ -67,7 +67,6 @@ gem 'devise-two-factor'
 group :development, :test do
   gem 'puma'
   gem 'capistrano', '~> 3.13', require: false
-  gem 'rvm-capistrano'
   gem 'capistrano-rails', '~> 1.4', require: false
   gem 'capistrano-linked-files', require: false
   gem 'capistrano-npm', require: false

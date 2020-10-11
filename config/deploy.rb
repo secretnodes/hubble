@@ -11,10 +11,6 @@ set :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 set :deploy_to, '/puzzle/app'
 set :init_system, :systemd
 
-set :rvm_ruby_string, :local
-
-before 'deploy', 'rvm:install_rvm' 
-before 'deploy', 'rvm:install_ruby'
 
 # Default value for :linked_files is []
 before 'deploy:check:linked_files', 'linked_files:upload_files'
@@ -26,7 +22,7 @@ append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/syst
 set :npm_flags, '--production --silent --no-progress'
 
 # Default value for default_env is {}
-set :default_env, { path: '/puzzle/ruby-2.7.1/bin:/puzzle/node-14.4.3/bin:$PATH' }
+set :default_env, { path: '/puzzle/ruby-2.7.1/bin:/puzzle/node-14.4.3/bin:$PATH', ruby_version: 'ruby 2.7.1' }
 
 # Default value for local_user is ENV['USER']
 set :local_user, -> { ENV['DEPLOY_USER'] } if ENV['DEPLOY_USER']
