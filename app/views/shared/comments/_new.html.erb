@@ -1,5 +1,5 @@
 <div class="new-comment-form">
-  <%= form_with model: Comment.new do |f| %>
+  <%= form_with model: Comment.new, local: true do |f| %>
     <div class="row">
       <div class='form-group col-12'>
         <label class='d-block'>Comment</label>

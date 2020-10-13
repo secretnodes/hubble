@@ -1,18 +1,27 @@
 <div class='comments-container' data-controller='comment'>
   <h3 class="mb-5 text-center">Comments</h3>
   <div class='comments-nav d-flex d-inline-flex justify-content-between w-100'>
-    <div class='btn nav-btn new-comment-btn'
-      data-action="click->comment#toggleNew"
-
-    >Add A New Comment</div>
+    <% if current_user.present? %>
+      <div class='btn nav-btn new-comment-btn'
+        data-action="click->comment#toggleNew"
+      >Add A New Comment</div>
+    <% end %>
+    <% if params[:comment_sort] == 'DESC' %>
+      <%= link_to "Oldest First", "#{current_path}?comment_sort=ASC", class: 'btn btn-primary comment-sort-btn' %>
+    <% else %>
+      <%= link_to "Newest First", "#{current_path}?comment_sort=DESC", class: 'btn btn-primary comment-sort-btn' %>
+    <% end %>
     <div class='btn nav-btn collapse-comments-btn'>Collapse Comments</div>
+    <div class='btn nav-btn show-comments-btn d-none'>Show Comments</div>
   </div>
   <div class='comments'>
     <% comments.each do |comment| %>
       <%= render partial: '/shared/comments/show', locals: { comment: comment } %>
     <% end %>
   </div>
-  <div class='d-none new-comment-container'>
-    <%= render partial: '/shared/comments/new', locals: { parent: parent } %>
-  </div>
+  <% if current_user.present? %>
+    <div class='d-none new-comment-container'>
+      <%= render partial: '/shared/comments/new', locals: { parent: parent } %>
+    </div>
+  <% end %>
 </div>
