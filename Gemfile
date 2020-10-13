@@ -64,6 +64,9 @@ gem "stimulus_reflex"
 gem 'devise'
 gem 'devise-two-factor'
 
+# comments
+gem 'acts_as_commentable'
+
 group :development, :test do
   gem 'puma'
   gem 'capistrano', '~> 3.13', require: false

@@ -1,0 +1,14 @@
+<div class="new-comment-form">
+  <%= form_with model: Comment.new, local: true do |f| %>
+    <div class="row">
+      <div class='form-group col-12'>
+        <label class='d-block'>Comment</label>
+        <%= f.text_area :comment, placeholder: "Write your comment here", class: 'form-control' %>
+      </div>
+    </div>
+    <%= f.hidden_field :commentable_type, value: parent.class %>
+    <%= f.hidden_field :commentable_id, value: parent.id %>
+    <%= f.hidden_field :user_id, value: current_user.id %>
+    <%= f.submit 'Submit', class: 'btn btn-primary', data: {action: 'click->comment#submitNew'}%>
+  <% end %>
+</div>
