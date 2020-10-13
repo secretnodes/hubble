@@ -4,7 +4,7 @@ class Admin::Common::FaucetsController < Admin::BaseController
   def create
     words = params[:words].blank? ? BipMnemonic.to_mnemonic(bits: 256) : params[:words]
     seed = BipMnemonic.to_seed( mnemonic: words )
-    master = MoneyTree::Master.new( seed_hex: seed )
+    # master = MoneyTree::Master.new( seed_hex: seed )
     priv = master.private_key.to_hex
 
     faucet = @chain.create_faucet( private_key: priv )

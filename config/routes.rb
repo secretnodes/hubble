@@ -35,9 +35,9 @@ Rails.application.routes.draw do
     resources :chains, format: false, constraints: { id: /[^\/]+/ }, only: %i{ show } do
       get '/dashboard' => 'dashboard#index', as: 'dashboard'
 
-      resource :faucet, only: %i{ show } do
-        resources :faucet_transactions, as: 'transactions', path: 'transactions', only: %i{ create }
-      end
+      # resource :faucet, only: %i{ show } do
+      #   resources :faucet_transactions, as: 'transactions', path: 'transactions', only: %i{ create }
+      # end
 
       member do
         get :search

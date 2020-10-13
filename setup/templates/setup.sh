@@ -23,23 +23,23 @@ echo
 echo
 
 echo "INSTALLING RUBY..."
-if [ -d "/puzzle/ruby-2.5.1" ]; then
+if [ -d "/puzzle/ruby-2.7.1" ]; then
   echo "SKIP"
 else
   git clone https://github.com/rbenv/ruby-build.git /tmp/ruby-build
   sudo bash -c "PREFIX=/puzzle/ruby-build /tmp/ruby-build/install.sh"
   rm -rf /tmp/ruby-build
-  /puzzle/ruby-build/bin/ruby-build 2.5.1 /puzzle/ruby-2.5.1
-  echo "export PATH=\$PATH:/puzzle/ruby-2.5.1/bin" >> ~/.bashrc
+  /puzzle/ruby-build/bin/ruby-build 2.7.1 /puzzle/ruby-2.7.1
+  echo "export PATH=\$PATH:/puzzle/ruby-2.7.1/bin" >> ~/.bashrc
   echo "export RAILS_ENV={{RAILS_ENV}}" >> ~/.bashrc
   source ~/.bashrc
-  /puzzle/ruby-2.5.1/bin/ruby -v > /dev/null
+  /puzzle/ruby-2.7.1/bin/ruby -v > /dev/null
   if [ ! $? -eq 0 ]; then
     echo "Ruby not installed correctly?"
     exit 1
   fi
   echo "gem: --no-rdoc --no-ri" > ~/.gemrc
-  /puzzle/ruby-2.5.1/bin/gem install bundler
+  /puzzle/ruby-2.7.1/bin/gem install bundler
   echo "DONE"
 fi
 
