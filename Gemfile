@@ -74,6 +74,7 @@ group :development, :test do
   gem 'capistrano-linked-files', require: false
   gem 'capistrano-npm', require: false
   gem "capistrano-sidekiq", git: "https://github.com/rwojnarowski/capistrano-sidekiq.git"
+  gem 'capistrano-rbenv', '~> 2.2', require: false
   gem 'ed25519'
   gem 'bcrypt_pbkdf'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
