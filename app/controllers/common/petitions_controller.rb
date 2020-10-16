@@ -37,6 +37,9 @@ class Common::PetitionsController < Common::BaseController
   def show
     @petition = @chain.namespace::Petition.find params[:id]
     @tally_result = @chain.namespace::PetitionTallyDecorator.new(@petition)
+    
+    sort_direction = params[:comment_sort].present? ? params[:comment_sort].downcase.to_sym : :asc
+    @comments = @petition.comments.unscope(:order).order(created_at: sort_direction)
   end
 
   private

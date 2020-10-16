@@ -9,4 +9,18 @@ $(document).ready( function() {
     $('.proposal-form').data( 'disabled', false )
     $('.submit-proposal-vote').removeAttr( 'disabled' )
   } );
+
+  $('.collapse-comments-btn').click(function() {
+    $('.comments').toggleClass('d-none');
+    $(this).toggleClass('d-none');
+    $('.comment-sort-btn').toggleClass('d-none');
+    $('.show-comments-btn').toggleClass('d-none');
+  });
+
+  $('.show-comments-btn').click(function() {
+    $('.comments').toggleClass('d-none');
+    $(this).toggleClass('d-none');
+    $('.comment-sort-btn').toggleClass('d-none');
+    $('.collapse-comments-btn').toggleClass('d-none');
+  })
 });

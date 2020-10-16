@@ -8,6 +8,8 @@ module Petitionlike
     belongs_to :user
     has_many :votes, class_name: "#{namespace}::PetitionVote", dependent: :delete_all
 
+    acts_as_commentable
+
     scope :ordered_by_submit_time, -> { order( voting_start_time: :desc ) }
     scope :voting_open, -> { where( 'voting_end_time > ?', Time.now ) }
     enum status: [:voting_period, :rejected, :passed]

@@ -73,6 +73,7 @@
         </div>
       </div>
     </div>
+    <%= render partial: '/shared/comments/index', locals: { comments: @comments, parent: @petition, current_path: namespaced_path( 'petition', @petition ) }%>
   </div>
 
   <div class='col-12 col-md-3'>

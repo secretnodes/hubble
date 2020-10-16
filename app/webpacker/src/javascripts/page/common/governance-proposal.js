@@ -16,5 +16,5 @@ $(document).ready( function() {
     $(this).toggleClass('d-none');
     $('.comment-sort-btn').toggleClass('d-none');
     $('.collapse-comments-btn').toggleClass('d-none');
-  })
+  });
 } )
