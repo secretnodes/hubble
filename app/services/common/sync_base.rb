@@ -293,7 +293,11 @@ class Common::SyncBase
   def lcd_post( path, body )
     path = path.join('/') if path.is_a?(Array)
 
-    url = "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}/#{path}"
+    url = if @lcd_port.blank?
+      "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}/#{path}"
+    else
+      "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}:#{@lcd_port}/#{path}"
+    end
 
     body = Rails.cache.fetch( ['lcd_post', @chain.network_name.downcase, @chain.ext_id.to_s, path].join('-'), force: Rails.env.development?, expires_in: 6.seconds, version: CACHE_VERSION ) do
       start_time = Time.now.utc.to_f
