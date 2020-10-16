@@ -19,7 +19,6 @@ export default class extends Controller {
       .then(html => {
         this.element.innerHTML = html;
         $('.current-block').click( ( e ) => {
-          console.log('here');
           window.location = $(e.currentTarget).attr('href');
         });
       })

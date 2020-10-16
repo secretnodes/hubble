@@ -22,6 +22,4 @@ $(document).ready( function() {
     button.siblings().removeClass('active').end().addClass('active')
   } )
   switcherButtons.first().trigger('click')
-
-
 } )
