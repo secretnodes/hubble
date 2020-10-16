@@ -17,7 +17,10 @@ export default class extends Controller {
     fetch(this.data.get("url"))
       .then(response => response.text())
       .then(html => {
-        this.element.innerHTML = html
+        this.element.innerHTML = html;
+        $('.current-block').click( ( e ) => {
+          window.location = $(e.currentTarget).attr('href');
+        });
       })
   }
 

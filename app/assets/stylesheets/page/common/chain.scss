@@ -37,4 +37,9 @@
     margin-top: 4px;
     margin-bottom: 12px;
   }
+
+  .current-block:hover {
+    cursor: pointer;
+    background-color: $light;
+  }
 }

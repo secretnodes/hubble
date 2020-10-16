@@ -10,7 +10,7 @@ class Common::HaltedChainService
       @chain.has_halted! unless @chain.halted?
       ProgressReport.instance.report 'CHAIN IS HALTED'
     else
-      @chain.update_attributes last_round_state: round_state_string, total_supply: get_total_supply
+      @chain.update_attributes last_round_state: round_state_string, total_supply: get_total_supply, inflation: get_inflation
       @chain.progressing! if @chain.halted?
       ProgressReport.instance.report 'CHAIN APPEARS OK'
     end
@@ -120,6 +120,10 @@ class Common::HaltedChainService
 
   def get_total_supply
     @chain.syncer.get_total_supply.to_i
+  end
+  
+  def get_inflation
+    @chain.syncer.get_inflation.to_f
   end
 
   def percentage

@@ -52,6 +52,7 @@ class Admin::Common::ChainsController < Admin::BaseController
 
   def show
     @chain = @namespace::Chain.find_by slug: params[:id]
+
     raise ActionController::NotFound unless @chain
   end
 
