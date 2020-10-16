@@ -80,7 +80,7 @@
     <div 
       data-controller="content-loader"
       data-content-loader-url="<%= namespaced_path(  'info_cards', @chain, pre_path: true ) %>"
-      data-content-loader-refresh-interval="5000">
+  >
     
       <%= render partial: 'info_cards', chain: @chain, latest_block: @latest_block %>
 

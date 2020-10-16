@@ -132,6 +132,10 @@ class Common::SyncBase
     lcd_get( "supply/total/#{@chain.primary_token}" )
   end
 
+  def get_inflation
+    lcd_get( 'minting/inflation' )
+  end
+
   def get_governance
     result = rpc_get( 'genesis' )
     info = result['result']['genesis']['app_state']['gov']
