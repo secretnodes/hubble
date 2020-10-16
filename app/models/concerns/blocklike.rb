@@ -74,7 +74,7 @@ module Blocklike
         # there are transactions in the block
         begin
           if header['num_txs'].to_i > 0 || block_meta['num_txs'].to_i > 0
-            syncer = chain.namespace::SyncBase.new( chain, 250 )
+            syncer = chain.namespace::SyncBase.new( chain )
             block_txs = syncer.get_block( height )['result']['block']['data']['txs']
           end
         rescue
