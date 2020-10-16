@@ -242,7 +242,12 @@ class Common::SyncBase
   def rpc_get( path, params=nil )
     path = path.join('/') if path.is_a?(Array)
     path += "?#{params.to_query}" if params
-    url = "http://#{@host}:#{@rpc_port}/#{path}"
+
+    url = if @rpc_port.blank? 
+      "http://#{@host}/#{path}"
+    else
+      "http://#{@host}:#{@rpc_port}/#{path}"
+    end
 
     body = Rails.cache.fetch( ['rpc_get', @chain.network_name.downcase, @chain.ext_id.to_s, path].join('-'), force: Rails.env.development?, expires_in: 1.second, version: CACHE_VERSION ) do
       start_time = Time.now.utc.to_f
@@ -259,7 +264,12 @@ class Common::SyncBase
   def lcd_get( path, params=nil )
     path = path.join('/') if path.is_a?(Array)
     path += "?#{params.to_query}" if params
-    url = "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}:#{@lcd_port}/#{path}"
+    
+    url = if @lcd_port.blank?
+      "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}/#{path}"
+    else
+      "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}:#{@lcd_port}/#{path}"
+    end
 
     body = Rails.cache.fetch( ['lcd_get', @chain.network_name.downcase, @chain.ext_id.to_s, path].join('-'), force: Rails.env.development?, expires_in: 1.second, version: CACHE_VERSION ) do
       start_time = Time.now.utc.to_f
@@ -282,7 +292,8 @@ class Common::SyncBase
 
   def lcd_post( path, body )
     path = path.join('/') if path.is_a?(Array)
-    url = "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}:#{@lcd_port}/#{path}"
+
+    url = "http#{@chain.use_ssl_for_lcd? ? 's' : ''}://#{@host}/#{path}"
 
     body = Rails.cache.fetch( ['lcd_post', @chain.network_name.downcase, @chain.ext_id.to_s, path].join('-'), force: Rails.env.development?, expires_in: 6.seconds, version: CACHE_VERSION ) do
       start_time = Time.now.utc.to_f
