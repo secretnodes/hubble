@@ -4,7 +4,6 @@ class Admin::BaseController < ApplicationController
   # before_action :require_2fa
 
   around_action :set_timezone, if: -> { current_admin.present? }
-  before_action :set_current_admin, unless: -> { current_admin.present? }
   layout 'admin'
 
   private
