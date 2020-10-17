@@ -6,6 +6,16 @@ class Admin::BaseController < ApplicationController
   around_action :set_timezone, if: -> { current_admin.present? }
   layout 'admin'
 
+  rescue_from CanCan::AccessDenied do |exception|
+    if current_user.blank?
+      flash[:info] = 'You must be logged in to use this feature. Please login and try again.'
+    else
+      flash[:error] = 'You are not authorized to use this feature.'
+    end
+
+    redirect_back(fallback_location: root_path)
+  end
+
   private
   
   def current_admin
