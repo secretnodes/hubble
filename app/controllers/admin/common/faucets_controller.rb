@@ -1,5 +1,6 @@
 class Admin::Common::FaucetsController < Admin::BaseController
   before_action :ensure_chain
+  load_and_authorize_resource class: 'Secret::Faucet'
 
   def create
     words = params[:words].blank? ? BipMnemonic.to_mnemonic(bits: 256) : params[:words]

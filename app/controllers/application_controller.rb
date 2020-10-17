@@ -8,6 +8,17 @@ class ApplicationController < ActionController::Base
   before_action :http_basic_auth if REQUIRE_HTTP_BASIC
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+
+  rescue_from CanCan::AccessDenied do |exception|
+    if current_user.blank?
+      flash[:info] = 'You must be logged in to use this feature. Please login and try again.'
+    else
+      flash[:error] = 'You are not authorized to use this feature.'
+    end
+
+    redirect_back(fallback_location: root_path)
+  end
+
   if !Rails.env.development?
     rescue_from StandardError,
                   with: :render_500

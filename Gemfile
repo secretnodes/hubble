@@ -64,6 +64,9 @@ gem "stimulus_reflex"
 gem 'devise'
 gem 'devise-two-factor'
 
+# authorization
+gem 'cancancan', '~> 3.1'
+
 # comments
 gem 'acts_as_commentable'
 

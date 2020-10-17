@@ -1,6 +1,4 @@
 class Admin::SessionsController < Admin::BaseController
-  skip_before_action :require_administrator
-  # skip_before_action :require_2fa
 
   def new
     if params[:token]
@@ -34,9 +32,7 @@ class Admin::SessionsController < Admin::BaseController
   end
 
   def destroy
-    session.delete :admin_id
-    cookies.signed[:admin_id] = nil
-    redirect_to admin_root_path
+    redirect_to destroy_user_session_path
   end
 
 end

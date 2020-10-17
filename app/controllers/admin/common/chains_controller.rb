@@ -1,5 +1,5 @@
 class Admin::Common::ChainsController < Admin::BaseController
-
+  load_and_authorize_resource class: 'Secret::Chain', find_by: :slug
   def new
     @chain = @namespace::Chain.new
   end

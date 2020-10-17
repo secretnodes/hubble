@@ -1,9 +1,9 @@
 class WalletsController < ApplicationController
   layout 'account'
-  before_action :require_user, only: %i{ index update }
+  load_and_authorize_resource
 
   def index
-    @chain = Secret::Chain.first
+    @chain = Secret::Chain.primary
     @wallet_types = current_user.wallets.group_by(&:wallet_type).map { |k, v| [k, v.collect { |a| [a.public_address, a.id] }] }
     @wallets = current_user.wallets.all
 
