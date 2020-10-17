@@ -16,6 +16,7 @@ set :init_system, :systemd
 
 # Default value for :linked_files is []
 before 'deploy:check:linked_files', 'linked_files:upload_files'
+set :linked_dirs, fetch(:linked_dirs, []) << '.bundle'
 append :linked_files, 'config/database.yml', 'config/credentials.yml.enc', 'config/master.key', 'config/skylight.yml'
 
 # Default value for linked_dirs is []

@@ -78,6 +78,7 @@ group :development, :test do
   gem 'capistrano-npm', require: false
   gem "capistrano-sidekiq", git: "https://github.com/rwojnarowski/capistrano-sidekiq.git"
   gem 'capistrano-rbenv', '~> 2.2', require: false
+  gem 'capistrano-bundler', '~> 2.0', require: false
   gem 'ed25519'
   gem 'bcrypt_pbkdf'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
