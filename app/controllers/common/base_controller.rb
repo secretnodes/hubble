@@ -20,10 +20,11 @@ class Common::BaseController < ApplicationController
     raise ActiveRecord::RecordNotFound unless @chain
   end
 
-  def ensure_current_user
-    if current_user.nil?
-      flash[:info] = "You must be logged in to use this feature. Please login and try again."
-      redirect_back(fallback_location: root_path)
-    end
+  def current_ability
+    # I am sure there is a slicker way to capture the controller namespace
+    controller_name_segments = params[:controller].split('/')
+    controller_name_segments.pop
+    controller_namespace = controller_name_segments.join('/').camelize
+    @current_ability ||= Ability.new(current_user, controller_namespace)
   end
 end

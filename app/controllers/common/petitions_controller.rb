@@ -1,6 +1,6 @@
 class Common::PetitionsController < Common::BaseController
   before_action :ensure_chain
-  before_action :ensure_current_user, only: [:new, :create]
+  load_and_authorize_resource only: [:new, :create]
 
   def index
     @petitions = @chain.namespace::Petition.ordered_by_submit_time

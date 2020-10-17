@@ -1,6 +1,6 @@
 class Common::PetitionVotesController < Common::BaseController
   before_action :ensure_chain
-  before_action :ensure_current_user
+  load_and_authorize_resource
 
   def create
     petition = @chain.petitions.find params[:petition_id]

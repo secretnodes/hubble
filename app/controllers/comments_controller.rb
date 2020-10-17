@@ -1,5 +1,6 @@
 class CommentsController < ApplicationController
   layout 'none'
+  load_and_authorize_resource
 
   def create
     user = User.find comment_params[:user_id]
