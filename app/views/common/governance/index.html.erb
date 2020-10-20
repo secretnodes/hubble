@@ -8,46 +8,42 @@
     <div class='col-12 col-md-9'>
       <section class='gov-proposals'>
         <div class='gov-proposals-table-header d-flex align-items-center justify-content-between'>
-          <h4>Governance Proposals</h4>
+          <h4>Governance</h4>
+
+          <div class='btn-group'>
+            <%= link_to 'Proposals <i class="fas fa-link"></i>'.html_safe, namespaced_path( 'governance_root' ), class: "btn btn-outline-light #{@prop_active}" %>
+            <%= link_to 'Foundation Proposals <i class="fas fa-unlink"></i>'.html_safe, namespaced_path('governance_root', { type: 'foundation' } ), class: "btn btn-outline-light #{@f_active}" %>
+            <%= link_to 'Petitions <i class="fas fa-unlink"></i>'.html_safe, namespaced_path( 'governance_root', { type: 'petitions' } ), class: "btn btn-outline-light #{@pet_active}" %>
+          </div>
 
           <% if @chain.class::SUPPORTS_LEDGER -%>
             <div class='controls'>
-              <button class='btn btn-sm btn-outline-light' data-toggle='modal' data-target='#proposal-modal'>New Proposal</button>
+              <button class='btn btn-sm btn-outline-light' data-toggle='modal' data-target='#proposal-modal'>Create</button>
             </div>
           <% end -%>
         </div>
 
-        <%= render 'common/governance/proposals_table', proposals: @proposals %>
+        <% if !@proposals.nil? %>
+          <%= render 'common/governance/proposals_table', proposals: @proposals %>
+        <% else %>
+          <%= render 'common/governance/petitions_table', petitions: @petitions %>
+        <% end %>
       </section>
     </div>
 
     <div class='col-12 col-md-3'>
-      <div class='card'>
-        <h5 class='card-header'>Parameters</h5>
-        <div class='card-body'>
-          <label class='text-muted mb-0 mt-0'>Voting Period</label>
-          <div class='technical'>
-            <%= round_if_whole(@chain.governance_params.voting_period, 2) %> days
-          </div>
-
-          <label class='text-muted mb-0 mt-3'>Minimum Deposit</label>
-          <div class='technical'>
-            <%= format_amount(@chain.governance_params.min_deposit_amount, @chain, denom: @chain.governance_params.min_deposit_denom) %>
-          </div>
-
-          <label class='text-muted mb-0 mt-3'>Maximum Deposit Period</label>
-          <div class='technical'>
-            <%= round_if_whole(@chain.governance_params.max_deposit_period, 2) %> days
-          </div>
-        </div>
-      </div>
+      <% if !@proposals.nil? %>
+        <%= render 'common/governance/proposal_parameters' %>
+      <% else %>
+        <%= render 'common/governance/petition_parameters' %>
+      <% end %>
     </div>
   </div>
 </div>
 
 <% content_for :modals do -%>
   <div class='modal fade' id='proposal-modal' tabindex='-1' role='dialog' data-chain-id='<%= @chain.ext_id %>'>
-    <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
       <div class='modal-content'>
         <div class='modal-body'>
           <button type='button' class='close float-right' data-dismiss='modal' aria-label='Close'>
@@ -63,6 +59,13 @@
             <div class='alert alert-danger mt-4 mb-0'>
               <p class='proposal-error mb-0'></p>
             </div>
+          </div>
+
+          <div class='proposal-step step-choose-type text-center p-5'>
+            <h3>Choose a Governance Type</h3>
+            <button class='mt-4 btn btn-lg btn-outline-primary choice-proposal'>Proposals <i class="fas fa-link"></i></button>
+            <%= link_to 'Foundation Proposals <i class="fas fa-unlink"></i>'.html_safe, public_send("new_#{@chain.namespace.to_s.downcase}_chain_petition_path", petition_type: 'foundation'), class: 'mt-4 btn btn-lg btn-outline-primary text-wrap' %>
+            <%= link_to 'Petitions <i class="fas fa-unlink"></i>'.html_safe, public_send("new_#{@chain.namespace.to_s.downcase}_chain_petition_path"), class: 'mt-4 btn btn-lg btn-outline-primary' %>
           </div>
           
           <div class='proposal-step step-choose-wallet text-center p-5'>
