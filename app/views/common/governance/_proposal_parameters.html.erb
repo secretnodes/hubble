@@ -1,0 +1,19 @@
+<div class='card'>
+  <h5 class='card-header'>Parameters</h5>
+  <div class='card-body'>
+    <label class='text-muted mb-0 mt-0'>Voting Period</label>
+    <div class='technical'>
+      <%= round_if_whole(@chain.governance_params.voting_period, 2) %> days
+    </div>
+
+    <label class='text-muted mb-0 mt-3'>Minimum Deposit</label>
+    <div class='technical'>
+      <%= format_amount(@chain.governance_params.min_deposit_amount, @chain, denom: @chain.governance_params.min_deposit_denom) %>
+    </div>
+
+    <label class='text-muted mb-0 mt-3'>Maximum Deposit Period</label>
+    <div class='technical'>
+      <%= round_if_whole(@chain.governance_params.max_deposit_period, 2) %> days
+    </div>
+  </div>
+</div>

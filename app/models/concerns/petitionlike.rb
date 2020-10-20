@@ -13,6 +13,10 @@ module Petitionlike
     scope :ordered_by_submit_time, -> { order( voting_start_time: :desc ) }
     scope :voting_open, -> { where( 'voting_end_time > ?', Time.now ) }
     enum status: [:voting_period, :rejected, :passed]
+    enum petition_type: %i{ petition foundation }
+
+    validates_presence_of :title, :description, :voting_end_time, :petition_type
+    validates_presence_of :contact_info, if: :foundation?
   end
 
   def to_param; id.to_s; end

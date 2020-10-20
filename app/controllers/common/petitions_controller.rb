@@ -3,10 +3,7 @@ class Common::PetitionsController < Common::BaseController
   load_and_authorize_resource only: [:new, :create]
 
   def index
-    @petitions = @chain.namespace::Petition.ordered_by_submit_time
-
-    page_title @chain.network_name, @chain.name, 'Governance Petitions & Results'
-    meta_description "#{@chain.network_name} -- #{@chain.name} Governance Petitions: Title, Status, Date Submitted, and Petition Parameters"
+   redirect_to namespaced_path( 'governance_root' )
   end
 
   def new
@@ -27,7 +24,7 @@ class Common::PetitionsController < Common::BaseController
     if @petition.save!
       FinalizePetitionWorker.perform_at(end_date, @petition.id, @chain.class.to_s, @chain.id)
       flash[:success] = "You successfully created a petition entitled #{@petition.title}!"
-      redirect_to namespaced_path('petitions')
+      redirect_to namespaced_path('governance_root', type: params[:petition_type] )
     else
       flash[:error] = "There was an error creating your petition. Please try again."
       return
@@ -48,7 +45,10 @@ class Common::PetitionsController < Common::BaseController
     params.require("#{@chain.namespace.to_s.downcase}_petition".to_sym).permit(
       :title,
       :voting_end_time,
-      :description
+      :description,
+      :petition_type,
+      :amount,
+      :contact_info
     )
   end
 end

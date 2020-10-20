@@ -16,6 +16,11 @@ class GovProposalSubmitModal {
     this.modal.on( 'shown.bs.modal', async () => {
       this.reset()
 
+      this.modal.find('.choice-proposal').click( () => {
+        this.modal.find('.step-choose-type').hide();
+        this.modal.find('.step-choose-wallet').show();
+      })
+
       if( !triggeredGAEvent ) { ga('send', 'event', 'gov-proposal-submit', 'started') }
 
       this.modal.find('.choice-ledger').click( async () => {
@@ -239,9 +244,10 @@ class GovProposalSubmitModal {
   }
 
   reset() {
-    this.modal.find('.modal-dialog').removeClass('modal-lg')
+    this.modal.find('.modal-dialog')
     this.modal.find('.proposal-step').hide()
-    this.modal.find('.step-choose-wallet').show()
+    this.modal.find('.step-choose-wallet').hide()
+    this.modal.find('.step-choose-type').show()
     this.modal.find('.proposal-deposit-amount').val('').off('input')
     this.modal.find('.proposal-title').val('').off('input')
     this.modal.find('.proposal-description').val('').off('input')
