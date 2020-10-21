@@ -63,7 +63,7 @@
                   <tr data-vote-id='<%= vote.id %>'>
                     <td class='text-uppercase text-md vote-option vote-<%= vote.option.downcase %>'><%= vote.option %></td>
                     <td>
-                      
+                      <%= vote.user.username %>
                     </td>
                   </tr>
                 <% end -%>
@@ -72,7 +72,29 @@
           </table>
         </div>
       </div>
+
+      <% if @petition.foundation? && (current_user.foundation? || current_user.sudo?) %>
+        <div class='my-5'>
+          <div class='title mb-1'>FOUNDATION DASHBOARD</div>
+          <hr />
+          <div class='mt-2'>
+            <div class='form-group'>
+              <label class='d-block'>Submitter Contact Info: <span class='ml-3'><%= @petition.contact_info %></span></label>
+            </div>
+          </div>
+          <div class='foundation-dashboard-container'>
+            <%= form_with url: namespaced_path('petition', @petition), method: :put, local: true do |f| %>
+              <div class='form-group'>
+                <label class='d-block'>Status</label>
+                <%= f.select :status, @statuses, class: 'form-control' %>
+              </div>
+              <%= f.submit 'Update Status', class: 'btn btn-primary' %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
+
     <%= render partial: '/shared/comments/index', locals: { comments: @comments, parent: @petition, current_path: namespaced_path( 'petition', @petition ) }%>
   </div>
 
