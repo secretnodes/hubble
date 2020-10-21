@@ -8,12 +8,14 @@
     <div class='col-12 col-md-9'>
       <section class='gov-proposals'>
         <div class='gov-proposals-table-header d-flex align-items-center justify-content-between'>
-          <h4>Governance</h4>
+          <h4>Gov</h4>
 
-          <div class='btn-group'>
-            <%= link_to 'Proposals <i class="fas fa-link"></i>'.html_safe, namespaced_path( 'governance_root' ), class: "btn btn-outline-light #{@prop_active}" %>
-            <%= link_to 'Foundation Proposals <i class="fas fa-unlink"></i>'.html_safe, namespaced_path('governance_root', { type: 'foundation' } ), class: "btn btn-outline-light #{@f_active}" %>
-            <%= link_to 'Petitions <i class="fas fa-unlink"></i>'.html_safe, namespaced_path( 'governance_root', { type: 'petitions' } ), class: "btn btn-outline-light #{@pet_active}" %>
+          <div class='form-group mt-2 mb-1'>
+            <select class='form-control' id='gov-page-selector'>
+              <option value='<%= namespaced_path( 'governance_root' )%>' <%= @prop_active %>>Proposals (On-Chain)</option>
+              <option value='<%= namespaced_path( 'governance_root', { type: 'foundation' } )%>' <%= @f_active %>>Foundation Proposals (Off-Chain)</option>
+              <option value='<%= namespaced_path( 'governance_root', { type: 'petitions' } )%>' <%= @pet_active %>>Petitions (Off-Chain)</option>
+            </select>
           </div>
 
           <% if @chain.class::SUPPORTS_LEDGER -%>

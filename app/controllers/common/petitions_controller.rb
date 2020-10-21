@@ -37,6 +37,27 @@ class Common::PetitionsController < Common::BaseController
     
     sort_direction = params[:comment_sort].present? ? params[:comment_sort].downcase.to_sym : :asc
     @comments = @petition.comments.unscope(:order).order(created_at: sort_direction)
+    @statuses = [['Consideration Phase', :voting_period], ['In Progress', :in_progress], ['Rejected', :rejected], ['Finished', :passed]] if current_user.foundation? || current_user.sudo?
+  end
+
+  def edit
+    @petition = @chain.namespace::Petition.find params[:id]
+    flash[:error] = 'That petition is not a foundation spend proposal, please select a different one.' and redirect_back(fallback_location: root_path) unless @petition.foundation?
+   
+  end
+
+  def update
+    @petition = @chain.namespace::Petition.find params[:id]
+
+    flash[:error] = 'That petition is not a foundation spend proposal, please select a different one.' and redirect_back(fallback_location: root_path) unless @petition.foundation?
+
+    if @petition.update(status: params[:status])
+      flash[:success] = 'You saved the Foundation Spend Proposal successfully!'
+      redirect_back(fallback_location: root_path)
+    else
+      flash[:error] = 'There was an error while saving your selection. Please try again.'
+      redirect_back(fallback_location: root_path)
+    end
   end
 
   private

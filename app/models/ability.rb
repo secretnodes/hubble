@@ -11,6 +11,7 @@ class Ability
       if user.sudo?
         can :manage, :all
       elsif user.foundation?
+        can %i{ edit update }, Secret::Petition, petition_type: :foundation
       elsif user.puzzle_staker?
       elsif !user.new_record?
         can :manage, Secret::Petition, user_id: user.id
