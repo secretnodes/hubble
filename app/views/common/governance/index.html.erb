@@ -36,6 +36,8 @@
     <div class='col-12 col-md-3'>
       <% if !@proposals.nil? %>
         <%= render 'common/governance/proposal_parameters' %>
+      <% elsif params[:type] == 'foundation' %>
+        <%= render 'common/governance/foundation_parameters' %>
       <% else %>
         <%= render 'common/governance/petition_parameters' %>
       <% end %>
