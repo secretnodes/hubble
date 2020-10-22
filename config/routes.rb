@@ -6,7 +6,9 @@ Rails.application.routes.draw do
     confirmations: 'users/confirmations'
   }
   require 'sidekiq/web'
-  mount Sidekiq::Web => '/sidekiq'
+  authenticate :user, ->(user) { user.sudo? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
 
   resources :users, only: %i{ update } do
     collection do
