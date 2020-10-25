@@ -1,4 +1,4 @@
-$(document).ready( function() {
+$(document).on( 'turbolinks:load', function() {
   if( !_.includes(App.mode, 'faucet-transaction-show') ) { return }
 
   if( $('.status').data('status') == 'pending' ) {

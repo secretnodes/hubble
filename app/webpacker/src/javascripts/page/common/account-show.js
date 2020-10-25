@@ -1,4 +1,4 @@
-$(document).ready( function() {
+$(document).on( 'turbolinks:load', function() {
   if( !_.includes(App.mode, 'account-show') ) { return }
 
   new App.Common.DelegationsTable( $('.delegations-table') ).render();

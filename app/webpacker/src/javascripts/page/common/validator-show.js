@@ -1,6 +1,6 @@
 
 
-$(document).ready( function() {
+$(document).on( 'turbolinks:load', function() {
   if( !_.includes(App.mode, 'validator-show') ) { return }
 
   new App.Common.ValidatorVotingPowerHistory( $('.voting-power-history-chart') ).render()

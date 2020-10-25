@@ -1,4 +1,4 @@
-$(document).ready( function() {
+$(document).on( 'turbolinks:load', function() {
   $('[data-toggle="tooltip"]').each( function() {
     const el = $(this)
     el.tooltipster( {

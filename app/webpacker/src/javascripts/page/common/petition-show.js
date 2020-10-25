@@ -1,4 +1,4 @@
-$(document).ready( function() {
+$(document).on( 'turbolinks:load', function() {
   if( !_.includes(App.mode, 'petition-show') ) { return }
   console.log($('.vote-option input'));
   $('.vote-option input').on( 'change', ( e ) => {

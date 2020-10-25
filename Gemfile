@@ -15,6 +15,7 @@ gem 'rails-ujs'
 
 gem 'babel-transpiler'
 gem 'actionmailer_inline_css'
+gem 'turbolinks', '~> 5.1.0'
 
 gem 'typhoeus'
 gem 'dotiw'

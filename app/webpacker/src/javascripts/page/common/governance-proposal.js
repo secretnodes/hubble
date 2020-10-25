@@ -1,4 +1,4 @@
-$(document).ready( function() {
+$(document).on( 'turbolinks:load', function() {
   if( !_.includes(App.mode, 'governance-proposal') ) { return }
 
   new App.Common.GovProposalDepositModal( $('#proposal-deposit-modal') )

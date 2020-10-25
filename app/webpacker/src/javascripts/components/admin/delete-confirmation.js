@@ -1,4 +1,4 @@
-$(document).ready( function() {
+$(document).on( 'turbolinks:load', function() {
   $('.action-delete-confirmation').click( function( e ) {
     const button = $(e.currentTarget)
     if( button.data('confirming') ) {

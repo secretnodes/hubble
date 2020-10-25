@@ -348,6 +348,9 @@ GEM
     thor (1.0.1)
     thread_safe (0.3.6)
     tilt (2.0.10)
+    turbolinks (5.1.1)
+      turbolinks-source (~> 5.1)
+    turbolinks-source (5.2.0)
     twitter (7.0.0)
       addressable (~> 2.3)
       buftok (~> 0.2.0)
@@ -445,6 +448,7 @@ DEPENDENCIES
   sidekiq
   sqlite3
   stimulus_reflex
+  turbolinks (~> 5.1.0)
   twitter
   typhoeus
   unicorn

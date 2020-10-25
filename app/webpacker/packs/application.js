@@ -69,7 +69,8 @@ import '../src/javascripts/page/common/petition-show';
 
 
 require("@rails/ujs").start()
-require("@rails/activestorage").start()
+require("@rails/activestorage").start() 
+require("turbolinks").start()
 
 import { Application } from "stimulus"
 import { definitionsFromContext } from "stimulus/webpack-helpers"

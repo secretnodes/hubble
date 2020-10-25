@@ -1,4 +1,4 @@
-$(document).ready( function() {
+$(document).on( 'turbolinks:load', function() {
   if( !_.includes(App.mode, 'block-show') ) { return }
 
   new App.Common.ValidatorTable( $('.validator-table'), ['precommits'] ).render()
