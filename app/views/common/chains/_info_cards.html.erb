@@ -42,20 +42,48 @@
               <td><span class='technical'><%= format_amount(@total_swap, @chain, denom: 'eng', hide_units: true, in_millions: true) %> <span class='text-sm text-muted'>SCRT</span></span></td>
             </tr>
             <tr>
+              <td>Bonded Rate</td>
+              <td><span class='technical'><%= number_to_percentage(@bond_rate)%></span></td>
+            </tr>
+            <tr>
               <td>Network Inflation</td>
-              <td><span class='technical'><%= number_to_percentage(@chain.inflation * 100) %></span></span></td>
+              <td><span class='technical'><%= number_to_percentage(@chain.inflation * 100) %></span></td>
             </tr>
 
             <% @chain.community_pool.each do |balance| -%>
               <tr>
                 <td>Community Pool</td>
-                <td><span class='technical'><%= format_amount( balance['amount'], @chain, denom: balance['denom'], precision: 0) %></span></span></td>
+                <td><span class='technical'><%= format_amount( balance['amount'], @chain, denom: balance['denom'], precision: 0) %></span></td>
               </tr>
             <% end -%>
+
+            <tr>
+              <td>Total Contracts</td>
+              <td><span class='technical'><%= @total_contracts %></span></td>
+            </tr>
+
+            <tr>
+              <td>Individual Delegators</td>
+              <td><span class='technical'><%= @total_delegators %></span></td>
+            </tr>
+
+            <tr>
+              <td>Total Accounts</td>
+              <td><span class='technical'><%= @total_accounts %></span></td>
+            </tr>
+
+            <tr>
+              <td>Total Unbonding</td>
+              <td><span class='technical'><%= format_amount(@total_unbonding, @chain, denom: 'uscrt', precision: 0) %></span></td>
+            </tr>
             
             <tr class='current-block' href="<%= namespaced_path('block', @latest_block, chain: @chain) %>">
               <td>Current Block</td>
-              <td><span class='technical'><%= @latest_block.height %></span></span></td>
+              <td><span class='technical'><%= @latest_block.height %></span></td>
+            </tr>
+            <tr>
+              <td>Last Updated</td>
+              <td><%= time_ago_in_words(@chain.updated_at) %> ago</td>
             </tr>
           </tbody>
         </table>

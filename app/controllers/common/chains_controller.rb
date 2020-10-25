@@ -8,15 +8,7 @@ class Common::ChainsController < Common::BaseController
 
     @current_price = @latest_block.usd_price
 
-    chain_ids = @chain.namespace::Chain.where(testnet: @chain.testnet?).pluck(:id)
-    raw_transactions = @chain.namespace::Transaction.swap.where(chain_id: chain_ids).reorder(timestamp: :desc)
-
-    @total_swap = 0
-    raw_transactions.each do |tx|
-      @total_swap += tx.message[0]['value']['AmountENG'].to_f
-    end
-
-    @market_cap = format_amount(@total_swap, @chain, denom: 'eng', hide_units: true, html: false).gsub(',', '').to_i * @current_price
+    set_info_card_data
 
     page_title @chain.network_name, @chain.name, 'Overview', 'Validators, Governance, and Community Pool'
     meta_description "#{@chain.network_name} -- #{@chain.name} list of Validators, Address/Name, Voting Power, Uptime, Current Block and Governance"
@@ -89,14 +81,28 @@ class Common::ChainsController < Common::BaseController
   def info_cards
     @current_price = @latest_block.usd_price
 
+    set_info_card_data
+
+    render partial: 'info_cards', chain: @chain, latest_block: @latest_block
+  end
+
+  private
+  
+  def set_info_card_data
     chain_ids = @chain.namespace::Chain.where(testnet: @chain.testnet?).pluck(:id)
-    raw_transactions = @chain.namespace::Transaction.swap.where(chain_id: chain_ids).reorder(timestamp: :desc)
+    raw_swaps = @chain.namespace::Transaction.swap.where(chain_id: chain_ids).reorder(timestamp: :desc)
 
     @total_swap = 0
-    raw_transactions.each do |tx|
+    raw_swaps.each do |tx|
       @total_swap += tx.message[0]['value']['AmountENG'].to_f
     end
+
+    @total_contracts = @chain.namespace::Transaction.where(chain_id: chain_ids).store_contract_code.where(error_message: nil).count
     @market_cap = format_amount(@total_swap, @chain, denom: 'eng', hide_units: true, html: false).gsub(',', '').to_i * @current_price
-    render partial: 'info_cards', chain: @chain, latest_block: @latest_block
+    @total_unbonding = @chain.accounts.sum(:unbonding_balance)
+    @total_delegators = @chain.accounts.where.not(delegated_balance: [0, nil]).count
+    total_bonded = @chain.accounts.sum(:delegated_balance)
+    @bond_rate = (total_bonded.to_f / @chain.total_supply) * 100
+    @total_accounts = @chain.accounts.count
   end
 end
