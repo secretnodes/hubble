@@ -31,8 +31,9 @@ class AccountBalanceWorker
             rewards_total = 0
           end
 
-          if account.validator.present? 
-            commission_total = (syncer.get_validator_commission account.validator.owner)[0]['amount'].to_f
+          if account.validator.present?
+            commission = syncer.get_validator_commission account.validator.owner
+            commission_total = commission.blank? ? 0 : commission[0]['amount'].to_f
           else
             commission_total = 0
           end
