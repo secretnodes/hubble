@@ -20,7 +20,7 @@ class AccountBalanceWorker
           end
 
           if unbonding.present?
-            unbonding_total = unbonding.inject(0) { |sum, hash| sum + hash['balance'].to_i  }
+            unbonding_total = unbonding.inject(0) { |sum, hash| sum + hash['entries'][0]['balance'].to_i  }
           else
             unbonding_total = 0
           end
@@ -31,12 +31,20 @@ class AccountBalanceWorker
             rewards_total = 0
           end
 
+          if account.validator.present?
+            commission = syncer.get_validator_commission account.validator.owner
+            commission_total = commission.blank? ? 0 : commission[0]['amount'].to_f
+          else
+            commission_total = 0
+          end
+
           account.update!(
             available_balance: wallet_balance,
             delegated_balance: delegation_total,
             rewards_balance: rewards_total,
             unbonding_balance: unbonding_total,
-            total_balance: wallet_balance + delegation_total + rewards_total + unbonding_total
+            commission_balance: commission_total,
+            total_balance: wallet_balance + delegation_total + rewards_total + unbonding_total + commission_total
           )
         end
       end
