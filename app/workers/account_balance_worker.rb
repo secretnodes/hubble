@@ -42,7 +42,7 @@ class AccountBalanceWorker
             delegated_balance: delegation_total,
             rewards_balance: rewards_total,
             unbonding_balance: unbonding_total,
-            commission_total: commission_total,
+            commission_balance: commission_total,
             total_balance: wallet_balance + delegation_total + rewards_total + unbonding_total + commission_total
           )
         end
