@@ -38,6 +38,7 @@ class ValidatorTable {
       paging: false,
       autoWidth: false,
       className: 'validator-table',
+      retrieve: true,
       order: [],
       'columns': _.compact( [
         _.includes(this.skipColumns, 'address') ? null : {

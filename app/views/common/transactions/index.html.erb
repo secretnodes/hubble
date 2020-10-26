@@ -1,4 +1,4 @@
-<% content_for :body_class, 'block-show' -%>
+<% content_for :body_class, 'transactions-index' -%>
 <% if @type == "swaps"
     locals = { accounts_link: true, transactions_link: true, governance_link: true, petitions_link: true, contracts_link: true, summary_link: true, events_link: true }
     url = "#{namespaced_path( 'swaps', partial: true, page: @page, chain: @chain )}"

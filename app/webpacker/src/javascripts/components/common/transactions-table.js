@@ -11,6 +11,7 @@ class TransactionsTable {
       paging: false,
       info: false,
       autoWidth: false,
+      retrieve: true,
       className: 'transactions-table',
       stripeClasses: isEmpty ? [] : ['even', 'odd'],
       order: isEmpty ? [] : [ [1, 'desc'], [2, 'desc'] ],

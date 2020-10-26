@@ -7,10 +7,11 @@ class DelegationsTable {
     this.table = this.container.find('table')
     const isEmpty = this.table.data('empty')
 
-    this.table.DataTable( {
+    this.dataTable = this.table.DataTable( {
       sDom: 'lrtip',
       paging: false,
       info: false,
+      retrieve: true,
       autoWidth: false,
       className: 'delegations-table',
       stripeClasses: isEmpty ? [] : ['even', 'odd'],

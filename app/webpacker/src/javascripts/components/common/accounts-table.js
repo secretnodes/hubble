@@ -9,6 +9,7 @@ class AccountsTable {
     this.table = table.DataTable( {
       sDom: 'lrtip',
       paging: false,
+      retrieve: true,
       info: false,
       autoWidth: false,
       className: 'transactions-table',

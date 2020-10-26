@@ -8,10 +8,11 @@ class GovProposalsTable {
     const withValidator = this.table.data('withValidator')
     const isEmpty = this.table.data('empty')
 
-    this.table.DataTable( {
+    this.dataTable = this.table.DataTable( {
       sDom: 'lrtip',
       paging: false,
       info: false,
+      retrieve: true,
       autoWidth: false,
       className: 'gov-proposals-table',
       stripeClasses: isEmpty ? [] : ['even', 'odd'],
