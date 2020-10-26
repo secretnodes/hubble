@@ -172,6 +172,8 @@ GEM
       activesupport (>= 4.2.0)
     groupdate (5.2.1)
       activesupport (>= 5)
+    gutentag (2.5.3)
+      activerecord (>= 3.2.0)
     htmlentities (4.3.4)
     http (4.4.1)
       addressable (~> 2.3)
@@ -426,6 +428,7 @@ DEPENDENCIES
   dotiw
   ed25519
   groupdate
+  gutentag (~> 2.5)
   jbuilder
   jquery-rails
   letter_opener_web

@@ -71,6 +71,9 @@ gem 'cancancan', '~> 3.1'
 # comments
 gem 'acts_as_commentable'
 
+#tags
+gem 'gutentag', '~> 2.5'
+
 group :development, :test do
   gem 'puma'
   gem 'capistrano', '~> 3.13', require: false
