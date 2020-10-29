@@ -13,6 +13,12 @@ set :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 set :deploy_to, '/puzzle/app'
 set :init_system, :systemd
 
+set :ssh_options, { 
+  forward_agent: true, 
+  paranoid: true, 
+  keys: "~/.ssh/puzzle_report_id_rsa" 
+}
+
 
 # Default value for :linked_files is []
 before 'deploy:check:linked_files', 'linked_files:upload_files'
