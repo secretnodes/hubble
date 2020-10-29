@@ -4,7 +4,7 @@ set :rbenv_type, :user
 set :rbenv_ruby, '2.7.1'
 
 set :application, 'puzzle'
-set :repo_url, 'https://github.com/secretnodes/puzzle' # DO NOT CHANGE THIS EVER
+set :repo_url, 'https://github.com/secretnodes/puzzle_report' # DO NOT CHANGE THIS EVER
 
 # Default branch is :master
 set :branch, `git rev-parse --abbrev-ref HEAD`.chomp
