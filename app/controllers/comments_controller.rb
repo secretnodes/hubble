@@ -1,7 +1,7 @@
 class CommentsController < ApplicationController
   layout 'none'
   load_and_authorize_resource
-
+  include CableReady::Broadcaster
   def create
     user = User.find comment_params[:user_id]
     if user.username.blank?
@@ -11,6 +11,13 @@ class CommentsController < ApplicationController
     @comment = Comment.new(comment_params)
 
     if @comment.save!
+      cable_ready['comment'].insert_adjacent_html(
+        selector: '.comments',
+        position: 'beforeend',
+        html: render_to_string(partial: '/shared/comments/show', locals: {comment: @comment})
+      )
+      cable_ready.broadcast
+      
       flash[:success] = "You successfully submitted your comment. Thanks for participating in the dicussion!"
       redirect_back(fallback_location: root_path)
     else

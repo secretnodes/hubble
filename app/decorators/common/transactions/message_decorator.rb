@@ -185,13 +185,16 @@ class Common::Transactions::MessageDecorator
   alias :handle_validator_address :handle_validator
 
   def handle_account( value, html: true)
-    validator = @chain.accounts.find_by( address: value ).try(:validator)
+    account = @chain.accounts.find_by( address: value )
+    validator = account.try(:validator)
     if validator
-      link_to validator.short_name, namespaced_path( 'validator', validator )
+     "#{link_to validator.short_name, namespaced_path( 'validator', validator )} #{ApplicationController.render partial: '/common/accounts/account_tags', locals: {account: account} }"
     else
-      tag.span( class: 'technical' ) do
+      link = tag.span( class: 'technical' ) do
         link_to value, namespaced_path( 'account', value )
       end
+      tags = ApplicationController.render partial: '/common/accounts/account_tags', locals: { account: account }
+      return "#{link} #{tags}"
     end
   end
   alias :handle_depositor :handle_account

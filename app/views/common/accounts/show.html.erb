@@ -7,9 +7,11 @@
   <div>
     <label class='text-muted'>Account</label>
     <span class='technical text-lg'><%= params[:id] %></span>
+    <%= render partial: 'account_tags', locals: { account: @found_account } %>
   </div>
   <button class='btn btn-outline-primary px-5 mr-5 mb-2' data-toggle='modal' data-target='#send-modal'>Send</button>
 </h2>
+
 <% if @found_account && @found_account.validator -%>
   <h5 class='mb-4'>
     <label class='text-muted'>Owner</label>
@@ -18,6 +20,18 @@
     </a>
   </h5>
 <% end -%>
+
+<% if current_user.sudo? %>
+  <div class='w-50'>
+    <%= form_with model: @found_account, url: namespaced_path( 'account', @found_account ), local: true, method: :put do |f| %>
+      <div class="form-group">
+        <label class='d-block'>Tags (separated by commas)</label>
+        <%= f.text_field :tags_as_string, class: 'form-control' %>
+      </div>
+      <%= f.submit 'Save Tags', class: 'btn btn-outline-primary'%>
+    <% end %>
+  </div>
+<% end %>
 
 <% @account = @chain.namespace::AccountDecorator.new( @chain, params[:id] ) -%>
 

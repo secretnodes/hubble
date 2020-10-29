@@ -20,7 +20,7 @@
         <% accounts.each_with_index do |account, i| %>
         <tr>
           <td><%= i + 1 %></td>
-          <td data-order=<%= account.address %>><%= link_to account.address, namespaced_path( 'account', account.address ) %></td>
+          <td data-order=<%= account.address %>><%= link_to account.address, namespaced_path( 'account', account.address ) %> <%= render partial: 'account_tags', locals: { account: account } %></td>
           <td data-order=<%= account.total_balance %>><%= format_amount(account.total_balance, chain, denom: 'uscrt') %></td>
           <td data-order=<%= (account.total_balance / chain.total_supply.to_f) * 100 %>><%= ((account.total_balance / chain.total_supply.to_f) * 100).round(5)%>%</td>
         </tr>

@@ -37,4 +37,22 @@ class Common::AccountsController < Common::BaseController
       }
     end
   end
+
+  def update
+    @account = @chain.accounts.find_by_address params[:id]
+    if @account.update(account_params)
+      flash[:success] = 'Account tags were updated successfully'
+    else
+      flash[:error] = 'There was a problem saving the account tags. Please try again.'
+    end
+    redirect_back(fallback_location: root_path)
+  end
+
+  private
+
+  def account_params
+    params.require("#{@chain.namespace.to_s.downcase}_account".to_sym).permit(
+      :tags_as_string
+    )
+  end
 end

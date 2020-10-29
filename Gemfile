@@ -60,6 +60,7 @@ gem 'sidekiq'
 
 # # js framework
 gem "stimulus_reflex"
+gem 'cable_ready'
 
 # # authentication
 gem 'devise'

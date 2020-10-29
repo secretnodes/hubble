@@ -414,6 +414,7 @@ DEPENDENCIES
   bitcoin-ruby
   bitcoin-secp256k1
   byebug
+  cable_ready
   cancancan (~> 3.1)
   capistrano (~> 3.13)
   capistrano-bundler (~> 2.0)
