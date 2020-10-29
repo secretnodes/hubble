@@ -1,0 +1,5 @@
+<% unless account.tag_names.empty? %>
+  <% account.tag_names.each do |tag| %>
+    <span class='badge badge-pill badge-primary text-uppercase text-sm'><%= tag %></span>
+  <% end %>
+<% end %>

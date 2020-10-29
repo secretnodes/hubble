@@ -60,6 +60,7 @@ gem 'sidekiq'
 
 # # js framework
 gem "stimulus_reflex"
+gem 'cable_ready'
 
 # # authentication
 gem 'devise'
@@ -70,6 +71,9 @@ gem 'cancancan', '~> 3.1'
 
 # comments
 gem 'acts_as_commentable'
+
+#tags
+gem 'gutentag', '~> 2.5'
 
 group :development, :test do
   gem 'puma'

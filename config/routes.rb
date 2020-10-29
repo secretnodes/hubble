@@ -10,6 +10,8 @@ Rails.application.routes.draw do
     mount Sidekiq::Web => '/sidekiq'
   end
 
+  mount ActionCable.server => '/cable'
+
   resources :users, only: %i{ update } do
     collection do
       get :welcome
@@ -57,7 +59,7 @@ Rails.application.routes.draw do
         resources :subscriptions, only: %i{ index create }, controller: '/util/subscriptions'
       end
 
-      resources :accounts, only: %i{ show index }
+      resources :accounts, only: %i{ show index update }
 
       resources :blocks, only: %i{ show } do
         resources :transactions, only: %i{ show }

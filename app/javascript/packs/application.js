@@ -66,7 +66,7 @@ import '../src/javascripts/kava.js';
 import '../src/javascripts/terra.js';
 import 'bootstrap';
 import '../src/javascripts/page/common/petition-show';
-
+import 'channels';
 
 require("@rails/ujs").start()
 require("@rails/activestorage").start() 
