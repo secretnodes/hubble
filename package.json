@@ -26,7 +26,7 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.5.1",
     "ledger-cosmos-js": "^2.1.7",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "moment": "^2.26.0",
     "moment-timezone": "^0.5.31",
     "popper.js": "^1.16.1",
