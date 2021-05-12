@@ -16,7 +16,7 @@
     "bootstrap": "^4.5.0",
     "bops": "^1.0.1",
     "cable_ready": "^4.4.0-pre1",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
     "clipboard": "^2.0.1",
     "core-js": "^3.6.5",
